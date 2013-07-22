@@ -1,5 +1,5 @@
 import os
-from requests.adapters import BaseAdapter, HTTPAdapter
+from requests_vcr.adapter import VCRAdapter
 
 
 class VCR(object):
@@ -52,10 +52,15 @@ class VCR(object):
         self.session.mount('https://', self.vcr_adapter)
         return self
 
-    def __exit__(self, ex_type, ex_value, ex_traceback):
-        if ex_traceback is not None:
-            raise ex_type, ex_value, ex_traceback
+    def __exit__(self, *ex_args):
+        # ex_args comes through as the exception type, exception value and
+        # exception traceback. If any of them are not None, we should probably
+        # try to raise the exception and not muffle anything.
+        if any((ex_args)):
+            raise ex_args
 
+        # On exit, we no longer wish to use our adapter and we want the
+        # session to behave normally! Woooo!
         self.vcr_adapter.close()
         for (k, v) in self.http_adapters.items():
             self.session.mount(k, v)
@@ -69,12 +74,13 @@ class VCR(object):
             and response data to and from
         """
         def _can_load_cassette():
-            # This test sucks. We may be creating the cassettes for the
-            # first time. We shouldn't be doing this, but I'll leave it as
-            # a reminder for later.
+            # If we want to record a cassette we don't care if the file exists
+            # yet
             if self.default_cassette_options['record_mode'] in ['once']:
                 return True
 
+            # Otherwise if we're only replaying responses, we should probably
+            # have the cassette the user expects us to load and raise.
             return os.path.exists(os.path.join(
                 self.cassette_library_dir, '{0}.{1}'.format(
                     cassette_name, serialize
@@ -84,44 +90,9 @@ class VCR(object):
         if _can_load_cassette():
             self.vcr_adapter.load_cassette(cassette_name, serialize)
         else:
+            # If we're not recording or replaying an existing cassette, we
+            # should tell the user/developer that there is no cassette, only
+            # Zuul
             raise ValueError('Cassette must have a valid name and may not be'
                              ' None.')
         return self
-
-
-class VCRAdapter(BaseAdapter):
-
-    """This object is an implementation detail of the library.
-
-    It is not meant to be a public API and is not exported as such.
-
-    """
-
-    def __init__(self, **kwargs):
-        super(VCRAdapter, self).__init__()
-        self.http_adapter = HTTPAdapter(**kwargs)
-        self.cassette_name = None
-        self.serialize = None
-        self.cassette_loaded = False
-
-    def close(self):
-        self.http_adapter.close()
-
-    def send(self, request, stream=False, timeout=None, verify=True,
-             cert=None, proxies=None):
-        if self.cassette_loaded:
-            # load cassette
-            print("Bunnies!")
-        else:
-            # store the response because if they're using us we should
-            # probably be storing the cassette
-            return self.http_adapter.send(
-                request, stream=stream, timeout=timeout, verify=verify,
-                cert=cert, proxies=proxies
-            )
-
-    def load_cassette(self, cassette_name, serialize='json'):
-        self.cassette_name = cassette_name
-        self.serialize = serialize
-        # load cassette into memory
-        self.cassette_loaded = True
