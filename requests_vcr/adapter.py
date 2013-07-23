@@ -1,3 +1,4 @@
+import os
 from requests.adapters import BaseAdapter, HTTPAdapter
 from requests_vcr.cassette import Cassette
 
@@ -23,6 +24,7 @@ class VCRAdapter(BaseAdapter):
 
     def send(self, request, stream=False, timeout=None, verify=True,
              cert=None, proxies=None):
+        """
         if self.cassette:
             # load cassette
             return self.cassette.as_response()
@@ -36,10 +38,29 @@ class VCRAdapter(BaseAdapter):
             if self.cassette_name:
                 Cassette.from_response(response).save(self.cassette_name)
             return response
+        """
+        if self.cassette or self.cassette_exists():
+            return self.cassette.as_response()
+        else:
+            response = self.http_adapter.send(
+                request, stream=stream, timeout=timeout, verify=verify,
+                cert=cert, proxies=proxies
+                )
+            self.cassette = Cassette.from_response(response)
+            self.cassette.save()
+            return response
 
     def load_cassette(self, cassette_name, serialize, options):
         self.cassette_name = cassette_name
         self.serialize = serialize
         self.options.update(options)
         # load cassette into memory
-        self.cassette = Cassette(cassette_name, serialize, )
+        if self.cassette_exists():
+            self.cassette = Cassette(cassette_name, serialize)
+        elif os.path.exists(os.path.dirname(cassette_name)):
+            self.cassette = Cassette(cassette_name, serialize, 'wb')
+
+    def cassette_exists(self):
+        if self.cassette_name and os.path.exists(self.cassette_name):
+            return True
+        return False
