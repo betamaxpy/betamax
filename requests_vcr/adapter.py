@@ -1,4 +1,5 @@
 from requests.adapters import BaseAdapter, HTTPAdapter
+from requests_vcr.cassette import Cassette
 
 
 class VCRAdapter(BaseAdapter):
@@ -11,29 +12,34 @@ class VCRAdapter(BaseAdapter):
 
     def __init__(self, **kwargs):
         super(VCRAdapter, self).__init__()
-        self.http_adapter = HTTPAdapter(**kwargs)
+        self.cassette = None
         self.cassette_name = None
+        self.http_adapter = HTTPAdapter(**kwargs)
         self.serialize = None
-        self.cassette_loaded = False
+        self.options = {}
 
     def close(self):
         self.http_adapter.close()
 
     def send(self, request, stream=False, timeout=None, verify=True,
              cert=None, proxies=None):
-        if self.cassette_loaded:
+        if self.cassette:
             # load cassette
-            print("Bunnies!")
+            return self.cassette.as_response()
         else:
             # store the response because if they're using us we should
             # probably be storing the cassette
-            return self.http_adapter.send(
+            response = self.http_adapter.send(
                 request, stream=stream, timeout=timeout, verify=verify,
                 cert=cert, proxies=proxies
             )
+            if self.cassette_name:
+                Cassette.from_response(response).save(self.cassette_name)
+            return response
 
-    def load_cassette(self, cassette_name, serialize='json'):
+    def load_cassette(self, cassette_name, serialize, options):
         self.cassette_name = cassette_name
         self.serialize = serialize
+        self.options.update(options)
         # load cassette into memory
-        self.cassette_loaded = True
+        self.cassette = Cassette(cassette_name, serialize, )

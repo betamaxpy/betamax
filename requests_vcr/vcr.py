@@ -39,7 +39,6 @@ class VCR(object):
         self.http_adapters = session.adapters.copy()
         #: Create a new adapter to replace the existing ones
         self.vcr_adapter = VCRAdapter(**(adapter_args or {}))
-        self.cassette_loaded = False
 
         self.default_cassette_options.update(default_cassette_options or {})
 
@@ -56,7 +55,7 @@ class VCR(object):
         # ex_args comes through as the exception type, exception value and
         # exception traceback. If any of them are not None, we should probably
         # try to raise the exception and not muffle anything.
-        if any((ex_args)):
+        if any(ex_args):
             raise ex_args
 
         # On exit, we no longer wish to use our adapter and we want the
@@ -73,7 +72,7 @@ class VCR(object):
         :param str serialize: the format you want VCR to serialize the request
             and response data to and from
         """
-        def _can_load_cassette():
+        def _can_load_cassette(name):
             # If we want to record a cassette we don't care if the file exists
             # yet
             if self.default_cassette_options['record_mode'] in ['once']:
@@ -81,14 +80,16 @@ class VCR(object):
 
             # Otherwise if we're only replaying responses, we should probably
             # have the cassette the user expects us to load and raise.
-            return os.path.exists(os.path.join(
-                self.cassette_library_dir, '{0}.{1}'.format(
-                    cassette_name, serialize
-                )
-            ))
+            return os.path.exists(name)
 
-        if _can_load_cassette():
-            self.vcr_adapter.load_cassette(cassette_name, serialize)
+        cassette_name = os.path.join(
+            self.cassette_library_dir, '{0}.{1}'.format(
+                cassette_name, serialize
+            ))
+        if (_can_load_cassette(cassette_name) and
+                serialize in ('json', 'yaml')):
+            self.vcr_adapter.load_cassette(cassette_name, serialize,
+                                           self.default_cassette_options)
         else:
             # If we're not recording or replaying an existing cassette, we
             # should tell the user/developer that there is no cassette, only
