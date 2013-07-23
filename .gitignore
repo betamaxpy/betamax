@@ -1,5 +1,6 @@
 *.pyc
 *.swp
+*.swo
 *.egg*
 .coverage
 .tox
