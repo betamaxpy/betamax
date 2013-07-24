@@ -3,11 +3,18 @@ from requests.models import Response
 
 
 def serialize_prepared_request(request, method):
-    pass
+    return {}
 
 
 def serialize_response(response, method):
-    pass
+    return {
+        'content': response.content,
+        'encoding': response.encoding,
+        'headers': response.headers,
+        'links': response.links,
+        'status_code': response.status_code,
+        'url': response.url,
+    }
 
 
 class Cassette(object):
