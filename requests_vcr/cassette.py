@@ -13,7 +13,7 @@ def serialize_prepared_request(request, method):
     }
 
 
-def deserialize_prepared_request(serialized, method):
+def deserialize_prepared_request(serialized):
     p = PreparedRequest()
     p.body = serialized['body']
     p.headers = CaseInsensitiveDict(serialized['headers'])
@@ -32,7 +32,7 @@ def serialize_response(response, method):
     }
 
 
-def deserialize_response(serialized, method):
+def deserialize_response(serialized):
     r = Response()
     r.raw = RequestsBytesIO(serialized['content'])
     r.encoding = serialized['encoding']
@@ -46,16 +46,32 @@ class Cassette(object):
     def __init__(self, cassette_name, serialize, mode='rb'):
         self.cassette_name = cassette_name
         self.serialize_format = serialize
-        self.recorded_response = Response()
+        self.recorded_response = None
         self.fd = open(cassette_name, mode)
 
     def serialize(self, response):
-        if self.serialize == 'json':
-            data = {
-                'request': {},
-                'response': {},
-            }
-            json.dump(data, self.fd)
+        return {
+            'request': serialize_prepared_request(response.request,
+                                                  self.serialize_format),
+            'response': serialize_response(response, self.serialize_format),
+        }
+
+    def save(self, response):
+        self.recorded_response = response
+        serialized = self.serialize(response)
+        json.dump(serialized, self.fd)
+
+    def as_response(self):
+        if not self.recorded_response:
+            serialized = json.load(self.fd)
+            r = deserialize_response(
+                serialized['response']
+            )
+            r.request = deserialize_prepared_request(
+                serialized['request']
+            )
+            self.recorded_response = r
+        return self.recorded_response
 
 
 class RequestsBytesIO(io.BytesIO):

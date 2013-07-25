@@ -46,8 +46,7 @@ class VCRAdapter(BaseAdapter):
                 request, stream=stream, timeout=timeout, verify=verify,
                 cert=cert, proxies=proxies
                 )
-            self.cassette = Cassette.from_response(response)
-            self.cassette.save()
+            self.cassette.save(response)
             return response
 
     def load_cassette(self, cassette_name, serialize, options):
@@ -58,7 +57,7 @@ class VCRAdapter(BaseAdapter):
         if self.cassette_exists():
             self.cassette = Cassette(cassette_name, serialize)
         elif os.path.exists(os.path.dirname(cassette_name)):
-            self.cassette = Cassette(cassette_name, serialize, 'wb')
+            self.cassette = Cassette(cassette_name, serialize, 'w+b')
 
     def cassette_exists(self):
         if self.cassette_name and os.path.exists(self.cassette_name):

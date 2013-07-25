@@ -1,10 +1,24 @@
+import os
 import unittest
+
 from requests_vcr import cassette
 from requests.models import Response, Request
 from requests.structures import CaseInsensitiveDict
 
 
-class TestCassetteModule(unittest.TestCase):
+class TestSerialization(unittest.TestCase):
+
+    """Unittests for the serialization and deserialization functions.
+
+    This tests:
+
+        - deserialize_prepared_request
+        - deserialize_response
+        - serialize_prepared_request
+        - serialize_response
+
+    """
+
     def test_serialize_response(self):
         r = Response()
         r.status_code = 200
@@ -31,7 +45,7 @@ class TestCassetteModule(unittest.TestCase):
             'url': 'http://example.com/',
             'status_code': 200,
         }
-        r = cassette.deserialize_response(s, 'json')
+        r = cassette.deserialize_response(s)
         assert r.content == 'foo'
         assert r.encoding == 'utf-8'
         assert r.headers == {'Content-Type': 'application/json'}
@@ -66,13 +80,28 @@ class TestCassetteModule(unittest.TestCase):
             'method': 'GET',
             'url': 'http://example.com/',
         }
-        p = cassette.deserialize_prepared_request(s, 'json')
+        p = cassette.deserialize_prepared_request(s)
         assert p.body == 'key=value'
         assert p.headers == CaseInsensitiveDict(
             {'User-Agent': 'requests-vcr/test header'}
         )
         assert p.method == 'GET'
         assert p.url == 'http://example.com/'
+
+
+class TestCassette(unittest.TestCase):
+    cassette_name = 'test_cassette.json'
+
+    def setUp(self):
+        self.cassette = cassette.Cassette(
+            TestCassette.cassette_name,
+            'json',
+            'w+b'
+        )
+
+    def tearDown(self):
+        if os.path.exists(TestCassette.cassette_name):
+            os.unlink(TestCassette.cassette_name)
 
 
 if __name__ == '__main__':
