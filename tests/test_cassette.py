@@ -1,7 +1,6 @@
-import io
 import unittest
 from requests_vcr import cassette
-from requests.models import Response
+from requests.models import Response, Request
 from requests.structures import CaseInsensitiveDict
 
 
@@ -10,7 +9,7 @@ class TestCassetteModule(unittest.TestCase):
         r = Response()
         r.status_code = 200
         r.encoding = 'utf-8'
-        r.raw = RequestsBytesIO(b'foo')
+        r.raw = cassette.RequestsBytesIO(b'foo')
         r.headers = CaseInsensitiveDict()
         r.url = 'http://example.com'
         serialized = cassette.serialize_response(r, 'json')
@@ -21,17 +20,59 @@ class TestCassetteModule(unittest.TestCase):
         assert serialized['content'] == 'foo'
         assert serialized['headers'] == {}
         assert serialized['url'] == 'http://example.com'
-        assert serialized['links'] == {}
+
+    def test_deserialize_response(self):
+        s = {
+            'content': 'foo',
+            'encoding': 'utf-8',
+            'headers': {
+                'Content-Type': 'application/json'
+            },
+            'url': 'http://example.com/',
+            'status_code': 200,
+        }
+        r = cassette.deserialize_response(s, 'json')
+        assert r.content == 'foo'
+        assert r.encoding == 'utf-8'
+        assert r.headers == {'Content-Type': 'application/json'}
+        assert r.url == 'http://example.com/'
+        assert r.status_code == 200
 
     def test_serialize_prepared_request(self):
-        serialized = cassette.serialize_prepared_request(None, 'json')
+        r = Request()
+        r.method = 'GET'
+        r.url = 'http://example.com'
+        r.headers = {'User-Agent': 'requests-vcr/test header'}
+        r.data = {'key': 'value'}
+        p = r.prepare()
+        serialized = cassette.serialize_prepared_request(p, 'json')
         assert serialized is not None
         assert serialized != {}
+        assert serialized['method'] == 'GET'
+        assert serialized['url'] == 'http://example.com/'
+        assert serialized['headers'] == {
+            'Content-Length': '9',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'requests-vcr/test header',
+        }
+        assert serialized['body'] == 'key=value'
 
-
-class RequestsBytesIO(io.BytesIO):
-    def read(self, chunk_size, *args, **kwargs):
-        return super(RequestsBytesIO, self).read(chunk_size)
+    def test_deserialize_prepared_request(self):
+        s = {
+            'body': 'key=value',
+            'headers': {
+                'User-Agent': 'requests-vcr/test header',
+            },
+            'method': 'GET',
+            'url': 'http://example.com/',
+        }
+        p = cassette.deserialize_prepared_request(s, 'json')
+        assert p.body == 'key=value'
+        assert p.headers == CaseInsensitiveDict(
+            {'User-Agent': 'requests-vcr/test header'}
+        )
+        assert p.method == 'GET'
+        assert p.url == 'http://example.com/'
 
 
 if __name__ == '__main__':
