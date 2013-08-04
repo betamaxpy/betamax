@@ -67,6 +67,11 @@ class Cassette(object):
             'response': serialize_response(response, self.serialize_format),
         }
 
+    def deserialize(self, serialized_data):
+        r = deserialize_response(serialized_data['response'])
+        r.request = deserialize_prepared_request(serialized_data['request'])
+        return r
+
     def save(self, response):
         self.recorded_response = response
         serialized = self.serialize(response)
@@ -75,13 +80,7 @@ class Cassette(object):
     def as_response(self):
         if not self.recorded_response:
             serialized = json.load(self.fd)
-            r = deserialize_response(
-                serialized['response']
-            )
-            r.request = deserialize_prepared_request(
-                serialized['request']
-            )
-            self.recorded_response = r
+            self.recorded_response = self.deserialize(serialized)
         return self.recorded_response
 
 

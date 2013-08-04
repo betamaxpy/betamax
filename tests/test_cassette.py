@@ -111,13 +111,7 @@ class TestCassette(unittest.TestCase):
         r.headers = {'User-Agent': 'requests-vcr/test header'}
         r.data = {'key': 'value'}
         self.response.request = r.prepare()
-
-    def tearDown(self):
-        if os.path.exists(TestCassette.cassette_name):
-            os.unlink(TestCassette.cassette_name)
-
-    def test_serialize(self):
-        expected = {
+        self.json = {
             'request': {
                 'body': 'key=value',
                 'headers': {
@@ -136,7 +130,22 @@ class TestCassette(unittest.TestCase):
                 'url': 'http://example.com',
             },
         }
-        assert expected == self.cassette.serialize(self.response)
+
+    def tearDown(self):
+        if os.path.exists(TestCassette.cassette_name):
+            os.unlink(TestCassette.cassette_name)
+
+    def test_serialize(self):
+        assert self.json == self.cassette.serialize(self.response)
+
+    def test_deserialize(self):
+        r = self.cassette.deserialize(self.json)
+        for attr in ['status_code', 'encoding', 'content', 'headers', 'url']:
+            assert getattr(self.response, attr) == getattr(r, attr)
+        actual_req = r.request
+        expected_req = self.response.request
+        for attr in ['method', 'url', 'headers', 'body']:
+            assert getattr(expected_req, attr) == getattr(actual_req, attr)
 
 
 if __name__ == '__main__':
