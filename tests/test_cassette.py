@@ -98,10 +98,45 @@ class TestCassette(unittest.TestCase):
             'json',
             'w+b'
         )
+        r = Response()
+        r.status_code = 200
+        r.encoding = 'utf-8'
+        r.raw = cassette.RequestsBytesIO(b'foo')
+        r.headers = CaseInsensitiveDict()
+        r.url = 'http://example.com'
+        self.response = r
+        r = Request()
+        r.method = 'GET'
+        r.url = 'http://example.com'
+        r.headers = {'User-Agent': 'requests-vcr/test header'}
+        r.data = {'key': 'value'}
+        self.response.request = r.prepare()
 
     def tearDown(self):
         if os.path.exists(TestCassette.cassette_name):
             os.unlink(TestCassette.cassette_name)
+
+    def test_serialize(self):
+        expected = {
+            'request': {
+                'body': 'key=value',
+                'headers': {
+                    'User-Agent': 'requests-vcr/test header',
+                    'Content-Length': '9',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                'method': 'GET',
+                'url': 'http://example.com/',
+            },
+            'response': {
+                'content': 'foo',
+                'encoding': 'utf-8',
+                'headers': {},
+                'status_code': 200,
+                'url': 'http://example.com',
+            },
+        }
+        assert expected == self.cassette.serialize(self.response)
 
 
 if __name__ == '__main__':

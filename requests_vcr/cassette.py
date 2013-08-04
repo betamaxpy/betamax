@@ -26,7 +26,7 @@ def serialize_response(response, method):
     return {
         'content': response.content,
         'encoding': response.encoding,
-        'headers': response.headers,
+        'headers': dict(response.headers),
         'status_code': response.status_code,
         'url': response.url,
     }
@@ -43,6 +43,17 @@ def deserialize_response(serialized):
 
 
 class Cassette(object):
+
+    """The Cassette object abstracts how requests are saved.
+
+    Example usage::
+
+        c = Cassette('vcr/cassettes/httpbin.json', 'json', 'w+b')
+        r = requests.get('https://httpbin.org/get')
+        c.save(r)
+
+    """
+
     def __init__(self, cassette_name, serialize, mode='rb'):
         self.cassette_name = cassette_name
         self.serialize_format = serialize
