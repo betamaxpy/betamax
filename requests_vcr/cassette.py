@@ -76,12 +76,23 @@ class Cassette(object):
         self.recorded_response = response
         serialized = self.serialize(response)
         json.dump(serialized, self.fd)
+        # Flush the file so that people can inspect files immediately (if they
+        # so please)
+        self.fd.flush()
 
     def as_response(self):
         if not self.recorded_response:
             serialized = json.load(self.fd)
             self.recorded_response = self.deserialize(serialized)
         return self.recorded_response
+
+    def is_empty(self):
+        try:
+            self.as_response()
+        except ValueError:
+            return True
+        else:
+            return False
 
 
 class RequestsBytesIO(io.BytesIO):
