@@ -64,18 +64,41 @@ class Cassette(object):
         self.serialize_format = serialize
         self.recorded_response = None
         self.fd = open(cassette_name, mode)
+        self.serialized = {}
 
-    def serialize(self, response):
-        return {
-            'request': serialize_prepared_request(response.request,
-                                                  self.serialize_format),
-            'response': serialize_response(response, self.serialize_format),
-        }
+    def as_response(self):
+        if not self.recorded_response:
+            self.load_serialized_data()
+            self.recorded_response = self.deserialize(self.serialized)
+        return self.recorded_response
 
     def deserialize(self, serialized_data):
         r = deserialize_response(serialized_data['response'])
         r.request = deserialize_prepared_request(serialized_data['request'])
         return r
+
+    def is_empty(self):
+        try:
+            self.as_response()
+        except ValueError:
+            return True
+        else:
+            return False
+
+    def load_serialized_data(self):
+        if not self.serialized:
+            self.serialized = json.load(self.fd)
+
+    def match(self, request, match_options):
+        if not isinstance(match_options, list):
+            raise ValueError('match_requests_on must be a list of strings')
+
+        self.load_serialized_data()
+        for opt in match_options:
+            if not self.serialized[opt] == getattr(request, opt):
+                return False
+
+        return True
 
     def save(self, response):
         self.recorded_response = response
@@ -85,19 +108,12 @@ class Cassette(object):
         # so please)
         self.fd.flush()
 
-    def as_response(self):
-        if not self.recorded_response:
-            serialized = json.load(self.fd)
-            self.recorded_response = self.deserialize(serialized)
-        return self.recorded_response
-
-    def is_empty(self):
-        try:
-            self.as_response()
-        except ValueError:
-            return True
-        else:
-            return False
+    def serialize(self, response):
+        return {
+            'request': serialize_prepared_request(response.request,
+                                                  self.serialize_format),
+            'response': serialize_response(response, self.serialize_format),
+        }
 
 
 class MockHTTPResponse(object):

@@ -39,7 +39,9 @@ class VCRAdapter(BaseAdapter):
                 Cassette.from_response(response).save(self.cassette_name)
             return response
         """
-        if self.cassette and not self.cassette.is_empty():
+        match_on = self.config['match_requests_on']
+        if (self.cassette and not self.cassette.is_empty() and
+                self.cassette.match(request, match_on)):
             return self.cassette.as_response()
         else:
             response = self.http_adapter.send(
