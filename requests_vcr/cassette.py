@@ -1,7 +1,9 @@
 import io
 import json
+import mimetools
 from requests.models import PreparedRequest, Response
 from requests.structures import CaseInsensitiveDict
+from requests.packages.urllib3 import HTTPResponse
 
 
 def serialize_prepared_request(request, method):
@@ -34,11 +36,14 @@ def serialize_response(response, method):
 
 def deserialize_response(serialized):
     r = Response()
-    r.raw = RequestsBytesIO(serialized['content'])
     r.encoding = serialized['encoding']
     r.headers = CaseInsensitiveDict(serialized['headers'])
     r.url = serialized['url']
     r.status_code = serialized['status_code']
+    body = io.StringIO(serialized['content'])
+    r.raw = HTTPResponse(body, status=r.status_code, headers=r.headers,
+                         preload_content=False,
+                         original_response=MockHTTPResponse(r.headers))
     return r
 
 
@@ -95,6 +100,11 @@ class Cassette(object):
             return False
 
 
-class RequestsBytesIO(io.BytesIO):
-    def read(self, chunk_size, *args, **kwargs):
-        return super(RequestsBytesIO, self).read(chunk_size)
+class MockHTTPResponse(object):
+    def __init__(self, headers):
+        h = ["%s: %s" % (k, v) for (k, v) in headers.items()]
+        h = io.StringIO('\r\n'.join(h))
+        self.msg = mimetools.Message(h)
+
+    def isclosed(self):
+        return False
