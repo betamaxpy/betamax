@@ -1,6 +1,7 @@
 import os
 from requests.adapters import BaseAdapter, HTTPAdapter
 from requests_vcr.cassette import Cassette
+from requests_vcr.exceptions import VCRError
 
 
 class VCRAdapter(BaseAdapter):
@@ -24,25 +25,11 @@ class VCRAdapter(BaseAdapter):
 
     def send(self, request, stream=False, timeout=None, verify=True,
              cert=None, proxies=None):
-        """
-        if self.cassette:
-            # load cassette
-            return self.cassette.as_response()
-        else:
-            # store the response because if they're using us we should
-            # probably be storing the cassette
-            response = self.http_adapter.send(
-                request, stream=stream, timeout=timeout, verify=verify,
-                cert=cert, proxies=proxies
-            )
-            if self.cassette_name:
-                Cassette.from_response(response).save(self.cassette_name)
-            return response
-        """
-        match_on = self.config['match_requests_on']
-        if (self.cassette and not self.cassette.is_empty() and
-                self.cassette.match(request, match_on)):
-            return self.cassette.as_response()
+        match_on = self.options['match_requests_on']
+        if self.cassette and not self.cassette.is_empty():
+            if self.cassette.match(request, match_on):
+                return self.cassette.as_response()
+            raise VCRError('A request was made that could not be handled')
         else:
             response = self.http_adapter.send(
                 request, stream=stream, timeout=timeout, verify=verify,

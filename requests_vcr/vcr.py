@@ -40,7 +40,7 @@ class VCR(object):
         #: Create a new adapter to replace the existing ones
         self.vcr_adapter = VCRAdapter(**(adapter_args or {}))
         #: Pass along the config options
-        self.vcr_adapter.config = default_cassette_options
+        self.vcr_adapter.options = self.default_cassette_options
 
         self.default_cassette_options.update(default_cassette_options or {})
 

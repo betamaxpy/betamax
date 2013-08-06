@@ -40,11 +40,20 @@ def deserialize_response(serialized):
     r.headers = CaseInsensitiveDict(serialized['headers'])
     r.url = serialized['url']
     r.status_code = serialized['status_code']
-    body = io.StringIO(serialized['content'])
-    r.raw = HTTPResponse(body, status=r.status_code, headers=r.headers,
-                         preload_content=False,
-                         original_response=MockHTTPResponse(r.headers))
+    add_urllib3_response(serialized, r)
     return r
+
+
+def add_urllib3_response(serialized, response):
+    body = io.StringIO(serialized['content'])
+    h = HTTPResponse(
+        body,
+        status=response.status_code,
+        headers=response.headers,
+        preload_content=False,
+        original_response=MockHTTPResponse(response.headers)
+    )
+    response.raw = h
 
 
 class Cassette(object):
@@ -93,9 +102,15 @@ class Cassette(object):
         if not isinstance(match_options, list):
             raise ValueError('match_requests_on must be a list of strings')
 
+        def _map_match(opt):
+            match_map = {'uri': 'url'}
+            return match_map.get(opt, opt)
+
         self.load_serialized_data()
+        serialized_request = self.serialized['request']
         for opt in match_options:
-            if not self.serialized[opt] == getattr(request, opt):
+            opt = _map_match(opt)
+            if not serialized_request[opt] == getattr(request, opt):
                 return False
 
         return True
@@ -119,7 +134,7 @@ class Cassette(object):
 class MockHTTPResponse(object):
     def __init__(self, headers):
         h = ["%s: %s" % (k, v) for (k, v) in headers.items()]
-        h = io.StringIO('\r\n'.join(h))
+        h = io.StringIO('\r\n'.join(h) or None)
         self.msg = mimetools.Message(h)
 
     def isclosed(self):

@@ -1,9 +1,17 @@
+import io
 import os
 import unittest
 
 from requests_vcr import cassette
 from requests.models import Response, Request
+from requests.packages import urllib3
 from requests.structures import CaseInsensitiveDict
+
+
+def decode(s):
+    if hasattr(s, 'decode'):
+        return s.decode()
+    return s
 
 
 class TestSerialization(unittest.TestCase):
@@ -23,9 +31,9 @@ class TestSerialization(unittest.TestCase):
         r = Response()
         r.status_code = 200
         r.encoding = 'utf-8'
-        r.raw = cassette.RequestsBytesIO(b'foo')
         r.headers = CaseInsensitiveDict()
         r.url = 'http://example.com'
+        cassette.add_urllib3_response({'content': decode('foo')}, r)
         serialized = cassette.serialize_response(r, 'json')
         assert serialized is not None
         assert serialized != {}
@@ -37,10 +45,10 @@ class TestSerialization(unittest.TestCase):
 
     def test_deserialize_response(self):
         s = {
-            'content': 'foo',
+            'content': decode('foo'),
             'encoding': 'utf-8',
             'headers': {
-                'Content-Type': 'application/json'
+                'Content-Type': decode('application/json')
             },
             'url': 'http://example.com/',
             'status_code': 200,
@@ -88,6 +96,15 @@ class TestSerialization(unittest.TestCase):
         assert p.method == 'GET'
         assert p.url == 'http://example.com/'
 
+    def test_add_urllib3_response(self):
+        r = Response()
+        r.status_code = 200
+        r.headers = {}
+        cassette.add_urllib3_response({'content': decode('foo')}, r)
+        assert isinstance(r.raw, urllib3.response.HTTPResponse)
+        assert r.raw.read() == 'foo'
+        assert isinstance(r.raw._original_response, cassette.MockHTTPResponse)
+
 
 class TestCassette(unittest.TestCase):
     cassette_name = 'test_cassette.json'
@@ -101,9 +118,9 @@ class TestCassette(unittest.TestCase):
         r = Response()
         r.status_code = 200
         r.encoding = 'utf-8'
-        r.raw = cassette.RequestsBytesIO(b'foo')
-        r.headers = CaseInsensitiveDict()
+        r.headers = CaseInsensitiveDict({'Content-Type': decode('foo')})
         r.url = 'http://example.com'
+        cassette.add_urllib3_response({'content': decode('foo')}, r)
         self.response = r
         r = Request()
         r.method = 'GET'
@@ -123,9 +140,9 @@ class TestCassette(unittest.TestCase):
                 'url': 'http://example.com/',
             },
             'response': {
-                'content': 'foo',
+                'content': decode('foo'),
                 'encoding': 'utf-8',
-                'headers': {},
+                'headers': {'Content-Type': decode('foo')},
                 'status_code': 200,
                 'url': 'http://example.com',
             },
