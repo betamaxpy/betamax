@@ -56,6 +56,10 @@ class BaseMatcher(type):
         matcher_registry[attrs.get('name')] = new_cls()
         return new_cls
 
+    def match(self, request, recorded_request):
+        raise RuntimeError('The match method must be implemented on %s' %
+                           self.__class__.__name__)
+
     @staticmethod
     def metaclass(*bases):
         """Remove the need for ``six.with_metaclass``"""
