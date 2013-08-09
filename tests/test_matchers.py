@@ -6,6 +6,8 @@ from requests_vcr.matchers import matcher_registry
 
 class TestMatchers(unittest.TestCase):
     def setUp(self):
+        self.alt_url = ('http://example.com/path/to/end/point?query=string'
+                        '&foo=bar')
         self.p = PreparedRequest()
         self.p.body = 'Foo bar'
         self.p.headers = {'User-Agent': 'requests-vcr/test'}
@@ -54,3 +56,31 @@ class TestMatchers(unittest.TestCase):
         match = matcher_registry['method'].match
         assert match(self.p, {'method': 'GET'})
         assert match(self.p, {'method': 'POST'}) is False
+
+    def test_path_matcher(self):
+        match = matcher_registry['path'].match
+        assert match(self.p, {'url': 'http://example.com/path/to/end/point'})
+        assert match(self.p,
+                     {'url': 'http://example.com:8000/path/to/end/point'})
+        assert match(self.p,
+                     {'url': 'http://example.com:8000/path/to/end/'}) is False
+
+    def test_query_matcher(self):
+        match = matcher_registry['query'].match
+        assert match(
+            self.p,
+            {'url': 'http://example.com/path/to/end/point?query=string'}
+        )
+        assert match(
+            self.p,
+            {'url': 'http://example.com/?query=string'}
+        )
+        self.p.url = self.alt_url
+        assert match(
+            self.p,
+            {'url': self.alt_url}
+        )
+        assert match(
+            self.p,
+            {'url': 'http://example.com/?foo=bar&query=string'}
+        )
