@@ -84,8 +84,8 @@ class HostMatcher(BaseMatcher.metaclass()):
     name = 'host'
 
     def match(self, request, recorded_request):
-        request_host = urlparse(request.url).host
-        recorded_host = urlparse(recorded_request['url']).host
+        request_host = urlparse(request.url).netloc
+        recorded_host = urlparse(recorded_request['url']).netloc
         return request_host == recorded_host
 
 
