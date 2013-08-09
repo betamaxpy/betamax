@@ -108,9 +108,15 @@ class PathMatcher(BaseMatcher.metaclass()):
 class QueryMatcher(BaseMatcher.metaclass()):
     name = 'query'
 
+    def to_dict(self, query):
+        """Turn the query string into a dictionary"""
+        return dict(q.split('=') for q in query.split('&'))
+
     def match(self, request, recorded_request):
-        request_query = urlparse(request.url).query
-        recorded_query = urlparse(request.url).query
+        request_query = self.to_dict(urlparse(request.url).query)
+        recorded_query = self.to_dict(
+            urlparse(recorded_request['url']).query
+        )
         return request_query == recorded_query
 
 
