@@ -66,18 +66,18 @@ class BaseMatcher(type):
         return BaseMatcher('BaseMatcher', bases, {})
 
 
-class URIMatcher(BaseMatcher.metaclass()):
-    name = 'uri'
+class BodyMatcher(BaseMatcher.metaclass()):
+    name = 'body'
 
     def match(self, request, recorded_request):
-        return request.url == recorded_request['url']
+        return request.body == recorded_request['body']
 
 
-class MethodMatcher(BaseMatcher.metaclass()):
-    name = 'method'
+class HeadersMatcher(BaseMatcher.metaclass()):
+    name = 'headers'
 
     def match(self, request, recorded_request):
-        return request.method == recorded_request['method']
+        return dict(request.headers) == recorded_request['headers']
 
 
 class HostMatcher(BaseMatcher.metaclass()):
@@ -87,6 +87,38 @@ class HostMatcher(BaseMatcher.metaclass()):
         request_host = urlparse(request.url).host
         recorded_host = urlparse(recorded_request['url']).host
         return request_host == recorded_host
+
+
+class MethodMatcher(BaseMatcher.metaclass()):
+    name = 'method'
+
+    def match(self, request, recorded_request):
+        return request.method == recorded_request['method']
+
+
+class PathMatcher(BaseMatcher.metaclass()):
+    name = 'path'
+
+    def match(self, request, recorded_request):
+        request_path = urlparse(request.url).path
+        recorded_path = urlparse(recorded_request['url']).path
+        return request_path == recorded_path
+
+
+class QueryMatcher(BaseMatcher.metaclass()):
+    name = 'query'
+
+    def match(self, request, recorded_request):
+        request_query = urlparse(request.url).query
+        recorded_query = urlparse(request.url).query
+        return request_query == recorded_query
+
+
+class URIMatcher(BaseMatcher.metaclass()):
+    name = 'uri'
+
+    def match(self, request, recorded_request):
+        return request.url == recorded_request['url']
 
 
 if None in matcher_registry:

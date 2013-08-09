@@ -2,8 +2,9 @@ import io
 import json
 import mimetools
 from requests.models import PreparedRequest, Response
-from requests.structures import CaseInsensitiveDict
 from requests.packages.urllib3 import HTTPResponse
+from requests.structures import CaseInsensitiveDict
+from requests_vcr.matchers import matcher_registry
 
 
 def serialize_prepared_request(request, method):
@@ -98,22 +99,16 @@ class Cassette(object):
         if not self.serialized:
             self.serialized = json.load(self.fd)
 
-    def match(self, request, match_options):
-        if not isinstance(match_options, list):
+    def match(self, request, options):
+        if not isinstance(options, list):
             raise ValueError('match_requests_on must be a list of strings')
 
-        def _map_match(opt):
-            match_map = {'uri': 'url'}
-            return match_map.get(opt, opt)
-
+        opts = set(options)  # Avoid people doing ["uri", "host", "uri"]
         self.load_serialized_data()
-        serialized_request = self.serialized['request']
-        for opt in match_options:
-            opt = _map_match(opt)
-            if not serialized_request[opt] == getattr(request, opt):
-                return False
-
-        return True
+        serialized = self.serialized['request']
+        return all(
+            matcher_registry[o].match(request, serialized) for o in opts
+        )
 
     def save(self, response):
         self.recorded_response = response
