@@ -38,7 +38,7 @@ class TestSerialization(unittest.TestCase):
         assert serialized != {}
         assert serialized['status_code'] == 200
         assert serialized['encoding'] == 'utf-8'
-        assert serialized['content'] == 'foo'
+        assert serialized['content'] == b'foo'
         assert serialized['headers'] == {}
         assert serialized['url'] == 'http://example.com'
 
@@ -53,7 +53,7 @@ class TestSerialization(unittest.TestCase):
             'status_code': 200,
         }
         r = cassette.deserialize_response(s)
-        assert r.content == 'foo'
+        assert r.content == b'foo'
         assert r.encoding == 'utf-8'
         assert r.headers == {'Content-Type': 'application/json'}
         assert r.url == 'http://example.com/'
@@ -74,7 +74,7 @@ class TestSerialization(unittest.TestCase):
         assert serialized['headers'] == {
             'Content-Length': '9',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'requests-vcr/test header',
+            b'User-Agent': 'requests-vcr/test header',
         }
         assert serialized['body'] == 'key=value'
 
@@ -101,7 +101,7 @@ class TestSerialization(unittest.TestCase):
         r.headers = {}
         cassette.add_urllib3_response({'content': decode('foo')}, r)
         assert isinstance(r.raw, urllib3.response.HTTPResponse)
-        assert r.raw.read() == 'foo'
+        assert r.content == b'foo'
         assert isinstance(r.raw._original_response, cassette.MockHTTPResponse)
 
 
@@ -124,9 +124,12 @@ class TestCassette(unittest.TestCase):
         r = Request()
         r.method = 'GET'
         r.url = 'http://example.com'
-        r.headers = {'User-Agent': 'requests-vcr/test header'}
+        r.headers = {}
         r.data = {'key': 'value'}
         self.response.request = r.prepare()
+        self.response.request.headers.update(
+            {'User-Agent': 'requests-vcr/test header'}
+        )
         self.json = {
             'request': {
                 'body': 'key=value',

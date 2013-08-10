@@ -59,7 +59,7 @@ class VCR(object):
         # exception traceback. If any of them are not None, we should probably
         # try to raise the exception and not muffle anything.
         if any(ex_args):
-            raise ex_args[0], ex_args[1], ex_args[2]
+            raise
 
         # On exit, we no longer wish to use our adapter and we want the
         # session to behave normally! Woooo!

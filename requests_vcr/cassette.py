@@ -1,6 +1,7 @@
 import io
 import json
-import mimetools
+import email.message
+from requests.compat import is_py2
 from requests.models import PreparedRequest, Response
 from requests.packages.urllib3 import HTTPResponse
 from requests.structures import CaseInsensitiveDict
@@ -45,10 +46,17 @@ def deserialize_response(serialized):
     return r
 
 
+def body_io(content):
+    if is_py2:
+        return io.StringIO(content)
+    if hasattr(content, 'encode'):
+        content = content.encode()
+    return io.BytesIO(content)
+
+
 def add_urllib3_response(serialized, response):
-    body = io.StringIO(serialized['content'])
     h = HTTPResponse(
-        body,
+        body_io(serialized['content']),
         status=response.status_code,
         headers=response.headers,
         preload_content=False,
@@ -130,7 +138,8 @@ class MockHTTPResponse(object):
     def __init__(self, headers):
         h = ["%s: %s" % (k, v) for (k, v) in headers.items()]
         h = io.StringIO('\r\n'.join(h) or None)
-        self.msg = mimetools.Message(h)
+        self.msg = email.message.Message()
+        self.msg.set_payload(h)
 
     def isclosed(self):
         return False
