@@ -2,7 +2,7 @@ from requests.compat import urlparse
 matcher_registry = {}
 
 
-class BaseMatcher(type):
+class BaseMatcher(object):
 
     """
     Base class that ensures sub-classes that implement custom matchers can be
@@ -10,15 +10,17 @@ class BaseMatcher(type):
 
     Usage::
 
-        from requests_vcr.matchers import BaseMatcher
+        from requests_vcr import VCR, BaseMatcher
 
-        class MyMatcher(BaseMatcher.metaclass()):
+        class MyMatcher(BaseMatcher):
             name = 'my'
 
             def match(self, request, recorded_request):
                 # My fancy matching algorithm
 
-        MyMatcher()
+        VCR.register_request_matcher(MyMatcher)
+
+    The last line is absolutely necessary.
 
     The `match` method will be given a `requests.PreparedRequest` object and a
     dictionary. The dictionary always has the following keys:
@@ -28,59 +30,44 @@ class BaseMatcher(type):
     - body
     - headers
 
-    .. note:: The above usage ensures that your matcher will work across
-        Python 2.6 - 3.3. If you're only targetting one major version of
-        Python, you can simply use the appropriate metaclass declaration
-        with BaseMatcher, e.g.,
-
-        ::
-
-            # Python 3
-            class MyMatcher(metaclass=BaseMatcher):
-                pass
-
-            # Python 2
-            class MyMatcher(object):
-                __metaclass__ = BaseMatcher
-
     """
 
     name = None
 
-    def __new__(cls, name, bases, attrs):
-        new_cls = type.__new__(cls, name, bases, attrs)
-
-        if 'metaclass' in attrs:
-            del attrs['metaclass']
-
-        matcher_registry[attrs.get('name')] = new_cls()
-        return new_cls
+    def __init__(self):
+        if not self.name:
+            raise ValueError('Matchers require names')
 
     def match(self, request, recorded_request):
-        raise RuntimeError('The match method must be implemented on %s' %
-                           self.__class__.__name__)
+        """This is a method that must be implemented by the user.
 
-    @staticmethod
-    def metaclass(*bases):
-        """Remove the need for ``six.with_metaclass``"""
-        return BaseMatcher('BaseMatcher', bases, {})
+        :param PreparedRequest request: A requests PreparedRequest object
+        :param dict recorded_request: A dictionary containing the serialized
+            request in the cassette
+        :returns bool: True if they match else False
+        """
+        raise NotImplementedError('The match method must be implemented on'
+                                  ' %s' % self.__class__.__name__)
 
 
-class BodyMatcher(BaseMatcher.metaclass()):
+class BodyMatcher(BaseMatcher):
+    # Matches based on the body of the request
     name = 'body'
 
     def match(self, request, recorded_request):
         return request.body == recorded_request['body']
 
 
-class HeadersMatcher(BaseMatcher.metaclass()):
+class HeadersMatcher(BaseMatcher):
+    # Matches based on the headers of the request
     name = 'headers'
 
     def match(self, request, recorded_request):
         return dict(request.headers) == recorded_request['headers']
 
 
-class HostMatcher(BaseMatcher.metaclass()):
+class HostMatcher(BaseMatcher):
+    # Matches based on the host of the request
     name = 'host'
 
     def match(self, request, recorded_request):
@@ -89,14 +76,16 @@ class HostMatcher(BaseMatcher.metaclass()):
         return request_host == recorded_host
 
 
-class MethodMatcher(BaseMatcher.metaclass()):
+class MethodMatcher(BaseMatcher):
+    # Matches based on the method of the request
     name = 'method'
 
     def match(self, request, recorded_request):
         return request.method == recorded_request['method']
 
 
-class PathMatcher(BaseMatcher.metaclass()):
+class PathMatcher(BaseMatcher):
+    # Matches based on the path of the request
     name = 'path'
 
     def match(self, request, recorded_request):
@@ -105,7 +94,8 @@ class PathMatcher(BaseMatcher.metaclass()):
         return request_path == recorded_path
 
 
-class QueryMatcher(BaseMatcher.metaclass()):
+class QueryMatcher(BaseMatcher):
+    # Matches based on the query of the request
     name = 'query'
 
     def to_dict(self, query):
@@ -122,12 +112,15 @@ class QueryMatcher(BaseMatcher.metaclass()):
         return request_query == recorded_query
 
 
-class URIMatcher(BaseMatcher.metaclass()):
+class URIMatcher(BaseMatcher):
+    # Matches based on the uri of the request
     name = 'uri'
 
     def match(self, request, recorded_request):
         return request.url == recorded_request['url']
 
 
-if None in matcher_registry:
-    del matcher_registry[None]
+_matchers = [BodyMatcher, HeadersMatcher, HostMatcher, MethodMatcher,
+             PathMatcher, QueryMatcher, URIMatcher]
+matcher_registry.update(dict((m.name, m()) for m in _matchers))
+del _matchers
