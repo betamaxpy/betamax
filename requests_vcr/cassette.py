@@ -26,9 +26,15 @@ def deserialize_prepared_request(serialized):
     return p
 
 
+def coerce_content(content):
+    if hasattr(content, 'decode') and not is_py2:
+        return content.decode()
+    return content
+
+
 def serialize_response(response, method):
     return {
-        'content': response.content,
+        'content': coerce_content(response.content),
         'encoding': response.encoding,
         'headers': dict(response.headers),
         'status_code': response.status_code,
@@ -71,13 +77,13 @@ class Cassette(object):
 
     Example usage::
 
-        c = Cassette('vcr/cassettes/httpbin.json', 'json', 'w+b')
+        c = Cassette('vcr/cassettes/httpbin.json', 'json', 'w+')
         r = requests.get('https://httpbin.org/get')
         c.save(r)
 
     """
 
-    def __init__(self, cassette_name, serialize, mode='rb'):
+    def __init__(self, cassette_name, serialize, mode='r'):
         self.cassette_name = cassette_name
         self.serialize_format = serialize
         self.recorded_response = None
@@ -98,7 +104,8 @@ class Cassette(object):
     def is_empty(self):
         try:
             self.as_response()
-        except ValueError:
+        except (ValueError, TypeError):
+            # Both should be raised by the json library
             return True
         else:
             return False
