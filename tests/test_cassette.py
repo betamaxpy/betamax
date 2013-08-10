@@ -38,7 +38,7 @@ class TestSerialization(unittest.TestCase):
         assert serialized != {}
         assert serialized['status_code'] == 200
         assert serialized['encoding'] == 'utf-8'
-        assert serialized['content'] == b'foo'
+        assert serialized['content'] == 'foo'
         assert serialized['headers'] == {}
         assert serialized['url'] == 'http://example.com'
 
@@ -74,7 +74,7 @@ class TestSerialization(unittest.TestCase):
         assert serialized['headers'] == {
             'Content-Length': '9',
             'Content-Type': 'application/x-www-form-urlencoded',
-            b'User-Agent': 'requests-vcr/test header',
+            'User-Agent': 'requests-vcr/test header',
         }
         assert serialized['body'] == 'key=value'
 
@@ -112,7 +112,7 @@ class TestCassette(unittest.TestCase):
         self.cassette = cassette.Cassette(
             TestCassette.cassette_name,
             'json',
-            'w+b'
+            'w+'
         )
         r = Response()
         r.status_code = 200

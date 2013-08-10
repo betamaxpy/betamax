@@ -46,7 +46,7 @@ class VCRAdapter(BaseAdapter):
         if self.cassette_exists():
             self.cassette = Cassette(cassette_name, serialize)
         elif os.path.exists(os.path.dirname(cassette_name)):
-            self.cassette = Cassette(cassette_name, serialize, 'w+b')
+            self.cassette = Cassette(cassette_name, serialize, 'w+')
 
     def cassette_exists(self):
         if self.cassette_name and os.path.exists(self.cassette_name):

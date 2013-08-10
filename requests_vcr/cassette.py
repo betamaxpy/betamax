@@ -11,7 +11,9 @@ from requests_vcr.matchers import matcher_registry
 def serialize_prepared_request(request, method):
     return {
         'body': request.body,
-        'headers': dict(request.headers),
+        'headers': dict(
+            (coerce_content(k), v) for (k, v) in request.headers.items()
+        ),
         'method': request.method,
         'url': request.url,
     }
