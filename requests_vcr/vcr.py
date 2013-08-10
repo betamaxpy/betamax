@@ -1,5 +1,6 @@
 import os
 from requests_vcr.adapter import VCRAdapter
+from requests_vcr import matchers
 
 
 class VCR(object):
@@ -99,3 +100,7 @@ class VCR(object):
             raise ValueError('Cassette must have a valid name and may not be'
                              ' None.')
         return self
+
+    @staticmethod
+    def register_request_matcher(matcher_class):
+        matchers.matcher_registry[matcher_class.name] = matcher_class()
