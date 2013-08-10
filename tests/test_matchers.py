@@ -80,7 +80,18 @@ class TestMatchers(unittest.TestCase):
             self.p,
             {'url': self.alt_url}
         )
+        # Regression test (order independence)
         assert match(
             self.p,
             {'url': 'http://example.com/?foo=bar&query=string'}
         )
+        # Regression test (no query issue)
+        assert match(self.p, {'url': 'http://example.com'}) is False
+
+    def test_uri_matcher(self):
+        match = matcher_registry['uri'].match
+        assert match(
+            self.p,
+            {'url': 'http://example.com/path/to/end/point?query=string'}
+        )
+        assert match(self.p, {'url': 'http://example.com'}) is False

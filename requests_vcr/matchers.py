@@ -110,6 +110,8 @@ class QueryMatcher(BaseMatcher.metaclass()):
 
     def to_dict(self, query):
         """Turn the query string into a dictionary"""
+        if not query:
+            return {}
         return dict(q.split('=') for q in query.split('&'))
 
     def match(self, request, recorded_request):
