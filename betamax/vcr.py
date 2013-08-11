@@ -62,13 +62,24 @@ class VCR(object):
         if any(ex_args):
             raise
 
+        # No need to keep the cassette in memory any longer.
+        self.vcr_adapter.eject_cassette()
         # On exit, we no longer wish to use our adapter and we want the
         # session to behave normally! Woooo!
         self.vcr_adapter.close()
         for (k, v) in self.http_adapters.items():
             self.session.mount(k, v)
 
-    def use_cassette(self, cassette_name, serialize='json'):
+    @property
+    def current_cassette(self):
+        return self.vcr_adapter.cassette
+
+    @staticmethod
+    def register_request_matcher(matcher_class):
+        matchers.matcher_registry[matcher_class.name] = matcher_class()
+
+    def use_cassette(self, cassette_name, serialize='json',
+                     re_record_interval=None):
         """Tell VCR which cassette you wish to use for the context.
 
         :param str cassette_name: relative name, without the serialization
@@ -92,8 +103,10 @@ class VCR(object):
             ))
         if (_can_load_cassette(cassette_name) and
                 serialize in ('json', 'yaml')):
-            self.vcr_adapter.load_cassette(cassette_name, serialize,
-                                           self.default_cassette_options)
+            self.vcr_adapter.load_cassette(
+                cassette_name, serialize, re_record_interval,
+                self.default_cassette_options
+            )
         else:
             # If we're not recording or replaying an existing cassette, we
             # should tell the user/developer that there is no cassette, only
@@ -101,7 +114,3 @@ class VCR(object):
             raise ValueError('Cassette must have a valid name and may not be'
                              ' None.')
         return self
-
-    @staticmethod
-    def register_request_matcher(matcher_class):
-        matchers.matcher_registry[matcher_class.name] = matcher_class()
