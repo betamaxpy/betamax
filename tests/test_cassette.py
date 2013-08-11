@@ -1,5 +1,6 @@
 import os
 import unittest
+from datetime import datetime
 
 from betamax import cassette
 from requests.models import Response, Request
@@ -51,6 +52,7 @@ class TestSerialization(unittest.TestCase):
             },
             'url': 'http://example.com/',
             'status_code': 200,
+            'recorded_at': '2013-08-31T00:00:01'
         }
         r = cassette.deserialize_response(s)
         assert r.content == b'foo'
@@ -148,14 +150,19 @@ class TestCassette(unittest.TestCase):
                 'status_code': 200,
                 'url': 'http://example.com',
             },
+            'recorded_at': '2013-08-31T00:00:00',
         }
+        self.date = datetime(2013, 8, 31)
 
     def tearDown(self):
         if os.path.exists(TestCassette.cassette_name):
             os.unlink(TestCassette.cassette_name)
 
     def test_serialize(self):
-        assert self.json == self.cassette.serialize(self.response)
+        serialized = self.cassette.serialize(self.response)
+        assert serialized['request'] == self.json['request']
+        assert serialized['response'] == self.json['response']
+        assert serialized.get('recorded_at') is not None
 
     def test_deserialize(self):
         r = self.cassette.deserialize(self.json)
@@ -165,6 +172,8 @@ class TestCassette(unittest.TestCase):
         expected_req = self.response.request
         for attr in ['method', 'url', 'headers', 'body']:
             assert getattr(expected_req, attr) == getattr(actual_req, attr)
+
+        assert self.date == self.cassette.recorded_at
 
 
 if __name__ == '__main__':
