@@ -162,6 +162,9 @@ class MockHTTPResponse(object):
     def __init__(self, headers):
         h = ["%s: %s" % (k, v) for (k, v) in headers.items()]
         h = io.StringIO('\r\n'.join(h) or None)
+        # Thanks to Python 3, we have to use the slightly more awful API below
+        # mimetools was deprecated so we have to use email.message.Message
+        # which takes no arguments in its initializer.
         self.msg = email.message.Message()
         self.msg.set_payload(h)
 
