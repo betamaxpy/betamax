@@ -1,5 +1,5 @@
-requests-vcr
-============
+betamax
+=======
 
 A VCR_-like adapter for requests. This will make mocking out requests much
 easier.
@@ -11,7 +11,7 @@ Example Use
 
 .. code::
 
-    from requests_vcr import VCR
+    from betamax import VCR
     from requests import Session
     from unittest import TestCase
 

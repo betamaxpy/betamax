@@ -1,7 +1,7 @@
 import unittest
 
 from requests import PreparedRequest
-from requests_vcr import matchers
+from betamax import matchers
 
 
 class TestMatchers(unittest.TestCase):
@@ -10,7 +10,7 @@ class TestMatchers(unittest.TestCase):
                         '&foo=bar')
         self.p = PreparedRequest()
         self.p.body = 'Foo bar'
-        self.p.headers = {'User-Agent': 'requests-vcr/test'}
+        self.p.headers = {'User-Agent': 'betamax/test'}
         self.p.url = 'http://example.com/path/to/end/point?query=string'
         self.p.method = 'GET'
 
@@ -42,7 +42,7 @@ class TestMatchers(unittest.TestCase):
 
     def test_headers_matcher(self):
         match = matchers.matcher_registry['headers'].match
-        assert match(self.p, {'headers': {'User-Agent': 'requests-vcr/test'}})
+        assert match(self.p, {'headers': {'User-Agent': 'betamax/test'}})
         assert match(self.p, {'headers': {'X-Sha': '6bbde0af'}}) is False
 
     def test_host_matcher(self):

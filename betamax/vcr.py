@@ -1,6 +1,6 @@
 import os
-from requests_vcr.adapter import VCRAdapter
-from requests_vcr import matchers
+from betamax.adapter import VCRAdapter
+from betamax import matchers
 
 
 class VCR(object):

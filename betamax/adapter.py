@@ -1,7 +1,7 @@
 import os
 from requests.adapters import BaseAdapter, HTTPAdapter
-from requests_vcr.cassette import Cassette
-from requests_vcr.exceptions import VCRError
+from betamax.cassette import Cassette
+from betamax.exceptions import VCRError
 
 
 class VCRAdapter(BaseAdapter):

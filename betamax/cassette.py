@@ -5,7 +5,7 @@ from requests.compat import is_py2
 from requests.models import PreparedRequest, Response
 from requests.packages.urllib3 import HTTPResponse
 from requests.structures import CaseInsensitiveDict
-from requests_vcr.matchers import matcher_registry
+from betamax.matchers import matcher_registry
 
 
 def serialize_prepared_request(request, method):

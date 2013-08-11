@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from requests_vcr import cassette
+from betamax import cassette
 from requests.models import Response, Request
 from requests.packages import urllib3
 from requests.structures import CaseInsensitiveDict
@@ -63,7 +63,7 @@ class TestSerialization(unittest.TestCase):
         r = Request()
         r.method = 'GET'
         r.url = 'http://example.com'
-        r.headers = {'User-Agent': 'requests-vcr/test header'}
+        r.headers = {'User-Agent': 'betamax/test header'}
         r.data = {'key': 'value'}
         p = r.prepare()
         serialized = cassette.serialize_prepared_request(p, 'json')
@@ -74,7 +74,7 @@ class TestSerialization(unittest.TestCase):
         assert serialized['headers'] == {
             'Content-Length': '9',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'requests-vcr/test header',
+            'User-Agent': 'betamax/test header',
         }
         assert serialized['body'] == 'key=value'
 
@@ -82,7 +82,7 @@ class TestSerialization(unittest.TestCase):
         s = {
             'body': 'key=value',
             'headers': {
-                'User-Agent': 'requests-vcr/test header',
+                'User-Agent': 'betamax/test header',
             },
             'method': 'GET',
             'url': 'http://example.com/',
@@ -90,7 +90,7 @@ class TestSerialization(unittest.TestCase):
         p = cassette.deserialize_prepared_request(s)
         assert p.body == 'key=value'
         assert p.headers == CaseInsensitiveDict(
-            {'User-Agent': 'requests-vcr/test header'}
+            {'User-Agent': 'betamax/test header'}
         )
         assert p.method == 'GET'
         assert p.url == 'http://example.com/'
@@ -128,13 +128,13 @@ class TestCassette(unittest.TestCase):
         r.data = {'key': 'value'}
         self.response.request = r.prepare()
         self.response.request.headers.update(
-            {'User-Agent': 'requests-vcr/test header'}
+            {'User-Agent': 'betamax/test header'}
         )
         self.json = {
             'request': {
                 'body': 'key=value',
                 'headers': {
-                    'User-Agent': 'requests-vcr/test header',
+                    'User-Agent': 'betamax/test header',
                     'Content-Length': '9',
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },

@@ -10,7 +10,7 @@ class BaseMatcher(object):
 
     Usage::
 
-        from requests_vcr import VCR, BaseMatcher
+        from betamax import VCR, BaseMatcher
 
         class MyMatcher(BaseMatcher):
             name = 'my'
