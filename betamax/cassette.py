@@ -1,11 +1,13 @@
+import email.message
 import io
 import json
-import email.message
+from datetime import datetime
+
+from betamax.matchers import matcher_registry
 from requests.compat import is_py2
 from requests.models import PreparedRequest, Response
 from requests.packages.urllib3 import HTTPResponse
 from requests.structures import CaseInsensitiveDict
-from betamax.matchers import matcher_registry
 
 
 def serialize_prepared_request(request, method):
@@ -73,6 +75,12 @@ def add_urllib3_response(serialized, response):
     response.raw = h
 
 
+def timestamp():
+    stamp = datetime.utcnow().isoformat()
+    i = stamp.rindex('.')
+    return stamp[:i]
+
+
 class Cassette(object):
 
     """The Cassette object abstracts how requests are saved.
@@ -101,7 +109,13 @@ class Cassette(object):
     def deserialize(self, serialized_data):
         r = deserialize_response(serialized_data['response'])
         r.request = deserialize_prepared_request(serialized_data['request'])
+        self.recorded_at = datetime.strptime(serialized_data['recorded_at'],
+                                             '%Y-%m-%dT%H:%M:%S')
         return r
+
+    def eject(self):
+        self.fd.flush()
+        self.fd.close()
 
     def is_empty(self):
         try:
@@ -140,6 +154,7 @@ class Cassette(object):
             'request': serialize_prepared_request(response.request,
                                                   self.serialize_format),
             'response': serialize_response(response, self.serialize_format),
+            'recorded_at': timestamp(),
         }
 
 
