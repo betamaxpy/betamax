@@ -4,8 +4,6 @@ betamax
 A VCR_-like adapter for requests. This will make mocking out requests much
 easier.
 
-.. _VCR: https://github.com/vcr/vcr
-
 Example Use
 -----------
 
@@ -38,3 +36,12 @@ Example Use
                     'https://api.github.com/repos/sigmavirus24/github3.py'
                     )
                 assert resp.json()['owner'] != {}
+
+VCR Cassette Compatiblity
+-------------------------
+
+There are some differences in how betamax and VCR_ record cassettes. It seems
+unlikely that someone will want to use the same cassettes in both python and
+ruby but if the demand is great enough, the inconsistencies can be fixed.
+
+.. _VCR: https://github.com/vcr/vcr
