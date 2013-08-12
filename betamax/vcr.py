@@ -29,7 +29,7 @@ class VCR(object):
     cassette_library_dir = 'vcr/cassettes'
     default_cassette_options = {
         'record_mode': 'once',
-        'match_requests_on': ['method'],
+        'match_requests_on': ['method', 'uri'],
         're_record_interval': None,
     }
 
