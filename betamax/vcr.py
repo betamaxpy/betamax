@@ -41,10 +41,10 @@ class VCR(object):
         self.http_adapters = session.adapters.copy()
         #: Create a new adapter to replace the existing ones
         self.vcr_adapter = VCRAdapter(**(adapter_args or {}))
-        #: Pass along the config options
-        self.vcr_adapter.options = self.default_cassette_options
-
+        # Merge the new cassette options with the default ones
         self.default_cassette_options.update(default_cassette_options or {})
+        # Pass along the config options
+        self.vcr_adapter.options = self.default_cassette_options
 
         # If it was passed in, use that instead.
         if cassette_library_dir:
@@ -101,12 +101,13 @@ class VCR(object):
             self.cassette_library_dir, '{0}.{1}'.format(
                 cassette_name, serialize
             ))
+        opts = self.default_cassette_options.copy()
+        if re_record_interval:
+            opts['re_record_interval'] = re_record_interval
+
         if (_can_load_cassette(cassette_name) and
                 serialize in ('json', 'yaml')):
-            self.vcr_adapter.load_cassette(
-                cassette_name, serialize, re_record_interval,
-                self.default_cassette_options
-            )
+            self.vcr_adapter.load_cassette(cassette_name, serialize, opts)
         else:
             # If we're not recording or replaying an existing cassette, we
             # should tell the user/developer that there is no cassette, only
