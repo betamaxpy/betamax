@@ -23,6 +23,7 @@ class VCRAdapter(BaseAdapter):
     def cassette_exists(self):
         if self.cassette_name and os.path.exists(self.cassette_name):
             return True
+        return False
 
     def close(self):
         self.http_adapter.close()
