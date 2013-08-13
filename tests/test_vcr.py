@@ -45,3 +45,6 @@ class TestVCR(unittest.TestCase):
         VCR.register_request_matcher(FakeMatcher)
         assert 'fake' in matchers.matcher_registry
         assert isinstance(matchers.matcher_registry['fake'], FakeMatcher)
+
+    def test_stores_the_session_instance(self):
+        assert self.session is self.vcr.session
