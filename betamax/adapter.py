@@ -40,7 +40,6 @@ class VCRAdapter(BaseAdapter):
             self.cassette = Cassette(cassette_name, serialize)
         elif os.path.exists(os.path.dirname(cassette_name)):
             self.cassette = Cassette(cassette_name, serialize, 'w+')
-        return False
 
     def send(self, request, stream=False, timeout=None, verify=True,
              cert=None, proxies=None):
