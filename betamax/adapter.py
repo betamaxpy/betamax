@@ -41,18 +41,22 @@ class VCRAdapter(BaseAdapter):
             self.cassette = Cassette(cassette_name, serialize)
         elif os.path.exists(os.path.dirname(cassette_name)):
             self.cassette = Cassette(cassette_name, serialize, 'w+')
+        else:
+            raise RuntimeError('No cassette could be loaded.')
 
     def send(self, request, stream=False, timeout=None, verify=True,
              cert=None, proxies=None):
         match_on = self.options['match_requests_on']
         if self.cassette and not self.cassette.is_empty():
-            if self.cassette.match(request, match_on):
-                return self.cassette.as_response()
+            self.cassette.match_options = set(match_on)
+            interaction = self.cassette.find_match(request)
+            if interaction is not None:
+                return interaction.as_response()
             raise VCRError('A request was made that could not be handled')
         else:
             response = self.http_adapter.send(
                 request, stream=stream, timeout=timeout, verify=verify,
                 cert=cert, proxies=proxies
                 )
-            self.cassette.save(response)
+            self.cassette.save_interaction(response, request)
             return response

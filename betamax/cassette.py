@@ -2,6 +2,7 @@ import email.message
 import io
 import json
 from datetime import datetime
+from functools import partial
 
 from betamax.matchers import matcher_registry
 from requests.compat import is_py2
@@ -96,66 +97,96 @@ class Cassette(object):
     def __init__(self, cassette_name, serialize, mode='r'):
         self.cassette_name = cassette_name
         self.serialize_format = serialize
-        self.recorded_response = None
+        self.serialized = None
+        self.interactions = []
+        self.match_options = set()
         self.fd = open(cassette_name, mode)
-        self.serialized = {}
-
-    def as_response(self):
-        if not self.recorded_response:
-            self.load_serialized_data()
-            self.recorded_response = self.deserialize(self.serialized)
-        return self.recorded_response
-
-    def deserialize(self, serialized_data):
-        r = deserialize_response(serialized_data['response'])
-        r.request = deserialize_prepared_request(serialized_data['request'])
-        self.recorded_at = datetime.strptime(serialized_data['recorded_at'],
-                                             '%Y-%m-%dT%H:%M:%S')
-        return r
+        self.load_interactions()
 
     def eject(self):
+        self.save_cassette()
         self.fd.flush()
         self.fd.close()
 
+    def find_match(self, request):
+        opts = self.match_options
+        # Curry those matchers
+        matchers = [partial(matcher_registry[o].match, request) for o in opts]
+        for i in self.interactions:
+            if i.match(matchers):
+                return i
+        return None
+
     def is_empty(self):
-        try:
-            self.as_response()
-        except (ValueError, TypeError):
-            # Both should be raised by the json library
-            return True
-        else:
+        if self.interactions:
             return False
+        return True
+
+    def load_interactions(self):
+        if self.serialized is None:
+            self.load_serialized_data()
+
+        if 'http_interactions' not in self.serialized:
+            return
+
+        self.interactions = [
+            Interaction(i)for i in self.serialized['http_interactions']
+        ]
 
     def load_serialized_data(self):
-        if not self.serialized:
+        if self.serialized:
+            return
+        try:
             self.serialized = json.load(self.fd)
+        except ValueError:
+            self.serialized = {}
 
-    def match(self, request, options):
-        if not isinstance(options, list):
-            raise ValueError('match_requests_on must be a list of strings')
+    def save_interaction(self, response, request):
+        self.interactions.append(Interaction(
+            self.serialize_interaction(response, request), response
+        ))
 
-        opts = set(options)  # Avoid people doing ["uri", "host", "uri"]
-        self.load_serialized_data()
-        serialized = self.serialized['request']
-        return all(
-            matcher_registry[o].match(request, serialized) for o in opts
-        )
+    def save_cassette(self):
+        if 'w' in self.fd.mode or 'r+' in self.fd.mode:
+            json.dump({
+                'http_interactions': [i.json for i in self.interactions],
+                'recorded_with': 'betamax',
+            }, self.fd)
+            # Flush the file so that people can inspect files immediately (if
+            # they so please)
+            self.fd.flush()
 
-    def save(self, response):
-        self.recorded_response = response
-        serialized = self.serialize(response)
-        json.dump(serialized, self.fd)
-        # Flush the file so that people can inspect files immediately (if they
-        # so please)
-        self.fd.flush()
-
-    def serialize(self, response):
+    def serialize_interaction(self, response, request):
         return {
-            'request': serialize_prepared_request(response.request,
+            'request': serialize_prepared_request(request,
                                                   self.serialize_format),
             'response': serialize_response(response, self.serialize_format),
             'recorded_at': timestamp(),
         }
+
+
+class Interaction(object):
+    def __init__(self, interaction, response=None):
+        self.json = interaction
+        if response:
+            self.recorded_response = response
+        else:
+            self.deserialize()
+
+    def as_response(self):
+        return self.recorded_response
+
+    def deserialize(self):
+        r = deserialize_response(self.json['response'])
+        r.request = deserialize_prepared_request(self.json['request'])
+        self.recorded_at = datetime.strptime(
+            self.json['recorded_at'], '%Y-%m-%dT%H:%M:%S'
+        )
+        self.recorded_response = r
+
+    def match(self, matchers):
+        request = self.json['request']
+        return all(m(request) for m in matchers)
 
 
 class MockHTTPResponse(object):
