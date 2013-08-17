@@ -142,9 +142,11 @@ class Cassette(object):
             self.serialized = {}
 
     def save_interaction(self, response, request):
-        self.interactions.append(Interaction(
-            self.serialize_interaction(response, request), response
-        ))
+        interaction = self.serialize_interaction(response, request)
+        self.serialized.setdefault('http_interactions', []).append(
+            interaction
+        )
+        self.interactions.append(Interaction(interaction, response))
 
     def save_cassette(self):
         if 'w' in self.fd.mode or 'r+' in self.fd.mode:
