@@ -130,7 +130,7 @@ class Cassette(object):
             return
 
         self.interactions = [
-            Interaction(i)for i in self.serialized['http_interactions']
+            Interaction(i) for i in self.serialized['http_interactions']
         ]
 
     def load_serialized_data(self):
