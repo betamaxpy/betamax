@@ -169,6 +169,7 @@ class Cassette(object):
 
 class Interaction(object):
     def __init__(self, interaction, response=None):
+        self.recorded_at = None
         self.json = interaction
         if response:
             self.recorded_response = response
