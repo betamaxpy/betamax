@@ -160,27 +160,16 @@ class TestCassette(unittest.TestCase):
         if os.path.exists(TestCassette.cassette_name):
             os.unlink(TestCassette.cassette_name)
 
+    @skip
     def test_serialize(self):
         serialized = self.cassette.serialize(self.response)
         assert serialized['request'] == self.json['request']
         assert serialized['response'] == self.json['response']
         assert serialized.get('recorded_at') is not None
 
-    @skip
-    def test_deserialize(self):
-        r = self.cassette.deserialize(self.json)
-        for attr in ['status_code', 'encoding', 'content', 'headers', 'url']:
-            assert getattr(self.response, attr) == getattr(r, attr)
-        actual_req = r.request
-        expected_req = self.response.request
-        for attr in ['method', 'url', 'headers', 'body']:
-            assert getattr(expected_req, attr) == getattr(actual_req, attr)
-
-        assert self.date == self.cassette.recorded_at
-
     def test_holds_interactions(self):
         assert isinstance(self.cassette.interactions, list)
-        assert self.cassettes.interactions != []
+        assert self.cassette.interactions != []
 
 
 class TestInteraction(unittest.TestCase):
@@ -208,9 +197,19 @@ class TestInteraction(unittest.TestCase):
             'recorded_at': '2013-08-31T00:00:00',
         }
         self.interaction = cassette.Interaction(self.json)
+        self.date = datetime(2013, 8, 31)
 
     def test_as_response(self):
         r = self.interaction.as_response()
         assert isinstance(r, Response)
-        assert r.content is not None
-        assert decode(r.content) == self.response['content']
+
+    def test_deserialized_response(self):
+        r = self.interaction.as_response()
+        for attr in ['status_code', 'encoding', 'content', 'headers', 'url']:
+            assert getattr(self.response, attr) == getattr(r, attr)
+        actual_req = r.request
+        expected_req = self.response.request
+        for attr in ['method', 'url', 'headers', 'body']:
+            assert getattr(expected_req, attr) == getattr(actual_req, attr)
+
+        assert self.date == self.cassette.recorded_at
