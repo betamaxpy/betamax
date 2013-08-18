@@ -1,16 +1,16 @@
 import unittest
 
-from betamax import VCR, matchers
+from betamax import Betamax, matchers
 from betamax.adapter import VCRAdapter
 from betamax.cassette import Cassette
 from requests import Session
 from requests.adapters import HTTPAdapter
 
 
-class TestVCR(unittest.TestCase):
+class TestBetamax(unittest.TestCase):
     def setUp(self):
         self.session = Session()
-        self.vcr = VCR(self.session)
+        self.vcr = Betamax(self.session)
 
     def test_initialization_does_alter_the_session(self):
         assert not isinstance(self.session.adapters['http://'], VCRAdapter)
@@ -42,7 +42,7 @@ class TestVCR(unittest.TestCase):
         class FakeMatcher(object):
             name = 'fake'
 
-        VCR.register_request_matcher(FakeMatcher)
+        Betamax.register_request_matcher(FakeMatcher)
         assert 'fake' in matchers.matcher_registry
         assert isinstance(matchers.matcher_registry['fake'], FakeMatcher)
 

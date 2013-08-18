@@ -3,7 +3,7 @@ from betamax.adapter import VCRAdapter
 from betamax import matchers
 
 
-class VCR(object):
+class Betamax(object):
 
     """This object contains the main API of the request-vcr library.
 
@@ -12,7 +12,7 @@ class VCR(object):
     .. code::
 
         s = requests.Session()
-        with VCR(s) as vcr:
+        with Betamax(s) as vcr:
             vcr.use_cassette('example')
             r = s.get('https://httpbin.org/get')
 
@@ -21,7 +21,7 @@ class VCR(object):
     .. code::
 
         s = requests.Session()
-        with VCR(s).use_cassette('example') as vcr:
+        with Betamax(s).use_cassette('example') as vcr:
             r = s.get('https://httpbin.org/get')
 
     """
@@ -80,12 +80,12 @@ class VCR(object):
 
     def use_cassette(self, cassette_name, serialize='json',
                      re_record_interval=None):
-        """Tell VCR which cassette you wish to use for the context.
+        """Tell Betamax which cassette you wish to use for the context.
 
         :param str cassette_name: relative name, without the serialization
-            format, of the cassette you wish VCR would use
-        :param str serialize: the format you want VCR to serialize the request
-            and response data to and from
+            format, of the cassette you wish Betamax would use
+        :param str serialize: the format you want Betamax to serialize the
+            request and response data to and from
         """
         def _can_load_cassette(name):
             # If we want to record a cassette we don't care if the file exists
