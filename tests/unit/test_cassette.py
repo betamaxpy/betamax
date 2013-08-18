@@ -7,8 +7,6 @@ from requests.models import Response, Request
 from requests.packages import urllib3
 from requests.structures import CaseInsensitiveDict
 
-from pytest import skip
-
 
 def decode(s):
     if hasattr(s, 'decode'):
@@ -160,15 +158,17 @@ class TestCassette(unittest.TestCase):
         if os.path.exists(TestCassette.cassette_name):
             os.unlink(TestCassette.cassette_name)
 
-    @skip
-    def test_serialize(self):
-        serialized = self.cassette.serialize(self.response)
+    def test_serialize_interaction(self):
+        serialized = self.cassette.serialize_interaction(
+            self.response, self.response.request
+        )
         assert serialized['request'] == self.json['request']
         assert serialized['response'] == self.json['response']
         assert serialized.get('recorded_at') is not None
 
     def test_holds_interactions(self):
         assert isinstance(self.cassette.interactions, list)
+        self.cassette.save_interaction(self.response, self.response.request)
         assert self.cassette.interactions != []
 
 
@@ -206,10 +206,10 @@ class TestInteraction(unittest.TestCase):
     def test_deserialized_response(self):
         r = self.interaction.as_response()
         for attr in ['status_code', 'encoding', 'content', 'headers', 'url']:
-            assert getattr(self.response, attr) == getattr(r, attr)
+            assert self.response[attr] == decode(getattr(r, attr))
         actual_req = r.request
-        expected_req = self.response.request
+        expected_req = self.request
         for attr in ['method', 'url', 'headers', 'body']:
-            assert getattr(expected_req, attr) == getattr(actual_req, attr)
+            assert expected_req[attr] == getattr(actual_req, attr)
 
-        assert self.date == self.cassette.recorded_at
+        assert self.date == self.interaction.recorded_at
