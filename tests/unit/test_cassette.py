@@ -213,3 +213,9 @@ class TestInteraction(unittest.TestCase):
             assert expected_req[attr] == getattr(actual_req, attr)
 
         assert self.date == self.interaction.recorded_at
+
+    def test_match(self):
+        matchers = [lambda x: True, lambda x: False, lambda x: True]
+        assert self.interaction.match(matchers) is False
+        matchers[1] = lambda x: True
+        assert self.interaction.match(matchers) is True
