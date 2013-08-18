@@ -105,7 +105,6 @@ class Cassette(object):
 
     def eject(self):
         self.save_cassette()
-        self.fd.flush()
         self.fd.close()
 
     def find_match(self, request):
