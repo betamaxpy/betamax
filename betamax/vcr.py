@@ -40,19 +40,19 @@ class Betamax(object):
         #: Store the session's original adapters.
         self.http_adapters = session.adapters.copy()
         #: Create a new adapter to replace the existing ones
-        self.vcr_adapter = BetamaxAdapter(**(adapter_args or {}))
+        self.betamax_adapter = BetamaxAdapter(**(adapter_args or {}))
         # Merge the new cassette options with the default ones
         self.default_cassette_options.update(default_cassette_options or {})
         # Pass along the config options
-        self.vcr_adapter.options = self.default_cassette_options
+        self.betamax_adapter.options = self.default_cassette_options
 
         # If it was passed in, use that instead.
         if cassette_library_dir:
             self.cassette_library_dir = cassette_library_dir
 
     def __enter__(self):
-        self.session.mount('http://', self.vcr_adapter)
-        self.session.mount('https://', self.vcr_adapter)
+        self.session.mount('http://', self.betamax_adapter)
+        self.session.mount('https://', self.betamax_adapter)
         return self
 
     def __exit__(self, *ex_args):
@@ -63,16 +63,16 @@ class Betamax(object):
             raise
 
         # No need to keep the cassette in memory any longer.
-        self.vcr_adapter.eject_cassette()
+        self.betamax_adapter.eject_cassette()
         # On exit, we no longer wish to use our adapter and we want the
         # session to behave normally! Woooo!
-        self.vcr_adapter.close()
+        self.betamax_adapter.close()
         for (k, v) in self.http_adapters.items():
             self.session.mount(k, v)
 
     @property
     def current_cassette(self):
-        return self.vcr_adapter.cassette
+        return self.betamax_adapter.cassette
 
     @staticmethod
     def register_request_matcher(matcher_class):
@@ -107,7 +107,7 @@ class Betamax(object):
 
         if (_can_load_cassette(cassette_name) and
                 serialize in ('json', 'yaml')):
-            self.vcr_adapter.load_cassette(cassette_name, serialize, opts)
+            self.betamax_adapter.load_cassette(cassette_name, serialize, opts)
         else:
             # If we're not recording or replaying an existing cassette, we
             # should tell the user/developer that there is no cassette, only
