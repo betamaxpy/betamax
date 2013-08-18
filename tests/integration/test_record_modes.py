@@ -3,7 +3,7 @@ from betamax import Betamax
 from requests import Session
 
 
-class TestVCR(object):
+class TestBetamax(object):
     def test_record_once(self):
         s = Session()
         cassette_path = None

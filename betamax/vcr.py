@@ -1,5 +1,5 @@
 import os
-from betamax.adapter import VCRAdapter
+from betamax.adapter import BetamaxAdapter
 from betamax import matchers
 
 
@@ -40,7 +40,7 @@ class Betamax(object):
         #: Store the session's original adapters.
         self.http_adapters = session.adapters.copy()
         #: Create a new adapter to replace the existing ones
-        self.vcr_adapter = VCRAdapter(**(adapter_args or {}))
+        self.vcr_adapter = BetamaxAdapter(**(adapter_args or {}))
         # Merge the new cassette options with the default ones
         self.default_cassette_options.update(default_cassette_options or {})
         # Pass along the config options

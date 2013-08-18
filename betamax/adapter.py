@@ -1,10 +1,10 @@
 import os
 from requests.adapters import BaseAdapter, HTTPAdapter
 from betamax.cassette import Cassette
-from betamax.exceptions import VCRError
+from betamax.exceptions import BetamaxError
 
 
-class VCRAdapter(BaseAdapter):
+class BetamaxAdapter(BaseAdapter):
 
     """This object is an implementation detail of the library.
 
@@ -13,7 +13,7 @@ class VCRAdapter(BaseAdapter):
     """
 
     def __init__(self, **kwargs):
-        super(VCRAdapter, self).__init__()
+        super(BetamaxAdapter, self).__init__()
         self.cassette = None
         self.cassette_name = None
         self.http_adapter = HTTPAdapter(**kwargs)
@@ -52,7 +52,7 @@ class VCRAdapter(BaseAdapter):
             interaction = self.cassette.find_match(request)
             if interaction is not None:
                 return interaction.as_response()
-            raise VCRError('A request was made that could not be handled')
+            raise BetamaxError('A request was made that could not be handled')
         else:
             response = self.http_adapter.send(
                 request, stream=stream, timeout=timeout, verify=verify,

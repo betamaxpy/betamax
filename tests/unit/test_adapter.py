@@ -1,12 +1,17 @@
+import os
+import sys
 import unittest
 
-from betamax.adapter import VCRAdapter
+# sys.path.insert(0, os.path.abspath('.'))
+# sys.stderr.write('%s' % str(sys.path))
+
+from betamax.adapter import BetamaxAdapter
 from requests.adapters import HTTPAdapter
 
 
-class TestVCRAdapter(unittest.TestCase):
+class TestBetamaxAdapter(unittest.TestCase):
     def setUp(self):
-        self.adapter = VCRAdapter()
+        self.adapter = BetamaxAdapter()
 
     def tearDown(self):
         self.adapter.eject_cassette()
@@ -25,3 +30,8 @@ class TestVCRAdapter(unittest.TestCase):
         self.adapter.load_cassette(filename, 'json', {})
         assert self.adapter.cassette is not None
         assert self.adapter.cassette_name == filename
+
+
+if __name__ == '__main__':
+    sys.path.insert(0, os.path.abspath('../..'))
+    unittest.main()

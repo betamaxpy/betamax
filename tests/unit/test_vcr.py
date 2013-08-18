@@ -1,7 +1,7 @@
 import unittest
 
 from betamax import Betamax, matchers
-from betamax.adapter import VCRAdapter
+from betamax.adapter import BetamaxAdapter
 from betamax.cassette import Cassette
 from requests import Session
 from requests.adapters import HTTPAdapter
@@ -13,22 +13,20 @@ class TestBetamax(unittest.TestCase):
         self.vcr = Betamax(self.session)
 
     def test_initialization_does_alter_the_session(self):
-        assert not isinstance(self.session.adapters['http://'], VCRAdapter)
-        assert isinstance(self.session.adapters['http://'], HTTPAdapter)
-        assert not isinstance(self.session.adapters['https://'], VCRAdapter)
-        assert isinstance(self.session.adapters['https://'], HTTPAdapter)
+        for v in self.session.adapters.values():
+            assert not isinstance(v, BetamaxAdapter)
+            assert isinstance(v, HTTPAdapter)
 
     def test_entering_context_alters_adapters(self):
         with self.vcr:
-            assert isinstance(self.session.adapters['http://'], VCRAdapter)
-            assert isinstance(self.session.adapters['https://'], VCRAdapter)
+            for v in self.session.adapters.values():
+                assert isinstance(v, BetamaxAdapter)
 
     def test_exiting_resets_the_adapters(self):
         with self.vcr:
-            assert isinstance(self.session.adapters['http://'], VCRAdapter)
-            assert isinstance(self.session.adapters['https://'], VCRAdapter)
-        assert not isinstance(self.session.adapters['http://'], VCRAdapter)
-        assert not isinstance(self.session.adapters['https://'], VCRAdapter)
+            pass
+        for v in self.session.adapters.values():
+            assert not isinstance(v, BetamaxAdapter)
 
     def test_current_cassette(self):
         assert self.vcr.current_cassette is None
