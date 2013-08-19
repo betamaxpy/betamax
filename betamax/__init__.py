@@ -1,4 +1,4 @@
-from betamax.vcr import Betamax
+from betamax.betamax import Betamax
 from betamax.matchers import BaseMatcher
 
 __all__ = [Betamax, BaseMatcher]
