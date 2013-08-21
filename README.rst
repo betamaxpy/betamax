@@ -9,11 +9,11 @@ Example Use
 
 .. code::
 
-    from betamax import VCR
+    from betamax import Betamax
     from requests import Session
     from unittest import TestCase
 
-    VCR.cassette_library_dir = 'tests/fixtures/cassettes'
+    Betamax.cassette_library_dir = 'tests/fixtures/cassettes'
 
 
     class TestGitHubAPI(TestCase):
@@ -23,7 +23,7 @@ Example Use
 
         # Set the cassette in a line other than the context declaration
         def test_user(self):
-            with VCR(self.session) as vcr:
+            with Betamax(self.session) as vcr:
                 vcr.use_cassette('user')
                 resp = self.session.get('https://api.github.com/user',
                                         auth=('user', 'pass'))
@@ -31,7 +31,7 @@ Example Use
 
         # Set the cassette in line with the context declaration
         def test_repo(self):
-            with VCR(self.session).use_cassette('repo') as vcr:
+            with Betamax(self.session).use_cassette('repo') as vcr:
                 resp = self.session.get(
                     'https://api.github.com/repos/sigmavirus24/github3.py'
                     )
@@ -40,8 +40,11 @@ Example Use
 VCR Cassette Compatiblity
 -------------------------
 
-There are some differences in how betamax and VCR_ record cassettes. It seems
-unlikely that someone will want to use the same cassettes in both python and
-ruby but if the demand is great enough, the inconsistencies can be fixed.
+Betamax can use any VCR-recorded cassette as of this point in time. The only
+caveat is that python-requests returns a URL on each response. VCR does not
+store that in a cassette now but we will. Any VCR-recorded cassette used to
+playback a response will unfortunately not have a URL attribute on responses
+that are returned. This is a minor annoyance but not something that can be
+fixed.
 
 .. _VCR: https://github.com/vcr/vcr
