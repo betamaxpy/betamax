@@ -51,13 +51,14 @@ class BetamaxAdapter(BaseAdapter):
         if self.cassette and not self.cassette.is_empty():
             self.cassette.match_options = set(match_on)
             interaction = self.cassette.find_match(request)
-            if interaction is not None:
-                return interaction.as_response()
-            raise BetamaxError('A request was made that could not be handled')
+            if interaction is None:
+                raise BetamaxError('A request was made that could not be'
+                                   ' handled')
+            response = interaction.as_response()
         else:
             response = self.http_adapter.send(
                 request, stream=stream, timeout=timeout, verify=verify,
                 cert=cert, proxies=proxies
                 )
             self.cassette.save_interaction(response, request)
-            return response
+        return response
