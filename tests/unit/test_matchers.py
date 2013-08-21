@@ -47,10 +47,10 @@ class TestMatchers(unittest.TestCase):
 
     def test_host_matcher(self):
         match = matchers.matcher_registry['host'].match
-        assert match(self.p, {'url': 'http://example.com'})
-        assert match(self.p, {'url': 'https://example.com'})
-        assert match(self.p, {'url': 'https://example.com/path'})
-        assert match(self.p, {'url': 'https://example2.com'}) is False
+        assert match(self.p, {'uri': 'http://example.com'})
+        assert match(self.p, {'uri': 'https://example.com'})
+        assert match(self.p, {'uri': 'https://example.com/path'})
+        assert match(self.p, {'uri': 'https://example2.com'}) is False
 
     def test_method_matcher(self):
         match = matchers.matcher_registry['method'].match
@@ -59,42 +59,42 @@ class TestMatchers(unittest.TestCase):
 
     def test_path_matcher(self):
         match = matchers.matcher_registry['path'].match
-        assert match(self.p, {'url': 'http://example.com/path/to/end/point'})
+        assert match(self.p, {'uri': 'http://example.com/path/to/end/point'})
         assert match(self.p,
-                     {'url': 'http://example.com:8000/path/to/end/point'})
+                     {'uri': 'http://example.com:8000/path/to/end/point'})
         assert match(self.p,
-                     {'url': 'http://example.com:8000/path/to/end/'}) is False
+                     {'uri': 'http://example.com:8000/path/to/end/'}) is False
 
     def test_query_matcher(self):
         match = matchers.matcher_registry['query'].match
         assert match(
             self.p,
-            {'url': 'http://example.com/path/to/end/point?query=string'}
+            {'uri': 'http://example.com/path/to/end/point?query=string'}
         )
         assert match(
             self.p,
-            {'url': 'http://example.com/?query=string'}
+            {'uri': 'http://example.com/?query=string'}
         )
         self.p.url = self.alt_url
         assert match(
             self.p,
-            {'url': self.alt_url}
+            {'uri': self.alt_url}
         )
         # Regression test (order independence)
         assert match(
             self.p,
-            {'url': 'http://example.com/?foo=bar&query=string'}
+            {'uri': 'http://example.com/?foo=bar&query=string'}
         )
         # Regression test (no query issue)
-        assert match(self.p, {'url': 'http://example.com'}) is False
+        assert match(self.p, {'uri': 'http://example.com'}) is False
 
     def test_uri_matcher(self):
         match = matchers.matcher_registry['uri'].match
         assert match(
             self.p,
-            {'url': 'http://example.com/path/to/end/point?query=string'}
+            {'uri': 'http://example.com/path/to/end/point?query=string'}
         )
-        assert match(self.p, {'url': 'http://example.com'}) is False
+        assert match(self.p, {'uri': 'http://example.com'}) is False
 
 
 class TestBaseMatcher(unittest.TestCase):

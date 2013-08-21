@@ -18,7 +18,7 @@ def serialize_prepared_request(request, method):
             (coerce_content(k), v) for (k, v) in request.headers.items()
         ),
         'method': request.method,
-        'url': request.url,
+        'uri': request.url,
     }
 
 
@@ -27,7 +27,7 @@ def deserialize_prepared_request(serialized):
     p.body = serialized['body']
     p.headers = CaseInsensitiveDict(serialized['headers'])
     p.method = serialized['method']
-    p.url = serialized['url']
+    p.url = serialized.get('uri')
     return p
 
 
@@ -51,7 +51,7 @@ def deserialize_response(serialized):
     r = Response()
     r.encoding = serialized['encoding']
     r.headers = CaseInsensitiveDict(serialized['headers'])
-    r.url = serialized['url']
+    r.url = serialized.get('url', '')
     r.status_code = serialized['status_code']
     add_urllib3_response(serialized, r)
     return r

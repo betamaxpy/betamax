@@ -72,7 +72,7 @@ class TestSerialization(unittest.TestCase):
         assert serialized is not None
         assert serialized != {}
         assert serialized['method'] == 'GET'
-        assert serialized['url'] == 'http://example.com/'
+        assert serialized['uri'] == 'http://example.com/'
         assert serialized['headers'] == {
             'Content-Length': '9',
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -87,7 +87,7 @@ class TestSerialization(unittest.TestCase):
                 'User-Agent': 'betamax/test header',
             },
             'method': 'GET',
-            'url': 'http://example.com/',
+            'uri': 'http://example.com/',
         }
         p = cassette.deserialize_prepared_request(s)
         assert p.body == 'key=value'
@@ -141,7 +141,7 @@ class TestCassette(unittest.TestCase):
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 'method': 'GET',
-                'url': 'http://example.com/',
+                'uri': 'http://example.com/',
             },
             'response': {
                 'content': decode('foo'),
@@ -193,7 +193,7 @@ class TestInteraction(unittest.TestCase):
                 'Content-Type': 'application/x-www-form-urlencoded',
                 },
             'method': 'GET',
-            'url': 'http://example.com/',
+            'uri': 'http://example.com/',
         }
         self.response = {
             'content': decode('foo'),
@@ -215,13 +215,18 @@ class TestInteraction(unittest.TestCase):
         assert isinstance(r, Response)
 
     def test_deserialized_response(self):
+        def check_uri(attr):
+            # Necessary since PreparedRequests do not have a uri attr
+            if attr == 'uri':
+                return 'url'
+            return attr
         r = self.interaction.as_response()
         for attr in ['status_code', 'encoding', 'content', 'headers', 'url']:
             assert self.response[attr] == decode(getattr(r, attr))
         actual_req = r.request
         expected_req = self.request
-        for attr in ['method', 'url', 'headers', 'body']:
-            assert expected_req[attr] == getattr(actual_req, attr)
+        for attr in ['method', 'uri', 'headers', 'body']:
+            assert expected_req[attr] == getattr(actual_req, check_uri(attr))
 
         assert self.date == self.interaction.recorded_at
 

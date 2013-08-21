@@ -72,7 +72,7 @@ class HostMatcher(BaseMatcher):
 
     def match(self, request, recorded_request):
         request_host = urlparse(request.url).netloc
-        recorded_host = urlparse(recorded_request['url']).netloc
+        recorded_host = urlparse(recorded_request['uri']).netloc
         return request_host == recorded_host
 
 
@@ -90,7 +90,7 @@ class PathMatcher(BaseMatcher):
 
     def match(self, request, recorded_request):
         request_path = urlparse(request.url).path
-        recorded_path = urlparse(recorded_request['url']).path
+        recorded_path = urlparse(recorded_request['uri']).path
         return request_path == recorded_path
 
 
@@ -107,7 +107,7 @@ class QueryMatcher(BaseMatcher):
     def match(self, request, recorded_request):
         request_query = self.to_dict(urlparse(request.url).query)
         recorded_query = self.to_dict(
-            urlparse(recorded_request['url']).query
+            urlparse(recorded_request['uri']).query
         )
         return request_query == recorded_query
 
@@ -117,7 +117,7 @@ class URIMatcher(BaseMatcher):
     name = 'uri'
 
     def match(self, request, recorded_request):
-        return request.url == recorded_request['url']
+        return request.url == recorded_request['uri']
 
 
 _matchers = [BodyMatcher, HeadersMatcher, HostMatcher, MethodMatcher,
