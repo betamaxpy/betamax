@@ -27,7 +27,7 @@ def deserialize_prepared_request(serialized):
     p.body = serialized['body']
     p.headers = CaseInsensitiveDict(serialized['headers'])
     p.method = serialized['method']
-    p.url = serialized.get('uri')
+    p.url = serialized['uri']
     return p
 
 
