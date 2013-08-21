@@ -31,6 +31,7 @@ class BetamaxAdapter(BaseAdapter):
     def eject_cassette(self):
         if self.cassette:
             self.cassette.eject()
+        self.cassette = None  # Allow self.cassette to be garbage-collected
 
     def load_cassette(self, cassette_name, serialize, options):
         self.cassette_name = cassette_name
