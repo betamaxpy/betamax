@@ -235,3 +235,14 @@ class TestInteraction(unittest.TestCase):
         assert self.interaction.match(matchers) is False
         matchers[1] = lambda x: True
         assert self.interaction.match(matchers) is True
+
+
+class TestMockHTTPResponse(unittest.TestCase):
+    def setUp(self):
+        self.resp = cassette.MockHTTPResponse({'Header': 'value'})
+
+    def test_isclosed(self):
+        assert self.resp.isclosed() is False
+
+    def test_is_Message(self):
+        assert isinstance(self.resp.msg, cassette.email.message.Message)
