@@ -239,7 +239,9 @@ class TestInteraction(unittest.TestCase):
 
 class TestMockHTTPResponse(unittest.TestCase):
     def setUp(self):
-        self.resp = cassette.MockHTTPResponse({'Header': 'value'})
+        self.resp = cassette.MockHTTPResponse({
+            decode('Header'): decode('value')
+        })
 
     def test_isclosed(self):
         assert self.resp.isclosed() is False
