@@ -31,6 +31,7 @@ class Betamax(object):
         'record_mode': 'once',
         'match_requests_on': ['method', 'uri'],
         're_record_interval': None,
+        'placeholders': []
     }
 
     def __init__(self, session, cassette_library_dir=None,
@@ -77,6 +78,13 @@ class Betamax(object):
     @staticmethod
     def register_request_matcher(matcher_class):
         matchers.matcher_registry[matcher_class.name] = matcher_class()
+
+    @staticmethod
+    def define_cassette_placeholder(placeholder, replace):
+        Betamax.default_cassette_options['placeholders'].append({
+            'placeholder': placeholder,
+            'replace': replace
+        })
 
     def use_cassette(self, cassette_name, serialize='json',
                      re_record_interval=None):
