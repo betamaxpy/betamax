@@ -12,7 +12,7 @@ class TestBetamax(unittest.TestCase):
         self.session = Session()
         self.vcr = Betamax(self.session)
 
-    def test_initialization_does_alter_the_session(self):
+    def test_initialization_does_not_alter_the_session(self):
         for v in self.session.adapters.values():
             assert not isinstance(v, BetamaxAdapter)
             assert isinstance(v, HTTPAdapter)
