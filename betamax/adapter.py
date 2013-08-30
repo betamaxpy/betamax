@@ -37,11 +37,14 @@ class BetamaxAdapter(BaseAdapter):
         self.cassette_name = cassette_name
         self.serialize = serialize
         self.options.update(options)
+        placeholders = self.options.get('placeholders')
         # load cassette into memory
         if self.cassette_exists():
-            self.cassette = Cassette(cassette_name, serialize)
+            self.cassette = Cassette(cassette_name, serialize,
+                                     placeholders=placeholders)
         elif os.path.exists(os.path.dirname(cassette_name)):
-            self.cassette = Cassette(cassette_name, serialize, 'w+')
+            self.cassette = Cassette(cassette_name, serialize, 'w+',
+                                     placeholders=placeholders)
         else:
             raise RuntimeError('No cassette could be loaded.')
 

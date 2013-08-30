@@ -94,12 +94,13 @@ class Cassette(object):
 
     """
 
-    def __init__(self, cassette_name, serialize, mode='r'):
+    def __init__(self, cassette_name, serialize, mode='r', placeholders=None):
         self.cassette_name = cassette_name
         self.serialize_format = serialize
         self.serialized = None
         self.interactions = []
         self.match_options = set()
+        self.placeholders = placeholders or []
         self.fd = open(cassette_name, mode)
         self.load_interactions()
 
@@ -164,6 +165,11 @@ class Cassette(object):
             'response': serialize_response(response, self.serialize_format),
             'recorded_at': timestamp(),
         }
+
+    def sanitize_interactions(self):
+        # for i in self.interactions:
+        #     yield i.replace(self.placeholders)
+        pass
 
 
 class Interaction(object):
