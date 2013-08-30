@@ -73,14 +73,32 @@ class Betamax(object):
 
     @property
     def current_cassette(self):
+        """Returns the cassette that is currently in use.
+
+        :returns: :class:`Cassette <betamax.cassette.Cassette>`
+        """
         return self.betamax_adapter.cassette
 
     @staticmethod
     def register_request_matcher(matcher_class):
+        """Register a new request matcher.
+
+        :param matcher_class: (required), this must sub-class
+            :class:`BaseMatcher <betamax.matchers.BaseMatcher>`
+        """
         matchers.matcher_registry[matcher_class.name] = matcher_class()
 
     @staticmethod
     def define_cassette_placeholder(placeholder, replace):
+        """Define a placeholder value for some text.
+
+        This also will replace the placeholder text with the text you wish it
+        to use when replaying interactions from cassettes.
+
+        :param str placeholder: (required), text to be used as a placeholder
+        :param str replace: (required), text to be replaced or replacing the
+            placeholder
+        """
         Betamax.default_cassette_options['placeholders'].append({
             'placeholder': placeholder,
             'replace': replace
