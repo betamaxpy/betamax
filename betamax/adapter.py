@@ -50,7 +50,7 @@ class BetamaxAdapter(BaseAdapter):
 
     def send(self, request, stream=False, timeout=None, verify=True,
              cert=None, proxies=None):
-        match_on = self.options['match_requests_on']
+        match_on = Cassette.default_cassette_options['match_requests_on']
         if self.cassette and not self.cassette.is_empty():
             self.cassette.match_options = set(match_on)
             interaction = self.cassette.find_match(request)

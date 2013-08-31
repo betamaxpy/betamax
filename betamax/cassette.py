@@ -94,6 +94,13 @@ class Cassette(object):
 
     """
 
+    default_cassette_options = {
+        'record_mode': 'once',
+        'match_requests_on': ['method', 'uri'],
+        're_record_interval': None,
+        'placeholders': []
+    }
+
     def __init__(self, cassette_name, serialize, mode='r', placeholders=None):
         self.cassette_name = cassette_name
         self.serialize_format = serialize

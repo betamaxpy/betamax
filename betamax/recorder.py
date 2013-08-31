@@ -1,6 +1,7 @@
 import os
-from betamax.adapter import BetamaxAdapter
 from betamax import matchers
+from betamax.adapter import BetamaxAdapter
+from betamax.configure import Configuration
 
 
 class Betamax(object):
@@ -26,14 +27,6 @@ class Betamax(object):
 
     """
 
-    cassette_library_dir = 'vcr/cassettes'
-    default_cassette_options = {
-        'record_mode': 'once',
-        'match_requests_on': ['method', 'uri'],
-        're_record_interval': None,
-        'placeholders': []
-    }
-
     def __init__(self, session, cassette_library_dir=None,
                  default_cassette_options=None, adapter_args=None):
         #: Store the requests.Session object being wrapped.
@@ -42,14 +35,16 @@ class Betamax(object):
         self.http_adapters = session.adapters.copy()
         #: Create a new adapter to replace the existing ones
         self.betamax_adapter = BetamaxAdapter(**(adapter_args or {}))
+        # We need a configuration instance to make life easier
+        self.config = Configuration()
         # Merge the new cassette options with the default ones
-        self.default_cassette_options.update(default_cassette_options or {})
-        # Pass along the config options
-        self.betamax_adapter.options = self.default_cassette_options
+        self.config.default_cassette_options.update(
+            default_cassette_options or {}
+        )
 
         # If it was passed in, use that instead.
         if cassette_library_dir:
-            self.cassette_library_dir = cassette_library_dir
+            self.config.cassette_library_dir = cassette_library_dir
 
     def __enter__(self):
         self.session.mount('http://', self.betamax_adapter)
@@ -71,6 +66,10 @@ class Betamax(object):
         for (k, v) in self.http_adapters.items():
             self.session.mount(k, v)
 
+    @staticmethod
+    def configure():
+        return Configuration()
+
     @property
     def current_cassette(self):
         """Returns the cassette that is currently in use.
@@ -78,15 +77,6 @@ class Betamax(object):
         :returns: :class:`Cassette <betamax.cassette.Cassette>`
         """
         return self.betamax_adapter.cassette
-
-    @staticmethod
-    def register_request_matcher(matcher_class):
-        """Register a new request matcher.
-
-        :param matcher_class: (required), this must sub-class
-            :class:`BaseMatcher <betamax.matchers.BaseMatcher>`
-        """
-        matchers.matcher_registry[matcher_class.name] = matcher_class()
 
     @staticmethod
     def define_cassette_placeholder(placeholder, replace):
@@ -99,10 +89,19 @@ class Betamax(object):
         :param str replace: (required), text to be replaced or replacing the
             placeholder
         """
-        Betamax.default_cassette_options['placeholders'].append({
+        Configuration().default_cassette_options['placeholders'].append({
             'placeholder': placeholder,
             'replace': replace
         })
+
+    @staticmethod
+    def register_request_matcher(matcher_class):
+        """Register a new request matcher.
+
+        :param matcher_class: (required), this must sub-class
+            :class:`BaseMatcher <betamax.matchers.BaseMatcher>`
+        """
+        matchers.matcher_registry[matcher_class.name] = matcher_class()
 
     def use_cassette(self, cassette_name, serialize='json',
                      re_record_interval=None):
@@ -116,7 +115,8 @@ class Betamax(object):
         def _can_load_cassette(name):
             # If we want to record a cassette we don't care if the file exists
             # yet
-            if self.default_cassette_options['record_mode'] in ['once']:
+            record_mode = self.config.default_cassette_options['record_mode']
+            if record_mode in ['once']:
                 return True
 
             # Otherwise if we're only replaying responses, we should probably
@@ -124,12 +124,11 @@ class Betamax(object):
             return os.path.exists(name)
 
         cassette_name = os.path.join(
-            self.cassette_library_dir, '{0}.{1}'.format(
+            self.config.cassette_library_dir, '{0}.{1}'.format(
                 cassette_name, serialize
             ))
-        opts = self.default_cassette_options.copy()
-        if re_record_interval:
-            opts['re_record_interval'] = re_record_interval
+
+        opts = {'re_record_interval': re_record_interval}
 
         if (_can_load_cassette(cassette_name) and
                 serialize in ('json', 'yaml')):
