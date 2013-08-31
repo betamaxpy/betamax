@@ -68,6 +68,16 @@ class Betamax(object):
 
     @staticmethod
     def configure():
+        """Helps configure the library as a whole.
+
+        .. code::
+
+            with Betamax.configure() as config:
+                config.cassette_library_dir = 'tests/cassettes/'
+                config.default_cassette_options['match_options'] = [
+                    'method', 'uri', 'headers'
+                    ]
+        """
         return Configuration()
 
     @property
