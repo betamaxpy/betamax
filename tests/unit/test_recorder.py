@@ -46,13 +46,3 @@ class TestBetamax(unittest.TestCase):
 
     def test_stores_the_session_instance(self):
         assert self.session is self.vcr.session
-
-    def test_allows_registration_of_placeholders(self):
-        opts = Cassette.default_cassette_options.copy()
-        opts['placeholders'] = []
-
-        Betamax.define_cassette_placeholder('<TEST>', 'test')
-        assert opts != Cassette.default_cassette_options
-        placeholders = Cassette.default_cassette_options['placeholders']
-        assert placeholders[0]['placeholder'] == '<TEST>'
-        assert placeholders[0]['replace'] == 'test'

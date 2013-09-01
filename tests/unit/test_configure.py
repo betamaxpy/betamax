@@ -30,3 +30,13 @@ class TestConfiguration(unittest.TestCase):
     def test_is_a_context_manager(self):
         with Configuration() as c:
             assert isinstance(c, Configuration)
+
+    def test_allows_registration_of_placeholders(self):
+        opts = copy.deepcopy(Cassette.default_cassette_options)
+        c = Configuration()
+
+        c.define_cassette_placeholder('<TEST>', 'test')
+        assert opts != Cassette.default_cassette_options
+        placeholders = Cassette.default_cassette_options['placeholders']
+        assert placeholders[0]['placeholder'] == '<TEST>'
+        assert placeholders[0]['replace'] == 'test'

@@ -89,22 +89,6 @@ class Betamax(object):
         return self.betamax_adapter.cassette
 
     @staticmethod
-    def define_cassette_placeholder(placeholder, replace):
-        """Define a placeholder value for some text.
-
-        This also will replace the placeholder text with the text you wish it
-        to use when replaying interactions from cassettes.
-
-        :param str placeholder: (required), text to be used as a placeholder
-        :param str replace: (required), text to be replaced or replacing the
-            placeholder
-        """
-        Configuration().default_cassette_options['placeholders'].append({
-            'placeholder': placeholder,
-            'replace': replace
-        })
-
-    @staticmethod
     def register_request_matcher(matcher_class):
         """Register a new request matcher.
 
