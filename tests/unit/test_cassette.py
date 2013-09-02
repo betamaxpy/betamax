@@ -33,19 +33,19 @@ class TestSerialization(unittest.TestCase):
         r.encoding = 'utf-8'
         r.headers = CaseInsensitiveDict()
         r.url = 'http://example.com'
-        cassette.add_urllib3_response({'content': decode('foo')}, r)
+        cassette.add_urllib3_response({'body': decode('foo')}, r)
         serialized = cassette.serialize_response(r, 'json')
         assert serialized is not None
         assert serialized != {}
         assert serialized['status_code'] == 200
         assert serialized['encoding'] == 'utf-8'
-        assert serialized['content'] == 'foo'
+        assert serialized['body'] == 'foo'
         assert serialized['headers'] == {}
         assert serialized['url'] == 'http://example.com'
 
     def test_deserialize_response(self):
         s = {
-            'content': decode('foo'),
+            'body': decode('foo'),
             'encoding': 'utf-8',
             'headers': {
                 'Content-Type': decode('application/json')
@@ -101,7 +101,7 @@ class TestSerialization(unittest.TestCase):
         r = Response()
         r.status_code = 200
         r.headers = {}
-        cassette.add_urllib3_response({'content': decode('foo')}, r)
+        cassette.add_urllib3_response({'body': decode('foo')}, r)
         assert isinstance(r.raw, urllib3.response.HTTPResponse)
         assert r.content == b'foo'
         assert isinstance(r.raw._original_response, cassette.MockHTTPResponse)
@@ -121,7 +121,7 @@ class TestCassette(unittest.TestCase):
         r.encoding = 'utf-8'
         r.headers = CaseInsensitiveDict({'Content-Type': decode('foo')})
         r.url = 'http://example.com'
-        cassette.add_urllib3_response({'content': decode('foo')}, r)
+        cassette.add_urllib3_response({'body': decode('foo')}, r)
         self.response = r
         r = Request()
         r.method = 'GET'
@@ -144,7 +144,7 @@ class TestCassette(unittest.TestCase):
                 'uri': 'http://example.com/',
             },
             'response': {
-                'content': decode('foo'),
+                'body': decode('foo'),
                 'encoding': 'utf-8',
                 'headers': {'Content-Type': decode('foo')},
                 'status_code': 200,
@@ -197,7 +197,7 @@ class TestInteraction(unittest.TestCase):
             'uri': 'http://example.com/',
         }
         self.response = {
-            'content': decode('foo'),
+            'body': decode('foo'),
             'encoding': 'utf-8',
             'headers': {
                 'Content-Type': decode('foo'),
@@ -225,8 +225,9 @@ class TestInteraction(unittest.TestCase):
                 return 'url'
             return attr
         r = self.interaction.as_response()
-        for attr in ['status_code', 'encoding', 'content', 'headers', 'url']:
+        for attr in ['status_code', 'encoding', 'headers', 'url']:
             assert self.response[attr] == decode(getattr(r, attr))
+        assert self.response['body'] == decode(r.content)
         actual_req = r.request
         expected_req = self.request
         for attr in ['method', 'uri', 'headers', 'body']:

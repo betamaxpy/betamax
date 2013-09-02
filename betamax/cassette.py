@@ -39,7 +39,7 @@ def coerce_content(content):
 
 def serialize_response(response, method):
     return {
-        'content': coerce_content(response.content),
+        'body': coerce_content(response.content),
         'encoding': response.encoding,
         'headers': dict(response.headers),
         'status_code': response.status_code,
@@ -67,7 +67,7 @@ def body_io(content):
 
 def add_urllib3_response(serialized, response):
     h = HTTPResponse(
-        body_io(serialized['content']),
+        body_io(serialized['body']),
         status=response.status_code,
         headers=response.headers,
         preload_content=False,
