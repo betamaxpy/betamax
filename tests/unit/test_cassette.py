@@ -242,8 +242,11 @@ class TestInteraction(unittest.TestCase):
 
     def test_replace(self):
         self.interaction.replace('123456789abcdef', '<AUTH_TOKEN>')
+        self.interaction.replace('cookie_value', '<COOKIE_VALUE>')
         json = self.interaction.json
         assert json['request']['headers']['Authorization'] == '<AUTH_TOKEN>'
+        header_value = json['response']['headers']['Set-Cookie']
+        assert header_value == 'cookie_name=<COOKIE_VALUE>'
 
 
 class TestMockHTTPResponse(unittest.TestCase):
