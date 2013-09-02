@@ -242,9 +242,11 @@ class TestInteraction(unittest.TestCase):
         assert self.interaction.match(matchers) is True
 
     def test_replace(self):
+        self.interaction.replace('123456789abcdef', '<AUTH_TOKEN>')
         self.interaction.replace('cookie_value', '<COOKIE_VALUE>')
         self.interaction.replace('secret_value', '<SECRET_VALUE>')
-        self.interaction.replace('123456789abcdef', '<AUTH_TOKEN>')
+        self.interaction.replace('foo', '<FOO>')
+        self.interaction.replace('http://example.com', '<EXAMPLE_URI>')
 
         header = self.interaction.json['request']['headers']['Authorization']
         assert header == '<AUTH_TOKEN>'
@@ -252,6 +254,12 @@ class TestInteraction(unittest.TestCase):
         assert header == 'cookie_name=<COOKIE_VALUE>'
         body = self.interaction.json['request']['body']
         assert body == 'key=value&key2=<SECRET_VALUE>'
+        body = self.interaction.json['response']['body']
+        assert body == '<FOO>'
+        uri = self.interaction.json['request']['uri']
+        assert uri == '<EXAMPLE_URI>/'
+        uri = self.interaction.json['response']['url']
+        assert uri == '<EXAMPLE_URI>'
 
     def test_replace_in_headers(self):
         self.interaction.replace_in_headers('123456789abcdef', '<AUTH_TOKEN>')
@@ -268,6 +276,13 @@ class TestInteraction(unittest.TestCase):
         assert body == 'key=value&key2=<SECRET_VALUE>'
         body = self.interaction.json['response']['body']
         assert body == '<FOO>'
+
+    def test_replace_in_uri(self):
+        self.interaction.replace_in_uri('http://example.com', '<EXAMPLE_URI>')
+        uri = self.interaction.json['request']['uri']
+        assert uri == '<EXAMPLE_URI>/'
+        uri = self.interaction.json['response']['url']
+        assert uri == '<EXAMPLE_URI>'
 
 
 class TestMockHTTPResponse(unittest.TestCase):
