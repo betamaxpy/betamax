@@ -216,10 +216,11 @@ class Interaction(object):
             self.replace(r['replace'], r['placeholder'])
 
     def replace_in_headers(self, text_to_replace, placeholder):
-        headers = self.json['request']['headers']
-        for k, v in list(headers.items()):
-            if text_to_replace in v:
-                headers[k] = v.replace(text_to_replace, placeholder)
+        for obj in ('request', 'response'):
+            headers = self.json[obj]['headers']
+            for k, v in list(headers.items()):
+                if text_to_replace in v:
+                    headers[k] = v.replace(text_to_replace, placeholder)
 
 
 class MockHTTPResponse(object):
