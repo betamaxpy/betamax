@@ -222,6 +222,9 @@ class Interaction(object):
                 if text_to_replace in v:
                     headers[k] = v.replace(text_to_replace, placeholder)
 
+    def replace_in_body(self, text_to_replace, placeholder):
+        pass
+
 
 class MockHTTPResponse(object):
     def __init__(self, headers):
