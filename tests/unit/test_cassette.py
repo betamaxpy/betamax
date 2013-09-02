@@ -243,7 +243,7 @@ class TestInteraction(unittest.TestCase):
 
     def test_replace(self):
         self.interaction.replace('cookie_value', '<COOKIE_VALUE>')
-        self.interaction.replace('secret_token', '<SECRET_TOKEN>')
+        self.interaction.replace('secret_value', '<SECRET_VALUE>')
         self.interaction.replace('123456789abcdef', '<AUTH_TOKEN>')
 
         header = self.interaction.json['request']['headers']['Authorization']
@@ -255,13 +255,19 @@ class TestInteraction(unittest.TestCase):
 
     def test_replace_in_headers(self):
         self.interaction.replace_in_headers('123456789abcdef', '<AUTH_TOKEN>')
+        self.interaction.replace_in_headers('cookie_value', '<COOKIE_VALUE>')
         header = self.interaction.json['request']['headers']['Authorization']
         assert header == '<AUTH_TOKEN>'
+        header = self.interaction.json['response']['headers']['Set-Cookie']
+        assert header == 'cookie_name=<COOKIE_VALUE>'
 
     def test_replace_in_body(self):
         self.interaction.replace_in_body('secret_value', '<SECRET_VALUE>')
+        self.interaction.replace_in_body('foo', '<FOO>')
         body = self.interaction.json['request']['body']
         assert body == 'key=value&key2=<SECRET_VALUE>'
+        body = self.interaction.json['response']['body']
+        assert body == '<FOO>'
 
 
 class TestMockHTTPResponse(unittest.TestCase):

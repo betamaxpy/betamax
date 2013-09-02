@@ -209,6 +209,7 @@ class Interaction(object):
     def replace(self, text_to_replace, placeholder):
         """Replace sensitive data in this interaction."""
         self.replace_in_headers(text_to_replace, placeholder)
+        self.replace_in_body(text_to_replace, placeholder)
 
     def replace_all(self, replacements):
         """Easy way to accept all placeholders registered."""
@@ -223,7 +224,12 @@ class Interaction(object):
                     headers[k] = v.replace(text_to_replace, placeholder)
 
     def replace_in_body(self, text_to_replace, placeholder):
-        pass
+        for obj in ('request', 'response'):
+            body = self.json[obj]['body']
+            if text_to_replace in body:
+                self.json[obj]['body'] = body.replace(
+                    text_to_replace, placeholder
+                )
 
 
 class MockHTTPResponse(object):
