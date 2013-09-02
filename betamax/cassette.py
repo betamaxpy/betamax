@@ -139,6 +139,8 @@ class Cassette(object):
         self.interactions = [
             Interaction(i) for i in self.serialized['http_interactions']
         ]
+        for i in self.interactions:
+            i.replace_all(self.placeholders, ('placeholder', 'replace'))
 
     def load_serialized_data(self):
         if self.serialized:
@@ -174,9 +176,8 @@ class Cassette(object):
         }
 
     def sanitize_interactions(self):
-        # for i in self.interactions:
-        #     yield i.replace_all(self.placeholders)
-        pass
+        for i in self.interactions:
+            i.replace_all(self.placeholders)
 
 
 class Interaction(object):
@@ -212,10 +213,11 @@ class Interaction(object):
         self.replace_in_body(text_to_replace, placeholder)
         self.replace_in_uri(text_to_replace, placeholder)
 
-    def replace_all(self, replacements):
+    def replace_all(self, replacements, key_order=('replace', 'placeholder')):
         """Easy way to accept all placeholders registered."""
+        (replace_key, placeholder_key) = key_order
         for r in replacements:
-            self.replace(r['replace'], r['placeholder'])
+            self.replace(r[replace_key], r[placeholder_key])
 
     def replace_in_headers(self, text_to_replace, placeholder):
         for obj in ('request', 'response'):
