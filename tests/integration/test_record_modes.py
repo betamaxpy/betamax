@@ -1,19 +1,11 @@
-import os
-import unittest
 from betamax import Betamax
-from requests import Session
+
+from tests.integration.helper import IntegrationHelper
 
 
-class TestBetamax(unittest.TestCase):
-    def setUp(self):
-        self.cassette_path = None
-
-    def tearDown(self):
-        assert self.cassette_path is not None
-        os.unlink(self.cassette_path)
-
+class TestBetamax(IntegrationHelper):
     def test_record_once(self):
-        s = Session()
+        s = self.session
         with Betamax(s).use_cassette('test_record_once') as betamax:
             assert betamax.current_cassette.is_empty() is True
             r = s.get('http://httpbin.org/get')

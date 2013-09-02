@@ -13,7 +13,7 @@ from requests.structures import CaseInsensitiveDict
 
 def serialize_prepared_request(request, method):
     return {
-        'body': request.body,
+        'body': request.body or '',
         'headers': dict(
             (coerce_content(k), v) for (k, v) in request.headers.items()
         ),
@@ -107,7 +107,8 @@ class Cassette(object):
         self.serialized = None
         self.interactions = []
         self.match_options = set()
-        self.placeholders = placeholders or []
+        self.placeholders = (placeholders or
+                             Cassette.default_cassette_options['placeholders'])
         self.fd = open(cassette_name, mode)
         self.load_interactions()
 
@@ -158,6 +159,7 @@ class Cassette(object):
         self.interactions.append(Interaction(interaction, response))
 
     def save_cassette(self):
+        self.sanitize_interactions()
         if 'w' in self.fd.mode or 'r+' in self.fd.mode:
             json.dump({
                 'http_interactions': [i.json for i in self.interactions],
