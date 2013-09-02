@@ -189,9 +189,11 @@ class Interaction(object):
             self.deserialize()
 
     def as_response(self):
+        """Returns the Interaction as a Response object."""
         return self.recorded_response
 
     def deserialize(self):
+        """Turns a serialized interaction into a Response."""
         r = deserialize_response(self.json['response'])
         r.request = deserialize_prepared_request(self.json['request'])
         self.recorded_at = datetime.strptime(
@@ -200,8 +202,13 @@ class Interaction(object):
         self.recorded_response = r
 
     def match(self, matchers):
+        """Return whether this interaction is a match."""
         request = self.json['request']
         return all(m(request) for m in matchers)
+
+    def replace(self, replace, placeholder):
+        """Replace sensitive data in this interaction."""
+        pass
 
 
 class MockHTTPResponse(object):
