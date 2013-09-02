@@ -186,7 +186,7 @@ class TestCassette(unittest.TestCase):
 class TestInteraction(unittest.TestCase):
     def setUp(self):
         self.request = {
-            'body': 'key=value',
+            'body': 'key=value&key2=secret_value',
             'headers': {
                 'User-Agent': 'betamax/test header',
                 'Content-Length': '9',
@@ -243,10 +243,13 @@ class TestInteraction(unittest.TestCase):
     def test_replace(self):
         self.interaction.replace('123456789abcdef', '<AUTH_TOKEN>')
         self.interaction.replace('cookie_value', '<COOKIE_VALUE>')
+        self.interaction.replace('secret_token', '<SECRET_TOKEN>')
         json = self.interaction.json
         assert json['request']['headers']['Authorization'] == '<AUTH_TOKEN>'
         header_value = json['response']['headers']['Set-Cookie']
         assert header_value == 'cookie_name=<COOKIE_VALUE>'
+        request_body = json['request']['body']
+        assert request_body == 'key=value&key2=<SECRET_TOKEN>'
 
 
 class TestMockHTTPResponse(unittest.TestCase):
