@@ -13,7 +13,8 @@ Example Use
     from requests import Session
     from unittest import TestCase
 
-    Betamax.cassette_library_dir = 'tests/fixtures/cassettes'
+    with Betamax.configure() as config:
+        config.cassette_library_dir = 'tests/fixtures/cassettes'
 
 
     class TestGitHubAPI(TestCase):
