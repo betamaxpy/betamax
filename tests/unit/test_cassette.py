@@ -191,6 +191,7 @@ class TestInteraction(unittest.TestCase):
                 'User-Agent': 'betamax/test header',
                 'Content-Length': '9',
                 'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': '123456789abcdef',
                 },
             'method': 'GET',
             'uri': 'http://example.com/',
@@ -198,7 +199,10 @@ class TestInteraction(unittest.TestCase):
         self.response = {
             'content': decode('foo'),
             'encoding': 'utf-8',
-            'headers': {'Content-Type': decode('foo')},
+            'headers': {
+                'Content-Type': decode('foo'),
+                'Set-Cookie': 'cookie_name=cookie_value'
+            },
             'status_code': 200,
             'url': 'http://example.com',
         }
@@ -235,6 +239,11 @@ class TestInteraction(unittest.TestCase):
         assert self.interaction.match(matchers) is False
         matchers[1] = lambda x: True
         assert self.interaction.match(matchers) is True
+
+    def test_replace(self):
+        self.interaction.replace('123456789abcdef', '<AUTH_TOKEN>')
+        json = self.interaction.json
+        assert json['request']['headers']['Authorization'] == '<AUTH_TOKEN>'
 
 
 class TestMockHTTPResponse(unittest.TestCase):
