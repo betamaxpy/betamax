@@ -175,7 +175,7 @@ class Cassette(object):
 
     def sanitize_interactions(self):
         # for i in self.interactions:
-        #     yield i.replace(self.placeholders)
+        #     yield i.replace_all(self.placeholders)
         pass
 
 
@@ -206,9 +206,20 @@ class Interaction(object):
         request = self.json['request']
         return all(m(request) for m in matchers)
 
-    def replace(self, replace, placeholder):
+    def replace(self, text_to_replace, placeholder):
         """Replace sensitive data in this interaction."""
-        pass
+        self.replace_in_headers(text_to_replace, placeholder)
+
+    def replace_all(self, replacements):
+        """Easy way to accept all placeholders registered."""
+        for r in replacements:
+            self.replace(r['replace'], r['placeholder'])
+
+    def replace_in_headers(self, text_to_replace, placeholder):
+        headers = self.json['request']['headers']
+        for k, v in list(headers.items()):
+            if text_to_replace in v:
+                headers[k] = v.replace(text_to_replace, placeholder)
 
 
 class MockHTTPResponse(object):
