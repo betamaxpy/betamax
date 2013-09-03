@@ -155,6 +155,7 @@ class TestCassette(unittest.TestCase):
         self.date = datetime(2013, 8, 31)
         self.cassette.save_interaction(self.response, self.response.request)
         self.interaction = self.cassette.interactions[0]
+        self.interaction.recorded_at = self.date
 
     def tearDown(self):
         if os.path.exists(TestCassette.cassette_name):
@@ -171,6 +172,7 @@ class TestCassette(unittest.TestCase):
     def test_holds_interactions(self):
         assert isinstance(self.cassette.interactions, list)
         assert self.cassette.interactions != []
+        assert self.interaction in self.cassette.interactions
 
     def test_find_match(self):
         self.cassette.match_options = set(['uri', 'method'])
@@ -181,6 +183,10 @@ class TestCassette(unittest.TestCase):
     def test_eject(self):
         self.cassette.eject()
         assert self.cassette.fd.closed
+
+    def test_earliest_recorded_date(self):
+        assert self.interaction.recorded_at is not None
+        assert self.cassette.earliest_recorded_date() is not None
 
 
 class TestInteraction(unittest.TestCase):

@@ -112,6 +112,12 @@ class Cassette(object):
         self.fd = open(cassette_name, mode)
         self.load_interactions()
 
+    def earliest_recorded_date(self):
+        if self.interactions:
+            i = sorted(self.interactions, key=lambda i: i.recorded_at)[0]
+            return i.recorded_at
+        return None
+
     def eject(self):
         self.save_cassette()
         self.fd.close()

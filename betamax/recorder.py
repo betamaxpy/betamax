@@ -110,7 +110,7 @@ class Betamax(object):
             # If we want to record a cassette we don't care if the file exists
             # yet
             record_mode = self.config.default_cassette_options['record_mode']
-            if record_mode in ['once']:
+            if record_mode in ['once', 'all']:
                 return True
 
             # Otherwise if we're only replaying responses, we should probably
