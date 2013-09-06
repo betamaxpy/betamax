@@ -1,4 +1,6 @@
 import os
+
+from datetime import datetime, timedelta
 from requests.adapters import BaseAdapter, HTTPAdapter
 from betamax.cassette import Cassette
 from betamax.exceptions import BetamaxError
@@ -47,6 +49,15 @@ class BetamaxAdapter(BaseAdapter):
                                      placeholders=placeholders)
         else:
             raise RuntimeError('No cassette could be loaded.')
+
+        if self.options.get('re_record_interval'):
+            re_record_interval = timedelta(self.options['re_record_interval'])
+        else:
+            re_record_interval = timedelta.max
+
+        now = datetime.utcnow()
+        if re_record_interval < (now - self.cassette.earliest_recorded_date):
+            self.cassette.clear()
 
     def send(self, request, stream=False, timeout=None, verify=True,
              cert=None, proxies=None):

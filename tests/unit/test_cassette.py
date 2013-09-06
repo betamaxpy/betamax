@@ -186,7 +186,7 @@ class TestCassette(unittest.TestCase):
 
     def test_earliest_recorded_date(self):
         assert self.interaction.recorded_at is not None
-        assert self.cassette.earliest_recorded_date() is not None
+        assert self.cassette.earliest_recorded_date is not None
 
 
 class TestInteraction(unittest.TestCase):
