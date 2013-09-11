@@ -186,6 +186,6 @@ class Options(object):
         return key in self.data
 
     def validate(self):
-        for key, value in self.data.items():
+        for key, value in list(self.data.items()):
             if key not in Options.valid_options:
                 del self[key]
