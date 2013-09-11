@@ -1,8 +1,9 @@
 import unittest
 
-from betamax import Betamax, matchers
+from betamax import matchers
 from betamax.adapter import BetamaxAdapter
 from betamax.cassette import Cassette
+from betamax.recorder import Betamax, Options
 from requests import Session
 from requests.adapters import HTTPAdapter
 
@@ -46,3 +47,27 @@ class TestBetamax(unittest.TestCase):
 
     def test_stores_the_session_instance(self):
         assert self.session is self.vcr.session
+
+
+class TestOptions(unittest.TestCase):
+    def setUp(self):
+        self.data = {
+            're_record_interval': 10000,
+            'match_requets_on': ['match'],
+            'serialize': 'json'
+        }
+        self.options = Options(self.data)
+
+    def test_data_is_valid(self):
+        for key in self.data:
+            assert key in self.options
+
+    def test_invalid_data_is_removed(self):
+        data = self.data.copy()
+        data['fake'] = 'value'
+        options = Options(data)
+
+        for key in self.data:
+            assert key in options
+
+        assert 'fake' not in options

@@ -25,10 +25,29 @@ class Betamax(object):
         with Betamax(s).use_cassette('example') as vcr:
             r = s.get('https://httpbin.org/get')
 
+    This object allows for the user to specify the cassette library directory
+    and default cassette options.
+
+    .. code::
+
+        s = requests.Session()
+        with Betamax(s, cassette_library_dir='tests/cassettes') as vcr:
+            vcr.use_cassette('example')
+            r = s.get('https://httpbin.org/get')
+
+        with Betamax(s, default_cassette_options={
+                're_record_interval': 1000
+                }) as vcr:
+            vcr.use_cassette('example')
+            r = s.get('https://httpbin.org/get')
+
     """
 
-    def __init__(self, session, cassette_library_dir=None,
-                 default_cassette_options=None, adapter_args=None):
+    def __init__(self, session, **kwargs):
+        kwargs = Options(kwargs).data  # Validate the options being passed in
+        cassette_library_dir = kwargs.get('cassette_library_dir')
+        default_cassette_options = kwargs.get('default_cassette_options')
+        adapter_args = kwargs.get('adapter_args')
         #: Store the requests.Session object being wrapped.
         self.session = session
         #: Store the session's original adapters.
@@ -134,3 +153,39 @@ class Betamax(object):
             raise ValueError('Cassette must have a valid name and may not be'
                              ' None.')
         return self
+
+
+class Options(object):
+    valid_options = {
+        'match_requests_on': lambda x: x in [
+            'method',
+            'uri',
+            'query',
+            'host',
+            'body'
+        ],
+        're_record_interval': lambda x: x > 0,
+        'serialize': lambda x: x in ['json'],
+    }
+
+    def __init__(self, data=None):
+        self.data = data or {}
+        self.validate()
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+    def __setitem__(self, key, value):
+        self.data[key] = value
+        return value
+
+    def __delitem__(self, key):
+        del self.data[key]
+
+    def __contains__(self, key):
+        return key in self.data
+
+    def validate(self):
+        for key, value in self.data.items():
+            if key not in Options.valid_options:
+                del self[key]
