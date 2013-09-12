@@ -40,6 +40,7 @@ class BetamaxAdapter(BaseAdapter):
         self.serialize = serialize
         self.options.update(options)
         placeholders = self.options.get('placeholders')
+
         # load cassette into memory
         if self.cassette_exists():
             self.cassette = Cassette(cassette_name, serialize,
@@ -62,17 +63,21 @@ class BetamaxAdapter(BaseAdapter):
     def send(self, request, stream=False, timeout=None, verify=True,
              cert=None, proxies=None):
         match_on = Cassette.default_cassette_options['match_requests_on']
+        response = None
+
         if self.cassette and not self.cassette.is_empty():
             self.cassette.match_options = set(match_on)
             interaction = self.cassette.find_match(request)
-            if interaction is None:
-                raise BetamaxError('A request was made that could not be'
-                                   ' handled')
-            response = interaction.as_response()
-        else:
+            if interaction:
+                response = interaction.as_response()
+        elif self.cassette.is_recording():
             response = self.http_adapter.send(
                 request, stream=stream, timeout=timeout, verify=verify,
                 cert=cert, proxies=proxies
                 )
             self.cassette.save_interaction(response, request)
+
+        if not response:
+            raise BetamaxError('A request was made that could not be handled')
+
         return response

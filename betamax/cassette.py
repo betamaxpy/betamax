@@ -107,6 +107,7 @@ class Cassette(object):
         self.serialized = None
         self.interactions = []
         self.match_options = set()
+        self.record_mode = Cassette.default_cassette_options['record_mode']
         self.placeholders = (placeholders or
                              Cassette.default_cassette_options['placeholders'])
         self.fd = open(cassette_name, mode)
@@ -142,6 +143,13 @@ class Cassette(object):
         if self.interactions:
             return False
         return True
+
+    def is_recording(self):
+        values = {
+            'none': False,
+            'once': self.is_empty(),
+        }
+        return values.get(self.record_mode, True)
 
     def load_interactions(self):
         if self.serialized is None:

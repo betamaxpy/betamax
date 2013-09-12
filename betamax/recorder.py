@@ -43,11 +43,8 @@ class Betamax(object):
 
     """
 
-    def __init__(self, session, **kwargs):
-        kwargs = Options(kwargs).data  # Validate the options being passed in
-        cassette_library_dir = kwargs.get('cassette_library_dir')
-        default_cassette_options = kwargs.get('default_cassette_options')
-        adapter_args = kwargs.get('adapter_args')
+    def __init__(self, session, cassette_library_dir=None,
+                 default_cassette_options={}, adapter_args=None):
         #: Store the requests.Session object being wrapped.
         self.session = session
         #: Store the session's original adapters.
@@ -116,8 +113,7 @@ class Betamax(object):
         """
         matchers.matcher_registry[matcher_class.name] = matcher_class()
 
-    def use_cassette(self, cassette_name, serialize='json',
-                     re_record_interval=None):
+    def use_cassette(self, cassette_name, **kwargs):
         """Tell Betamax which cassette you wish to use for the context.
 
         :param str cassette_name: relative name, without the serialization
@@ -136,12 +132,15 @@ class Betamax(object):
             # have the cassette the user expects us to load and raise.
             return os.path.exists(name)
 
+        kwargs = Options(kwargs)
+        serialize = kwargs['serialize']
+
         cassette_name = os.path.join(
             self.config.cassette_library_dir, '{0}.{1}'.format(
                 cassette_name, serialize
             ))
 
-        opts = {'re_record_interval': re_record_interval}
+        opts = {'re_record_interval': kwargs['re_record_interval']}
 
         if (_can_load_cassette(cassette_name) and
                 serialize in ('json', 'yaml')):
@@ -168,12 +167,18 @@ class Options(object):
         'serialize': lambda x: x in ['json'],
     }
 
+    defaults = {
+        'match_requests_on': ['method', 'uri'],
+        're_record_interval': None,
+        'serialize': 'json'
+    }
+
     def __init__(self, data=None):
         self.data = data or {}
         self.validate()
 
     def __getitem__(self, key):
-        return self.data[key]
+        return self.data.get(key, Options.defaults.get(key))
 
     def __setitem__(self, key, value):
         self.data[key] = value
