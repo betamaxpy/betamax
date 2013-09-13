@@ -68,12 +68,6 @@ class Betamax(object):
         return self
 
     def __exit__(self, *ex_args):
-        # ex_args comes through as the exception type, exception value and
-        # exception traceback. If any of them are not None, we should probably
-        # try to raise the exception and not muffle anything.
-        if any(ex_args):
-            raise
-
         # No need to keep the cassette in memory any longer.
         self.betamax_adapter.eject_cassette()
         # On exit, we no longer wish to use our adapter and we want the
@@ -81,6 +75,11 @@ class Betamax(object):
         self.betamax_adapter.close()
         for (k, v) in self.http_adapters.items():
             self.session.mount(k, v)
+        # ex_args comes through as the exception type, exception value and
+        # exception traceback. If any of them are not None, we should probably
+        # try to raise the exception and not muffle anything.
+        if any(ex_args):
+            raise
 
     @staticmethod
     def configure():
@@ -124,13 +123,13 @@ class Betamax(object):
         def _can_load_cassette(name):
             # If we want to record a cassette we don't care if the file exists
             # yet
-            record_mode = self.config.default_cassette_options['record_mode']
-            if record_mode in ['once', 'all']:
-                return True
+            recording = False
+            if kwargs['record'] in ['once', 'all']:
+                recording = True
 
             # Otherwise if we're only replaying responses, we should probably
             # have the cassette the user expects us to load and raise.
-            return os.path.exists(name)
+            return os.path.exists(name) or recording
 
         kwargs = Options(kwargs)
         serialize = kwargs['serialize']
@@ -164,13 +163,20 @@ class Options(object):
             'body'
         ],
         're_record_interval': lambda x: x > 0,
+        'record': lambda x: x in [
+            'all'
+            'new_episodes',
+            'none',
+            'once',
+        ],
         'serialize': lambda x: x in ['json'],
     }
 
     defaults = {
         'match_requests_on': ['method', 'uri'],
         're_record_interval': None,
-        'serialize': 'json'
+        'record': 'once',
+        'serialize': 'json',
     }
 
     def __init__(self, data=None):
@@ -194,3 +200,7 @@ class Options(object):
         for key, value in list(self.data.items()):
             if key not in Options.valid_options:
                 del self[key]
+            else:
+                is_valid = Options.valid_options[key]
+                if not is_valid(value):
+                    del self[key]

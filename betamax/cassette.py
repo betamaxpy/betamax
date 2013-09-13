@@ -140,7 +140,7 @@ class Cassette(object):
         return None
 
     def is_empty(self):
-        if self.interactions:
+        if self.serialized:
             return False
         return True
 
@@ -174,9 +174,9 @@ class Cassette(object):
 
     def save_interaction(self, response, request):
         interaction = self.serialize_interaction(response, request)
-        self.serialized.setdefault('http_interactions', []).append(
-            interaction
-        )
+        # self.serialized.setdefault('http_interactions', []).append(
+        #     interaction
+        # )
         self.interactions.append(Interaction(interaction, response))
 
     def save_cassette(self):
