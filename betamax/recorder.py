@@ -2,6 +2,7 @@ import os
 from betamax import matchers
 from betamax.adapter import BetamaxAdapter
 from betamax.configure import Configuration
+from betamax.options import Options
 
 
 class Betamax(object):
@@ -139,7 +140,10 @@ class Betamax(object):
                 cassette_name, serialize
             ))
 
-        opts = {'re_record_interval': kwargs['re_record_interval']}
+        opts = {
+            're_record_interval': kwargs['re_record_interval'],
+            'record': kwargs['record']
+        }
 
         if (_can_load_cassette(cassette_name) and
                 serialize in ('json', 'yaml')):
@@ -151,56 +155,3 @@ class Betamax(object):
             raise ValueError('Cassette must have a valid name and may not be'
                              ' None.')
         return self
-
-
-class Options(object):
-    valid_options = {
-        'match_requests_on': lambda x: x in [
-            'method',
-            'uri',
-            'query',
-            'host',
-            'body'
-        ],
-        're_record_interval': lambda x: x > 0,
-        'record': lambda x: x in [
-            'all'
-            'new_episodes',
-            'none',
-            'once',
-        ],
-        'serialize': lambda x: x in ['json'],
-    }
-
-    defaults = {
-        'match_requests_on': ['method', 'uri'],
-        're_record_interval': None,
-        'record': 'once',
-        'serialize': 'json',
-    }
-
-    def __init__(self, data=None):
-        self.data = data or {}
-        self.validate()
-
-    def __getitem__(self, key):
-        return self.data.get(key, Options.defaults.get(key))
-
-    def __setitem__(self, key, value):
-        self.data[key] = value
-        return value
-
-    def __delitem__(self, key):
-        del self.data[key]
-
-    def __contains__(self, key):
-        return key in self.data
-
-    def validate(self):
-        for key, value in list(self.data.items()):
-            if key not in Options.valid_options:
-                del self[key]
-            else:
-                is_valid = Options.valid_options[key]
-                if not is_valid(value):
-                    del self[key]

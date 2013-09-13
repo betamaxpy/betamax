@@ -4,7 +4,7 @@ from tests.integration.helper import IntegrationHelper
 
 
 class TestRecordOnce(IntegrationHelper):
-    def test_record_once(self):
+    def test_records_new_interaction(self):
         s = self.session
         with Betamax(s).use_cassette('test_record_once') as betamax:
             self.cassette_path = betamax.current_cassette.cassette_name
@@ -14,7 +14,7 @@ class TestRecordOnce(IntegrationHelper):
             assert betamax.current_cassette.is_empty() is True
             assert betamax.current_cassette.interactions != []
 
-    def test_replays_response(self):
+    def test_replays_response_from_cassette(self):
         s = self.session
         with Betamax(s).use_cassette('test_replays_response') as betamax:
             self.cassette_path = betamax.current_cassette.cassette_name
@@ -31,7 +31,7 @@ class TestRecordOnce(IntegrationHelper):
 
 
 class TestRecordNone(IntegrationHelper):
-    def test_record_none(self):
+    def test_raises_exception_when_no_interactions_present(self):
         s = self.session
         with Betamax(s) as betamax:
             # import pytest
@@ -50,4 +50,20 @@ class TestRecordNone(IntegrationHelper):
 
 
 class TestRecordAll(IntegrationHelper):
-    pass
+    def setUp(self):
+        super(TestRecordAll, self).setUp()
+        with Betamax(self.session).use_cassette('test_record_all'):
+            self.session.get('http://httpbin.org/get')
+            self.session.get('http://httpbin.org/redirect/2')
+
+    def test_records_new_events_with_existing_cassette(self):
+        s = self.session
+        opts = {'record': 'all'}
+        with Betamax(s).use_cassette('test_record_all', **opts) as betamax:
+            cassette = betamax.current_cassette
+            self.cassette_path = cassette.cassette_name
+            assert cassette.interactions != []
+            assert len(cassette.interactions) == 3
+            assert cassette.is_empty() is False
+            s.get('https://httpbin.org/get')
+            assert len(cassette.interactions) == 4

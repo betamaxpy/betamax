@@ -51,6 +51,8 @@ class BetamaxAdapter(BaseAdapter):
         else:
             raise RuntimeError('No cassette could be loaded.')
 
+        self.cassette.record_mode = self.options['record']
+
         if self.options.get('re_record_interval'):
             re_record_interval = timedelta(self.options['re_record_interval'])
         else:
