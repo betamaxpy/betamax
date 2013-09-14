@@ -1,4 +1,6 @@
+import os
 import re
+import sys
 from setuptools import setup
 
 packages = ['betamax']
@@ -15,6 +17,10 @@ with open('betamax/__init__.py', 'r') as fd:
 
 if not __version__:
     raise RuntimeError('Cannot find version information')
+
+if sys.argv[-1] in ['submit', 'publish']:
+    os.system("python setup.py sdist bdist_wheel upload")
+    sys.exit()
 
 
 def data_for(filename):
