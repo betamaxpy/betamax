@@ -7,7 +7,7 @@
 
 - Support for ``re_record_interval``
 
-- Support for the ``once`` cassette mode
+- Support for the ``once``, ``all``, ``new_episodes``, ``all`` cassette modes
 
 - Support for filtering sensitive data
 

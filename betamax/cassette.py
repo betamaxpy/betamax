@@ -92,6 +92,11 @@ class Cassette(object):
         r = requests.get('https://httpbin.org/get')
         c.save(r)
 
+    No methods or attributes -- other than ``cassette_name`` -- on this object
+    are considered public or part of the public API. As such they are entirely
+    considered implementation details and subject to change. Using or relying
+    on them is not wise or advised.
+
     """
 
     default_cassette_options = {
@@ -102,6 +107,7 @@ class Cassette(object):
     }
 
     def __init__(self, cassette_name, serialize, mode='r', placeholders=None):
+        #: Name of the cassette including path, e.g., "vcr/cassettes/name.json"
         self.cassette_name = cassette_name
         self.serialize_format = serialize
         self.serialized = None
@@ -115,8 +121,11 @@ class Cassette(object):
 
     def clear(self):
         """Clears out this cassette"""
+        # Start a new list
         self.interactions = []
+        # Save that empty list
         self.save_cassette()
+        # Reset the file object to the start of the file
         self.fd.seek(0, 0)
 
     @property
@@ -134,12 +143,14 @@ class Cassette(object):
         opts = self.match_options
         # Curry those matchers
         matchers = [partial(matcher_registry[o].match, request) for o in opts]
+
         for i in self.interactions:
-            if i.match(matchers):
+            if i.match(matchers):  # If the interaction matches everything
                 if self.record_mode == 'all':
                     self.interactions.remove(i)
                     break
                 return i
+
         return None
 
     def is_empty(self):
@@ -177,9 +188,6 @@ class Cassette(object):
 
     def save_interaction(self, response, request):
         interaction = self.serialize_interaction(response, request)
-        # self.serialized.setdefault('http_interactions', []).append(
-        #     interaction
-        # )
         self.interactions.append(Interaction(interaction, response))
 
     def save_cassette(self):
@@ -207,6 +215,22 @@ class Cassette(object):
 
 
 class Interaction(object):
+
+    """The Interaction object represents the entirety of a single interaction.
+
+    The interaction includes the date it was recorded, its JSON
+    representation, and the ``requests.Response`` object complete with its
+    ``request`` attribute.
+
+    This object also handles the filtering of sensitive data.
+
+    No methods or attributes on this object are considered public or part of
+    the public API. As such they are entirely considered implementation
+    details and subject to change. Using or relying on them is not wise or
+    advised.
+
+    """
+
     def __init__(self, interaction, response=None):
         self.recorded_at = None
         self.json = interaction
