@@ -16,13 +16,19 @@ with open('betamax/__init__.py', 'r') as fd:
 if not __version__:
     raise RuntimeError('Cannot find version information')
 
+
+def data_for(filename):
+    with open(filename) as fd:
+        content = fd.read()
+    return content
+
 setup(
     name="betamax",
     version=__version__,
     description="A VCR imitation for python-requests",
-    long_description="\n\n".join([open("README.rst").read(),
-                                  open("HISTORY.rst").read()]),
-    license=open('LICENSE').read(),
+    long_description="\n\n".join([data_for("README.rst"),
+                                  data_for("HISTORY.rst")]),
+    license=data_for('LICENSE'),
     author="Ian Cordasco",
     author_email="graffatcolmingov@gmail.com",
     url="https://github.com/sigmavirus24/betamax",
