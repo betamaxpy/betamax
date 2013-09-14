@@ -49,14 +49,16 @@ class BetamaxAdapter(BaseAdapter):
             self.cassette = Cassette(cassette_name, serialize, 'w+',
                                      placeholders=placeholders)
         else:
-            raise RuntimeError('No cassette could be loaded.')
+            raise RuntimeError(
+                'No cassette could be loaded or %s does not exist.' %
+                os.path.dirname(cassette_name)
+            )
 
         self.cassette.record_mode = self.options['record']
 
+        re_record_interval = timedelta.max
         if self.options.get('re_record_interval'):
             re_record_interval = timedelta(self.options['re_record_interval'])
-        else:
-            re_record_interval = timedelta.max
 
         now = datetime.utcnow()
         if re_record_interval < (now - self.cassette.earliest_recorded_date):
