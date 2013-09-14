@@ -136,6 +136,9 @@ class Cassette(object):
         matchers = [partial(matcher_registry[o].match, request) for o in opts]
         for i in self.interactions:
             if i.match(matchers):
+                if self.record_mode == 'all':
+                    self.interactions.remove(i)
+                    break
                 return i
         return None
 
