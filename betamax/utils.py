@@ -4,7 +4,7 @@ from requests.compat import is_py2
 
 def coerce_content(content, encoding):
     if hasattr(content, 'decode') and not is_py2:
-        return content.decode(encoding)
+        return content.decode(encoding) if encoding else content.decode()
     return content
 
 
