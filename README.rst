@@ -2,7 +2,7 @@ betamax
 =======
 
 A VCR_-like adapter for requests. This will make mocking out requests much
-easier.
+easier. Tested on `Travis CI`_.
 
 Example Use
 -----------
@@ -49,3 +49,4 @@ that are returned. This is a minor annoyance but not something that can be
 fixed.
 
 .. _VCR: https://github.com/vcr/vcr
+.. _Travis CI: https://travis-ci.org/sigmavirus24/betamax

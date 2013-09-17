@@ -4,18 +4,19 @@ import json
 from datetime import datetime
 from functools import partial
 
+from betamax.utils import body_io, coerce_content
 from betamax.matchers import matcher_registry
-from requests.compat import is_py2
 from requests.models import PreparedRequest, Response
 from requests.packages.urllib3 import HTTPResponse
 from requests.structures import CaseInsensitiveDict
 
 
 def serialize_prepared_request(request, method):
+    headers = request.headers
     return {
         'body': request.body or '',
         'headers': dict(
-            (coerce_content(k), v) for (k, v) in request.headers.items()
+            (coerce_content(k, 'utf-8'), v) for (k, v) in headers.items()
         ),
         'method': request.method,
         'uri': request.url,
@@ -31,16 +32,12 @@ def deserialize_prepared_request(serialized):
     return p
 
 
-def coerce_content(content):
-    if hasattr(content, 'decode') and not is_py2:
-        return content.decode()
-    return content
-
-
 def serialize_response(response, method):
     return {
-        'body': coerce_content(response.content),
-        'encoding': response.encoding,
+        'body': {
+            'string': coerce_content(response.content, response.encoding),
+            'encoding': response.encoding
+        },
         'headers': dict(response.headers),
         'status_code': response.status_code,
         'url': response.url,
@@ -49,7 +46,7 @@ def serialize_response(response, method):
 
 def deserialize_response(serialized):
     r = Response()
-    r.encoding = serialized['encoding']
+    r.encoding = serialized['body']['encoding']
     r.headers = CaseInsensitiveDict(serialized['headers'])
     r.url = serialized.get('url', '')
     r.status_code = serialized['status_code']
@@ -57,17 +54,9 @@ def deserialize_response(serialized):
     return r
 
 
-def body_io(content):
-    if is_py2:
-        return io.StringIO(content)
-    if hasattr(content, 'encode'):
-        content = content.encode()
-    return io.BytesIO(content)
-
-
 def add_urllib3_response(serialized, response):
     h = HTTPResponse(
-        body_io(serialized['body']),
+        body_io(**serialized['body']),
         status=response.status_code,
         headers=response.headers,
         preload_content=False,
@@ -277,12 +266,17 @@ class Interaction(object):
                     headers[k] = v.replace(text_to_replace, placeholder)
 
     def replace_in_body(self, text_to_replace, placeholder):
-        for obj in ('request', 'response'):
-            body = self.json[obj]['body']
-            if text_to_replace in body:
-                self.json[obj]['body'] = body.replace(
-                    text_to_replace, placeholder
-                )
+        body = self.json['request']['body']
+        if text_to_replace in body:
+            self.json['request']['body'] = body.replace(
+                text_to_replace, placeholder
+            )
+
+        body = self.json['response']['body']['string']
+        if text_to_replace in body:
+            self.json['response']['body']['string'] = body.replace(
+                text_to_replace, placeholder
+            )
 
     def replace_in_uri(self, text_to_replace, placeholder):
         for (obj, key) in (('request', 'uri'), ('response', 'url')):

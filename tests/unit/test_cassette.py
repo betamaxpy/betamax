@@ -33,20 +33,27 @@ class TestSerialization(unittest.TestCase):
         r.encoding = 'utf-8'
         r.headers = CaseInsensitiveDict()
         r.url = 'http://example.com'
-        cassette.add_urllib3_response({'body': decode('foo')}, r)
+        cassette.add_urllib3_response({
+            'body': {
+                'string': decode('foo'),
+                'encoding': 'utf-8'
+            }
+        }, r)
         serialized = cassette.serialize_response(r, 'json')
         assert serialized is not None
         assert serialized != {}
         assert serialized['status_code'] == 200
-        assert serialized['encoding'] == 'utf-8'
-        assert serialized['body'] == 'foo'
+        assert serialized['body']['encoding'] == 'utf-8'
+        assert serialized['body']['string'] == 'foo'
         assert serialized['headers'] == {}
         assert serialized['url'] == 'http://example.com'
 
     def test_deserialize_response(self):
         s = {
-            'body': decode('foo'),
-            'encoding': 'utf-8',
+            'body': {
+                'string': decode('foo'),
+                'encoding': 'utf-8'
+            },
             'headers': {
                 'Content-Type': decode('application/json')
             },
@@ -101,7 +108,12 @@ class TestSerialization(unittest.TestCase):
         r = Response()
         r.status_code = 200
         r.headers = {}
-        cassette.add_urllib3_response({'body': decode('foo')}, r)
+        cassette.add_urllib3_response({
+            'body': {
+                'string': decode('foo'),
+                'encoding': 'utf-8'
+            }
+        }, r)
         assert isinstance(r.raw, urllib3.response.HTTPResponse)
         assert r.content == b'foo'
         assert isinstance(r.raw._original_response, cassette.MockHTTPResponse)
@@ -121,7 +133,12 @@ class TestCassette(unittest.TestCase):
         r.encoding = 'utf-8'
         r.headers = CaseInsensitiveDict({'Content-Type': decode('foo')})
         r.url = 'http://example.com'
-        cassette.add_urllib3_response({'body': decode('foo')}, r)
+        cassette.add_urllib3_response({
+            'body': {
+                'string': decode('foo'),
+                'encoding': 'utf-8'
+            }
+        }, r)
         self.response = r
         r = Request()
         r.method = 'GET'
@@ -144,8 +161,10 @@ class TestCassette(unittest.TestCase):
                 'uri': 'http://example.com/',
             },
             'response': {
-                'body': decode('foo'),
-                'encoding': 'utf-8',
+                'body': {
+                    'string': decode('foo'),
+                    'encoding': 'utf-8',
+                },
                 'headers': {'Content-Type': decode('foo')},
                 'status_code': 200,
                 'url': 'http://example.com',
@@ -203,8 +222,10 @@ class TestInteraction(unittest.TestCase):
             'uri': 'http://example.com/',
         }
         self.response = {
-            'body': decode('foo'),
-            'encoding': 'utf-8',
+            'body': {
+                'string': decode('foo'),
+                'encoding': 'utf-8'
+            },
             'headers': {
                 'Content-Type': decode('foo'),
                 'Set-Cookie': 'cookie_name=cookie_value'
@@ -231,9 +252,9 @@ class TestInteraction(unittest.TestCase):
                 return 'url'
             return attr
         r = self.interaction.as_response()
-        for attr in ['status_code', 'encoding', 'headers', 'url']:
+        for attr in ['status_code', 'headers', 'url']:
             assert self.response[attr] == decode(getattr(r, attr))
-        assert self.response['body'] == decode(r.content)
+        assert self.response['body']['string'] == decode(r.content)
         actual_req = r.request
         expected_req = self.request
         for attr in ['method', 'uri', 'headers', 'body']:
@@ -261,7 +282,7 @@ class TestInteraction(unittest.TestCase):
         body = self.interaction.json['request']['body']
         assert body == 'key=value&key2=<SECRET_VALUE>'
         body = self.interaction.json['response']['body']
-        assert body == '<FOO>'
+        assert body == {'encoding': 'utf-8', 'string': '<FOO>'}
         uri = self.interaction.json['request']['uri']
         assert uri == '<EXAMPLE_URI>/'
         uri = self.interaction.json['response']['url']
@@ -281,7 +302,7 @@ class TestInteraction(unittest.TestCase):
         body = self.interaction.json['request']['body']
         assert body == 'key=value&key2=<SECRET_VALUE>'
         body = self.interaction.json['response']['body']
-        assert body == '<FOO>'
+        assert body == {'encoding': 'utf-8', 'string': '<FOO>'}
 
     def test_replace_in_uri(self):
         self.interaction.replace_in_uri('http://example.com', '<EXAMPLE_URI>')
