@@ -1,5 +1,5 @@
-Welcome to Requests-OAuthlib's documentation!
-=============================================
+Welcome to Betamax's documentation!
+===================================
 
 Contents:
 

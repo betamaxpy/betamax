@@ -6,3 +6,4 @@
 .tox
 htmlcov
 vcr/*
+docs/_build
