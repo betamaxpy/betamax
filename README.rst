@@ -1,13 +1,13 @@
 betamax
 =======
 
-A VCR_-like adapter for requests. This will make mocking out requests much
-easier. Tested on `Travis CI`_.
+Betamax is a VCR_ imitation for requests. This will make mocking out requests 
+much easier. Tested on `Travis CI`_.
 
 Example Use
 -----------
 
-.. code::
+::
 
     from betamax import Betamax
     from requests import Session
