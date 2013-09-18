@@ -1,7 +1,7 @@
-Welcome to Betamax's documentation!
-===================================
+.. include:: ../README.rst
 
-Contents:
+Contents of Betamax's Documentation
+===================================
 
 .. toctree::
    :maxdepth: 2
@@ -12,7 +12,7 @@ Contents:
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
