@@ -42,9 +42,9 @@ class Configuration(object):
         The options include:
 
         - ``match_requests_on``
-        - ``placeholders```
+        - ``placeholders``
         - ``re_record_interval``
-        - ``record_mode`
+        - ``record_mode``
 
         Other options will be ignored.
         """

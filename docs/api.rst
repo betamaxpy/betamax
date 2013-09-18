@@ -6,12 +6,12 @@ API
 .. autoclass:: Betamax
     :members:
 
-.. autoclass:: configure.Configuration
+.. autoclass:: betamax.configure.Configuration
     :members:
 
 
-More examples
--------------
+Examples
+--------
 
 Let `example.json` be a file in a directory called `cassettes` with the 
 content:
