@@ -6,6 +6,9 @@ API
 .. autoclass:: Betamax
     :members:
 
+.. autoclass:: configure.Configuration
+    :members:
+
 
 More examples
 -------------
@@ -21,15 +24,17 @@ content:
           "request": {
             "body": "",
             "headers": {
-                "User-Agent": "python-requests/v1.2.3"
+              "User-Agent": "python-requests/v1.2.3"
             },
             "method": "GET",
             "uri": "https://httpbin.org/get"
           },
           "response": {
-            "body": "example body",
+            "body": {
+              "string": "example body",
+              "encoding": "utf-8"
+            },
             "headers": {},
-            "encoding": "utf-8",
             "status_code": 200,
             "url": "https://httpbin.org/get"
           }
