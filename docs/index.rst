@@ -7,6 +7,7 @@ Contents:
    :maxdepth: 2
 
    api
+   implementation_details
 
 
 

@@ -119,16 +119,26 @@ class Cassette(object):
 
     @property
     def earliest_recorded_date(self):
+        """The earliest date of all of the interactions this cassette."""
         if self.interactions:
             i = sorted(self.interactions, key=lambda i: i.recorded_at)[0]
             return i.recorded_at
         return datetime.now()
 
     def eject(self):
+        """Save the interactions to the cassette and close the file."""
         self.save_cassette()
         self.fd.close()
 
     def find_match(self, request):
+        """Find a matching interaction based on the matchers and request.
+
+        This uses all of the matchers selected via configuration or
+        ``use_cassette`` and passes in the request currently in progress.
+
+        :param request: ``requests.PreparedRequest``
+        :returns: :class:`Interaction <Interaction>`
+        """
         opts = self.match_options
         # Curry those matchers
         matchers = [partial(matcher_registry[o].match, request) for o in opts]
@@ -136,18 +146,23 @@ class Cassette(object):
         for i in self.interactions:
             if i.match(matchers):  # If the interaction matches everything
                 if self.record_mode == 'all':
+                    # If we're recording everything and there's a matching
+                    # interaction we want to overwrite it, so we remove it.
                     self.interactions.remove(i)
                     break
                 return i
 
+        # No matches. So sad.
         return None
 
     def is_empty(self):
+        """Determines if the cassette when loaded was empty."""
         if self.serialized:
             return False
         return True
 
     def is_recording(self):
+        """Returns if the cassette is recording."""
         values = {
             'none': False,
             'once': self.is_empty(),
