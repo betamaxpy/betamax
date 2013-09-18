@@ -1,4 +1,4 @@
-0.1.0 - 2013-09-12
+0.1.0 - 2013-09-17
 ==================
 
 - Initial Release
@@ -13,16 +13,16 @@
 
 - Support for the following methods of request matching:
 
-  * Method
+  - Method
 
-  * URI
+  - URI
 
-  * Host
+  - Host
 
-  * Path
+  - Path
 
-  * Query String
+  - Query String
 
-  * Body
+  - Body
 
-  * Headers
+  - Headers
