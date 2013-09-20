@@ -3,11 +3,10 @@ from requests.compat import is_py2
 
 
 def coerce_content(content, encoding):
-    if hasattr(content, 'decode') and not is_py2:
-        if encoding:
-            content = content.decode(encoding)
-        else:
-            content = content.decode()
+    if encoding:
+        content = content.decode(encoding, errors='replace')
+    else:
+        content = content.decode(errors='replace')
     return content
 
 
