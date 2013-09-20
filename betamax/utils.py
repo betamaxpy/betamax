@@ -2,20 +2,15 @@ import io
 from requests.compat import is_py2
 
 
-def coerce_content(content, encoding):
-    if encoding:
-        content = content.decode(encoding, errors='replace')
-    else:
-        content = content.decode(errors='replace')
+def coerce_content(content, encoding=None):
+    if hasattr(content, 'decode'):
+        content = content.decode(encoding or 'utf-8', 'replace')
     return content
 
 
-def body_io(string, encoding):
+def body_io(string, encoding=None):
     if is_py2:
         return io.StringIO(string)
     if hasattr(string, 'encode'):
-        if encoding:
-            string = string.encode(encoding)
-        else:
-            string = string.encode()
+        string = string.encode(encoding or 'utf-8')
     return io.BytesIO(string)

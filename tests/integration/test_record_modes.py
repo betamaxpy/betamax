@@ -34,8 +34,6 @@ class TestRecordNone(IntegrationHelper):
     def test_raises_exception_when_no_interactions_present(self):
         s = self.session
         with Betamax(s) as betamax:
-            # import pytest
-            # pytest.set_trace()
             betamax.use_cassette('test', record='none')
             self.cassette_path = betamax.current_cassette.cassette_name
             assert betamax.current_cassette is not None
