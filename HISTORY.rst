@@ -1,6 +1,14 @@
 History
 =======
 
+0.1.2 - 2013-09-21
+------------------
+
+- Fix issues with how requests parses cookies out of responses
+
+- Fix unicode issues with ``Response#text`` (trying to use ``Response#json``
+  raises exception because it cannot use string decoding on a unicode string)
+
 0.1.1 - 2013-09-19
 ------------------
 
