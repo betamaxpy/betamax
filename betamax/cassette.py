@@ -1,6 +1,8 @@
 import email.message
 import io
 import json
+import zlib
+
 from datetime import datetime
 from functools import partial
 
@@ -55,6 +57,11 @@ def deserialize_response(serialized):
 
 
 def add_urllib3_response(serialized, response):
+    if response.headers.get('content-encoding'):
+        body_string = zlib.compress(serialized['body']['string'], 1)
+        serialized['body']['string'] = coerce_content(
+            body_string, response.encoding)
+
     h = HTTPResponse(
         body_io(**serialized['body']),
         status=response.status_code,
