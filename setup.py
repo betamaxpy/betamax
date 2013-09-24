@@ -4,7 +4,7 @@ import sys
 from setuptools import setup
 
 packages = ['betamax']
-requires = ['requests >= 1.2.3']
+requires = ['requests >= 2.0']
 
 __version__ = ''
 with open('betamax/__init__.py', 'r') as fd:
