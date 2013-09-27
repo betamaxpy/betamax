@@ -1,7 +1,7 @@
+import base64
 import email.message
 import io
 import json
-import zlib
 
 from datetime import datetime
 from functools import partial
@@ -35,11 +35,14 @@ def deserialize_prepared_request(serialized):
 
 
 def serialize_response(response, method):
+    body = {'encoding': response.encoding}
+    if response.headers.get('Content-Encoding') == 'gzip':
+        body['base64_string'] = base64.b64encode(response.raw.read())
+    else:
+        body['string'] = coerce_content(response.content, body['encoding'])
+
     return {
-        'body': {
-            'string': coerce_content(response.content, response.encoding),
-            'encoding': response.encoding
-        },
+        'body': body,
         'headers': dict(response.headers),
         'status_code': response.status_code,
         'url': response.url,
@@ -57,13 +60,15 @@ def deserialize_response(serialized):
 
 
 def add_urllib3_response(serialized, response):
-    if response.headers.get('content-encoding'):
-        body_string = zlib.compress(serialized['body']['string'], 1)
-        serialized['body']['string'] = coerce_content(
-            body_string, response.encoding)
+    if response.headers.get('Content-Encoding') == 'gzip':
+        body = io.BytesIO(
+            base64.b64decode(serialized['body']['base64_string'])
+        )
+    else:
+        body = body_io(**serialized['body'])
 
     h = HTTPResponse(
-        body_io(**serialized['body']),
+        body,
         status=response.status_code,
         headers=response.headers,
         preload_content=False,
@@ -245,10 +250,8 @@ class Interaction(object):
     def __init__(self, interaction, response=None):
         self.recorded_at = None
         self.json = interaction
-        if response:
-            self.recorded_response = response
-        else:
-            self.deserialize()
+        self.orig_response = response
+        self.deserialize()
 
     def as_response(self):
         """Returns the Interaction as a Response object."""
@@ -312,6 +315,7 @@ class Interaction(object):
 class MockHTTPResponse(object):
     def __init__(self, headers):
         h = ["%s: %s" % (k, v) for (k, v) in headers.items()]
+        h = map(coerce_content, h)
         h = io.StringIO('\r\n'.join(h) or None)
         # Thanks to Python 3, we have to use the slightly more awful API below
         # mimetools was deprecated so we have to use email.message.Message
