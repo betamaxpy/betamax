@@ -1,6 +1,12 @@
 History
 =======
 
+0.1.3 - 2013-09-27
+------------------
+
+- Fix issue when response has a Content-Encoding of gzip and we need to 
+  preserve the original bytes of the message.
+
 0.1.2 - 2013-09-21
 ------------------
 
