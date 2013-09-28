@@ -1,6 +1,11 @@
 History
 =======
 
+0.1.4 - 2013-09-27
+------------------
+
+- Do not try to sanitize something that may not exist.
+ 
 0.1.3 - 2013-09-27
 ------------------
 
