@@ -1,6 +1,11 @@
 History
 =======
 
+0.1.5 - 2013-09-27
+------------------
+
+- Make sure what we pass to ``base64.b64decode`` is a bytes object
+
 0.1.4 - 2013-09-27
 ------------------
 

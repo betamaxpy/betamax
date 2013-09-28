@@ -62,7 +62,7 @@ def deserialize_response(serialized):
 def add_urllib3_response(serialized, response):
     if response.headers.get('Content-Encoding') == 'gzip':
         body = io.BytesIO(
-            base64.b64decode(serialized['body']['base64_string'])
+            base64.b64decode(serialized['body']['base64_string'].encode())
         )
     else:
         body = body_io(**serialized['body'])
