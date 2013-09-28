@@ -50,3 +50,11 @@ fixed.
 
 .. _VCR: https://github.com/vcr/vcr
 .. _Travis CI: https://travis-ci.org/sigmavirus24/betamax
+
+Contributing
+------------
+
+You can check out the project board on waffle.io_ to see what the status of 
+each issue is.
+
+.. _waffle.io: https://waffle.io/sigmavirus24/betamax
