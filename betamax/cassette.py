@@ -297,7 +297,7 @@ class Interaction(object):
                 text_to_replace, placeholder
             )
 
-        body = self.json['response']['body']['string']
+        body = self.json['response']['body'].get('string', '')
         if text_to_replace in body:
             self.json['response']['body']['string'] = body.replace(
                 text_to_replace, placeholder
