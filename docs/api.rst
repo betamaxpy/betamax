@@ -16,7 +16,7 @@ Examples
 Let `example.json` be a file in a directory called `cassettes` with the 
 content:
 
-.. code:: javascript
+.. code-block:: javascript
 
     {
       "http_interactions": [
@@ -45,7 +45,7 @@ content:
 
 The following snippet will not raise any exceptions
 
-.. code:: python
+.. code-block:: python
 
     from betamax import Betamax
     from requests import Session
@@ -59,7 +59,7 @@ The following snippet will not raise any exceptions
 
 On the other hand, this will raise an exception:
 
-.. code:: python
+.. code-block:: python
 
     from betamax import Betamax
     from requests import Session
@@ -80,7 +80,7 @@ support gzip content encoding will return responses that Betamax cannot
 serialize in a human-readable format. In this event, the cassette will look 
 like this:
 
-.. code:: javascript
+.. code-block:: javascript
     :emphasize-lines: 14
 
     {
