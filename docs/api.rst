@@ -71,3 +71,41 @@ On the other hand, this will raise an exception:
         betamax.use_cassette('example', record='none')
         r = s.post("https://httpbin.org/post",
                    data={"key": "value"})
+
+Opinions at Work
+----------------
+
+If you use ``requests``'s default ``Accept-Encoding`` header, servers that 
+support gzip content encoding will return responses that Betamax cannot 
+serialize in a human-readable format. In this event, the cassette will look 
+like this:
+
+.. code:: javascript
+    :emphasize-lines: 14
+
+    {
+      "http_interactions": [
+        {
+          "request": {
+            "body": "",
+            "headers": {
+              "User-Agent": "python-requests/v1.2.3"
+            },
+            "method": "GET",
+            "uri": "https://httpbin.org/get"
+          },
+          "response": {
+            "body": {
+              "base64_string": "Zm9vIGJhcgo=",
+              "encoding": "utf-8"
+            },
+            "headers": {
+              "Content-Encoding": "gzip"
+            },
+            "status_code": 200,
+            "url": "https://httpbin.org/get"
+          }
+        }
+      ],
+      "recorded_with": "betamax"
+    }
