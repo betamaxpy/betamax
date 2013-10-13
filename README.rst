@@ -2,7 +2,10 @@ betamax
 =======
 
 Betamax is a VCR_ imitation for requests. This will make mocking out requests 
-much easier. Tested on `Travis CI`_.
+much easier. It is tested on `Travis CI`_.
+
+Put in a more humorous way: "Betamax records your HTTP interactions so the NSA 
+does not have to."
 
 Example Use
 -----------
