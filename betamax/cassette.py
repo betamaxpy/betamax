@@ -37,7 +37,7 @@ def deserialize_prepared_request(serialized):
 def serialize_response(response, method):
     body = {'encoding': response.encoding}
     if response.headers.get('Content-Encoding') == 'gzip':
-        body['base64_string'] = base64.b64encode(response.raw.read())
+        body['base64_string'] = base64.b64encode(response.raw.read()).decode()
     else:
         body['string'] = coerce_content(response.content, body['encoding'])
 
