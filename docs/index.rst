@@ -8,7 +8,7 @@ Contents of Betamax's Documentation
 
    api
    implementation_details
-   usage_paterns
+   usage_patterns
 
 
 
