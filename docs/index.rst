@@ -8,6 +8,7 @@ Contents of Betamax's Documentation
 
    api
    implementation_details
+   matchers
    usage_patterns
 
 
