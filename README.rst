@@ -59,7 +59,8 @@ happen:
 
 Recorded requests and corresponding responses - also known as interactions -
 are stored in files called cassettes. (An example cassette can be seen in
-the `examples section of the documentation`_.)
+the `examples section of the documentation`_.) The directory you store your
+cassettes in is called your library, or your `cassette library`_.
 
 VCR Cassette Compatiblity
 -------------------------
@@ -82,3 +83,5 @@ each issue is.
 .. _waffle.io: https://waffle.io/sigmavirus24/betamax
 .. _examples section of the documentation:
     http://betamax.readthedocs.org/en/latest/api.html#examples
+.. _cassette library:
+    http://betamax.readthedocs.org/en/latest/cassettes.html
