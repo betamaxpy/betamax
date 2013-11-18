@@ -106,4 +106,32 @@ may not be in the same order as this example.
     **Pro-tip** You can pretty print a cassette like so:
     ``python -m json.tool cassette.json``.
 
+What is a cassette library?
+===========================
+
+When configuring Betamax, you can choose your own cassette library directory.
+This is the directory available from the current directory in which you want
+to store your cassettes.
+
+For example, let's say that you set your cassette library to be
+``tests/cassettes/``. In that case, when you record a cassette, it will be
+saved there. To continue the example, let's say you use the following code:
+
+.. code:: python
+
+    from requests import Session
+    from betamax import Betamax
+
+
+    s = Session()
+    with Betamax(s, cassette_library_dir='tests/cassettes').use_cassette('example'):
+        r = s.get('https://httpbin.org/get')
+
+You would then have the following directory structure::
+
+    .
+    `-- tests
+        `-- cassettes
+            `-- example.json
+
 .. _JSON: http://json.org
