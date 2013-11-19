@@ -98,7 +98,7 @@ If you put everything together, you get:
     }
 
 If you were to pretty-print a cassette, this is vaguely what you would see.
-Keep in mind that Python since does not keep dictionaries ordered, the items
+Keep in mind that since Python does not keep dictionaries ordered, the items
 may not be in the same order as this example.
 
 .. note::
