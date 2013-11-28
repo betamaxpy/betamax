@@ -1,6 +1,12 @@
 History
 =======
 
+0.1.6 - 2013-xx-xx
+------------------
+
+- Support ``match_requests_on`` as a parameter sent to
+  ``Betamax#use_cassette``.
+
 0.1.5 - 2013-09-27
 ------------------
 
