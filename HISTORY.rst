@@ -4,8 +4,11 @@ History
 0.1.6 - 2013-xx-xx
 ------------------
 
+- Fix how global settings and per-invocation options are persisted and 
+  honored. (#10)
+
 - Support ``match_requests_on`` as a parameter sent to
-  ``Betamax#use_cassette``.
+  ``Betamax#use_cassette``. (No issue)
 
 0.1.5 - 2013-09-27
 ------------------

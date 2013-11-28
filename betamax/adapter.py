@@ -38,7 +38,7 @@ class BetamaxAdapter(BaseAdapter):
     def load_cassette(self, cassette_name, serialize, options):
         self.cassette_name = cassette_name
         self.serialize = serialize
-        self.options.update(options)
+        self.options.update(options.items())
         placeholders = self.options.get('placeholders')
 
         match_requests_on = self.options.get(
@@ -59,7 +59,8 @@ class BetamaxAdapter(BaseAdapter):
                 os.path.dirname(cassette_name)
             )
 
-        self.cassette.record_mode = self.options['record']
+        if 'record' in self.options:
+            self.cassette.record_mode = self.options['record']
         self.cassette.match_options = match_requests_on
 
         re_record_interval = timedelta.max

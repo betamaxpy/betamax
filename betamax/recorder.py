@@ -140,15 +140,10 @@ class Betamax(object):
                 cassette_name, serialize
             ))
 
-        opts = {
-            'match_requests_on': kwargs['match_requests_on'],
-            're_record_interval': kwargs['re_record_interval'],
-            'record': kwargs['record']
-        }
-
         if (_can_load_cassette(cassette_name) and
                 serialize in ('json', 'yaml')):
-            self.betamax_adapter.load_cassette(cassette_name, serialize, opts)
+            self.betamax_adapter.load_cassette(cassette_name, serialize,
+                                               kwargs)
         else:
             # If we're not recording or replaying an existing cassette, we
             # should tell the user/developer that there is no cassette, only

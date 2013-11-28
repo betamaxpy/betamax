@@ -1,3 +1,6 @@
+from betamax.cassette import Cassette
+
+
 def validate_record(record):
     return record in ['all', 'new_episodes', 'none', 'once']
 
@@ -6,6 +9,11 @@ def validate_matchers(matchers):
     from betamax.matchers import matcher_registry
     available_matchers = list(matcher_registry.keys())
     return all(m in available_matchers for m in matchers)
+
+
+def translate_cassette_options():
+    for (k, v) in Cassette.default_cassette_options.items():
+        yield (k, v) if k != 'record_mode' else ('record', v)
 
 
 class Options(object):
@@ -26,12 +34,14 @@ class Options(object):
     def __init__(self, data=None):
         self.data = data or {}
         self.validate()
+        self.defaults = Options.defaults.copy()
+        self.defaults.update(translate_cassette_options())
 
     def __repr__(self):
         return 'Options(%s)' % self.data
 
     def __getitem__(self, key):
-        return self.data.get(key, Options.defaults.get(key))
+        return self.data.get(key, self.defaults.get(key))
 
     def __setitem__(self, key, value):
         self.data[key] = value
@@ -42,6 +52,9 @@ class Options(object):
 
     def __contains__(self, key):
         return key in self.data
+
+    def items(self):
+        return self.data.items()
 
     def validate(self):
         for key, value in list(self.data.items()):
