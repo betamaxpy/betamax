@@ -141,6 +141,7 @@ class Betamax(object):
             ))
 
         opts = {
+            'match_requests_on': kwargs['match_requests_on'],
             're_record_interval': kwargs['re_record_interval'],
             'record': kwargs['record']
         }

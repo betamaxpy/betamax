@@ -3,7 +3,8 @@ def validate_record(record):
 
 
 def validate_matchers(matchers):
-    available_matchers = ['method', 'uri', 'query', 'host', 'body']
+    from betamax.matchers import matcher_registry
+    available_matchers = list(matcher_registry.keys())
     return all(m in available_matchers for m in matchers)
 
 

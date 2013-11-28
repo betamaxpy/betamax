@@ -41,6 +41,11 @@ class BetamaxAdapter(BaseAdapter):
         self.options.update(options)
         placeholders = self.options.get('placeholders')
 
+        match_requests_on = self.options.get(
+            'match_requests_on',
+            Cassette.default_cassette_options['match_requests_on']
+            )
+
         # load cassette into memory
         if self.cassette_exists():
             self.cassette = Cassette(cassette_name, serialize,
@@ -55,6 +60,7 @@ class BetamaxAdapter(BaseAdapter):
             )
 
         self.cassette.record_mode = self.options['record']
+        self.cassette.match_options = match_requests_on
 
         re_record_interval = timedelta.max
         if self.options.get('re_record_interval'):
@@ -67,14 +73,12 @@ class BetamaxAdapter(BaseAdapter):
     def send(self, request, stream=False, timeout=None, verify=True,
              cert=None, proxies=None):
         interaction = None
-        match_on = Cassette.default_cassette_options['match_requests_on']
         response = None
 
         if not self.cassette:
             raise BetamaxError('No cassette was specified or found.')
 
         if self.cassette.interactions:
-            self.cassette.match_options = set(match_on)
             interaction = self.cassette.find_match(request)
 
         if not interaction and self.cassette.is_recording():
