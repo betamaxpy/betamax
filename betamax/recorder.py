@@ -80,7 +80,8 @@ class Betamax(object):
         # exception traceback. If any of them are not None, we should probably
         # try to raise the exception and not muffle anything.
         if any(ex_args):
-            raise
+            # If you return False, Python will re-raise the exception for you
+            return False
 
     @staticmethod
     def configure():
