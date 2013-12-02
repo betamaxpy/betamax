@@ -10,7 +10,7 @@ class BaseMatcher(object):
 
     Usage::
 
-        from betamax import VCR, BaseMatcher
+        from betamax import Betamax, BaseMatcher
 
         class MyMatcher(BaseMatcher):
             name = 'my'
@@ -18,7 +18,7 @@ class BaseMatcher(object):
             def match(self, request, recorded_request):
                 # My fancy matching algorithm
 
-        VCR.register_request_matcher(MyMatcher)
+        Betamax.register_request_matcher(MyMatcher)
 
     The last line is absolutely necessary.
 
