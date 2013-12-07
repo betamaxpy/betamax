@@ -93,3 +93,7 @@ class BaseSerializer(object):
         """This is a method that must be implemented by the user."""
         raise NotImplementedError('The serializer must be implemented on'
                                   ' %s' % self.__class__.name__)
+
+
+class JSONSerializer(BaseSerializer):
+    name = 'json'
