@@ -117,7 +117,23 @@ class URIMatcher(BaseMatcher):
     name = 'uri'
 
     def match(self, request, recorded_request):
-        return request.url == recorded_request['uri']
+        queries_match = QueryMatcher().match(request, recorded_request)
+        request_url, recorded_url = request.url, recorded_request['uri']
+        return self.all_equal(request_url, recorded_url) and queries_match
+
+    def parse(self, uri):
+        parsed = urlparse(uri)
+        return {
+            'scheme': parsed.scheme,
+            'netloc': parsed.netloc,
+            'path': parsed.path,
+            'fragment': parsed.fragment
+            }
+
+    def all_equal(self, new_uri, recorded_uri):
+        new_parsed = self.parse(new_uri)
+        recorded_parsed = self.parse(recorded_uri)
+        return (new_parsed == recorded_parsed)
 
 
 _matchers = [BodyMatcher, HeadersMatcher, HostMatcher, MethodMatcher,
