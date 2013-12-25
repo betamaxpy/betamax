@@ -96,6 +96,12 @@ class TestMatchers(unittest.TestCase):
         )
         assert match(self.p, {'uri': 'http://example.com'}) is False
 
+    def test_uri_matcher_handles_query_strings(self):
+        match = matchers.matcher_registry['uri'].match
+        self.p.url = 'http://example.com/path/to?query=string&form=value'
+        other_uri = 'http://example.com/path/to?form=value&query=string'
+        assert match(self.p, {'uri': other_uri}) is True
+
 
 class TestBaseMatcher(unittest.TestCase):
     def setUp(self):
