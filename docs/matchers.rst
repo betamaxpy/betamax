@@ -91,3 +91,13 @@ default matchers, e.g.:
 
     with Betamax(s).use_cassette('example', match_requests_on=['uri', 'my']):
         # ...
+
+
+``on_init``
+~~~~~~~~~~~
+
+As you can see in the code for ``URIMatcher``, we use ``on_init`` to 
+initialize an attribute on the ``URIMatcher`` instance. This method serves to 
+provide the matcher author with a different way of initializing the object 
+outside of the ``match`` method. This also means that the author does not have 
+to override the base class' ``__init__`` method.
