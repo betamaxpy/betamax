@@ -37,6 +37,10 @@ class BaseMatcher(object):
     def __init__(self):
         if not self.name:
             raise ValueError('Matchers require names')
+        self.on_init()
+
+    def on_init(self):
+        return None
 
     def match(self, request, recorded_request):
         """This is a method that must be implemented by the user.
@@ -116,8 +120,12 @@ class URIMatcher(BaseMatcher):
     # Matches based on the uri of the request
     name = 'uri'
 
+    def on_init(self):
+        # Get something we can use to match query strings with
+        self.query_matcher = QueryMatcher().match
+
     def match(self, request, recorded_request):
-        queries_match = QueryMatcher().match(request, recorded_request)
+        queries_match = self.query_matcher(request, recorded_request)
         request_url, recorded_url = request.url, recorded_request['uri']
         return self.all_equal(request_url, recorded_url) and queries_match
 
