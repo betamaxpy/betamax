@@ -64,8 +64,8 @@ class Betamax(object):
             self.config.cassette_library_dir = cassette_library_dir
 
     def __enter__(self):
-        self.session.mount('http://', self.betamax_adapter)
-        self.session.mount('https://', self.betamax_adapter)
+        for k in self.http_adapters:
+            self.session.mount(k, self.betamax_adapter)
         return self
 
     def __exit__(self, *ex_args):
