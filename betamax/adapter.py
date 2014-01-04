@@ -94,9 +94,19 @@ class BetamaxAdapter(BaseAdapter):
 
     def send_and_record(self, request, stream=False, timeout=None,
                         verify=True, cert=None, proxies=None):
-        response = self.http_adapter.send(
+        adapter = self.find_adapter(request.url)
+        response = adapter.send(
             request, stream=True, timeout=timeout, verify=verify,
             cert=cert, proxies=proxies
             )
         self.cassette.save_interaction(response, request)
         return self.cassette.interactions[-1]
+
+    def find_adapter(self, url):
+        for (prefix, adapter) in self.old_adapters.items():
+
+            if url.lower().startswith(prefix):
+                return adapter
+
+        # Unlike in requests, this has to match something here to have come
+        # this far
