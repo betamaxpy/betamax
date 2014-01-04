@@ -108,5 +108,4 @@ class BetamaxAdapter(BaseAdapter):
             if url.lower().startswith(prefix):
                 return adapter
 
-        # Unlike in requests, this has to match something here to have come
-        # this far
+        # Unlike in requests, we cannot possibly get this far.
