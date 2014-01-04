@@ -45,13 +45,13 @@ class Betamax(object):
     """
 
     def __init__(self, session, cassette_library_dir=None,
-                 default_cassette_options={}, adapter_args=None):
+                 default_cassette_options={}):
         #: Store the requests.Session object being wrapped.
         self.session = session
         #: Store the session's original adapters.
         self.http_adapters = session.adapters.copy()
         #: Create a new adapter to replace the existing ones
-        self.betamax_adapter = BetamaxAdapter(**(adapter_args or {}))
+        self.betamax_adapter = BetamaxAdapter(old_adapters=self.http_adapters)
         # We need a configuration instance to make life easier
         self.config = Configuration()
         # Merge the new cassette options with the default ones
@@ -64,8 +64,8 @@ class Betamax(object):
             self.config.cassette_library_dir = cassette_library_dir
 
     def __enter__(self):
-        self.session.mount('http://', self.betamax_adapter)
-        self.session.mount('https://', self.betamax_adapter)
+        for k in self.http_adapters:
+            self.session.mount(k, self.betamax_adapter)
         return self
 
     def __exit__(self, *ex_args):

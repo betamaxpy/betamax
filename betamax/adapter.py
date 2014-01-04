@@ -18,6 +18,7 @@ class BetamaxAdapter(BaseAdapter):
         super(BetamaxAdapter, self).__init__()
         self.cassette = None
         self.cassette_name = None
+        self.old_adapters = kwargs.pop('old_adapters', {})
         self.http_adapter = HTTPAdapter(**kwargs)
         self.serialize = None
         self.options = {}
@@ -74,7 +75,6 @@ class BetamaxAdapter(BaseAdapter):
     def send(self, request, stream=False, timeout=None, verify=True,
              cert=None, proxies=None):
         interaction = None
-        response = None
 
         if not self.cassette:
             raise BetamaxError('No cassette was specified or found.')
@@ -83,14 +83,29 @@ class BetamaxAdapter(BaseAdapter):
             interaction = self.cassette.find_match(request)
 
         if not interaction and self.cassette.is_recording():
-            response = self.http_adapter.send(
-                request, stream=True, timeout=timeout, verify=verify,
-                cert=cert, proxies=proxies
+            interaction = self.send_and_record(
+                request, stream, timeout, verify, cert, proxies
                 )
-            self.cassette.save_interaction(response, request)
-            interaction = self.cassette.interactions[-1]
 
         if not interaction:
             raise BetamaxError('A request was made that could not be handled')
 
         return interaction.as_response()
+
+    def send_and_record(self, request, stream=False, timeout=None,
+                        verify=True, cert=None, proxies=None):
+        adapter = self.find_adapter(request.url)
+        response = adapter.send(
+            request, stream=True, timeout=timeout, verify=verify,
+            cert=cert, proxies=proxies
+            )
+        self.cassette.save_interaction(response, request)
+        return self.cassette.interactions[-1]
+
+    def find_adapter(self, url):
+        for (prefix, adapter) in self.old_adapters.items():
+
+            if url.lower().startswith(prefix):
+                return adapter
+
+        # Unlike in requests, we cannot possibly get this far.
