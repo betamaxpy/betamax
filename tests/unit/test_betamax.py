@@ -46,3 +46,12 @@ class TestBetamax(unittest.TestCase):
 
     def test_stores_the_session_instance(self):
         assert self.session is self.vcr.session
+
+    def test_replaces_all_adapters(self):
+        mount_point = 'fake_protocol://'
+        s = Session()
+        s.mount(mount_point, HTTPAdapter())
+        with Betamax(s):
+            adapter = s.adapters.get(mount_point)
+            assert adapter is not None
+            assert isinstance(adapter, BetamaxAdapter)
