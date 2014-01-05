@@ -177,6 +177,7 @@ class TestCassette(unittest.TestCase):
         self.interaction.recorded_at = self.date
 
     def tearDown(self):
+        self.cassette.eject()
         if os.path.exists(TestCassette.cassette_name):
             os.unlink(TestCassette.cassette_name)
 
