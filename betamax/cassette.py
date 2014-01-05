@@ -209,7 +209,7 @@ class Cassette(object):
     def save_cassette(self):
         self.sanitize_interactions()
 
-        if self.record_mode == 'new_episodes':
+        if self.record_mode in ('new_episodes', 'all'):
             self.fd.close()
             self.fd = open(self.fd.name, 'w')
 

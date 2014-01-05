@@ -92,6 +92,9 @@ class TestRecordAll(IntegrationHelper):
             s.post('http://httpbin.org/post', data={'foo': 'bar'})
             assert len(cassette.interactions) == 4
 
+        with Betamax(s).use_cassette('test_record_all') as betamax:
+            assert len(betamax.current_cassette.interactions) == 4
+
     def test_replaces_old_interactions(self):
         s = self.session
         opts = {'record': 'all'}
