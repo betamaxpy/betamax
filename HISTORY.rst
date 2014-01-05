@@ -1,7 +1,7 @@
 History
 =======
 
-0.1.6 - 2013-xx-xx
+0.1.6 - 2013-12-07
 ------------------
 
 - Fix how global settings and per-invocation options are persisted and 
