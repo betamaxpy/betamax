@@ -66,6 +66,12 @@ class TestRecordNewEpisodes(IntegrationHelper):
             s.get('https://httpbin.org/get')
             assert len(cassette.interactions) == 4
 
+        with Betamax(s).use_cassette('test_record_new') as betamax:
+            cassette = betamax.current_cassette
+            assert len(cassette.interactions) == 4
+            r = s.get('https://httpbin.org/get')
+            assert r.status_code == 200
+
 
 class TestRecordAll(IntegrationHelper):
     def setUp(self):

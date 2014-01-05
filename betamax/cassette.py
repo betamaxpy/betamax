@@ -208,6 +208,11 @@ class Cassette(object):
 
     def save_cassette(self):
         self.sanitize_interactions()
+
+        if self.record_mode == 'new_episodes':
+            self.fd.close()
+            self.fd = open(self.fd.name, 'w')
+
         if 'w' in self.fd.mode or 'r+' in self.fd.mode:
             json.dump({
                 'http_interactions': [i.json for i in self.interactions],
