@@ -126,7 +126,7 @@ class Betamax(object):
             # If we want to record a cassette we don't care if the file exists
             # yet
             recording = False
-            if kwargs['record'] in ['once', 'all']:
+            if kwargs['record'] in ['once', 'all', 'new_episodes']:
                 recording = True
 
             # Otherwise if we're only replaying responses, we should probably

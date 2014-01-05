@@ -73,6 +73,16 @@ class TestRecordNewEpisodes(IntegrationHelper):
             assert r.status_code == 200
 
 
+class TestRecordNewEpisodesCreatesCassettes(IntegrationHelper):
+    def test_creates_new_cassettes(self):
+        recorder = Betamax(self.session)
+        opts = {'record': 'new_episodes'}
+        cassette_name = 'test_record_new_makes_new_cassettes'
+        with recorder.use_cassette(cassette_name, **opts) as betamax:
+            self.cassette_path = betamax.current_cassette.cassette_name
+            self.session.get('https://httpbin.org/get')
+
+
 class TestRecordAll(IntegrationHelper):
     def setUp(self):
         super(TestRecordAll, self).setUp()
