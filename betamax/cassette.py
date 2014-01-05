@@ -79,8 +79,12 @@ def add_urllib3_response(serialized, response):
 
 def timestamp():
     stamp = datetime.utcnow().isoformat()
-    i = stamp.rindex('.')
-    return stamp[:i]
+    try:
+        i = stamp.rindex('.')
+    except ValueError:
+        return stamp
+    else:
+        return stamp[:i]
 
 
 class Cassette(object):
