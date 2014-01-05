@@ -1,6 +1,22 @@
 History
 =======
 
+0.x.y - 2014-__-__
+------------------
+
+- Fix bug where new interactions recorded under ``new_episodes`` or ``all``
+  were not actually saved to disk.
+
+- Match URIs in a far more intelligent way.
+
+- Use the Session's original adapters when making new requests
+
+  In the event the Session has a custom adapter mounted, e.g., the SSLAdapter 
+  in requests-toolbelt, then we should probably use that.
+
+- Add ``on_init`` hook to ``BaseMatcher`` so matcher authors can customize 
+  initialization
+
 0.1.6 - 2013-12-07
 ------------------
 
