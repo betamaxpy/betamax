@@ -88,7 +88,8 @@ class BetamaxAdapter(BaseAdapter):
                 )
 
         if not interaction:
-            raise BetamaxError('A request was made that could not be handled')
+            raise BetamaxError(unhandled_request_message(request,
+                                                         self.cassette))
 
         return interaction.as_response()
 
@@ -109,3 +110,22 @@ class BetamaxAdapter(BaseAdapter):
                 return adapter
 
         # Unlike in requests, we cannot possibly get this far.
+
+
+UNHANDLED_REQUEST_EXCEPTION = """A request was made that could not be handled.
+
+A request was made to {url} that could not be found in {cassette_file_path}.
+
+The settings on the cassette are:
+
+    - record_mode: {cassette_record_mode}
+    - match_options {cassette_match_options}.
+"""
+
+
+def unhandled_request_message(request, cassette):
+    return UNHANDLED_REQUEST_EXCEPTION.format(
+        url=request.url, cassette_file_path=cassette.cassette_name,
+        cassette_record_mode=cassette.record_mode,
+        cassette_match_options=cassette.match_options
+        )
