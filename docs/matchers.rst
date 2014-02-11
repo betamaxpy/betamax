@@ -82,7 +82,7 @@ use it like so:
         def match(self, request, recorded_request):
             return True
 
-    betamax.Betamax.register_matcher(MyMatcher)
+    betamax.Betamax.register_request_matcher(MyMatcher)
 
 To use it, you simply use the name you set like you use the name of the 
 default matchers, e.g.:
