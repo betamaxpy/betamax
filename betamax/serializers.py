@@ -107,7 +107,7 @@ class JSONSerializer(BaseSerializer):
             json.dump(cassette_data, fd)
 
     def deserialize(self):
-        with open(self.cassette_path, 'r') as fd:
+        with open(self.cassette_path, 'r+') as fd:
             try:
                 cassette_data = json.load(fd)
             except ValueError:

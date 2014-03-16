@@ -206,10 +206,8 @@ class Cassette(object):
     def load_serialized_data(self):
         if self.serialized:
             return
-        try:
-            self.serialized = json.load(self.fd)
-        except ValueError:
-            self.serialized = {}
+
+        self.serialized = self.serializer.deserialize()
 
     def save_interaction(self, response, request):
         interaction = self.serialize_interaction(response, request)
