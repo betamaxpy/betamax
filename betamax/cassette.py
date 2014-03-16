@@ -8,6 +8,7 @@ from functools import partial
 
 from betamax.utils import body_io, coerce_content
 from betamax.matchers import matcher_registry
+from betamax.serializers import serializer_registry
 from requests.models import PreparedRequest, Response
 from requests.packages.urllib3 import HTTPResponse
 from requests.structures import CaseInsensitiveDict
@@ -112,6 +113,10 @@ class Cassette(object):
     }
 
     def __init__(self, cassette_name, serialize, mode='r', placeholders=None):
+        # Get the Serializer class
+        serializer_class = serializer_registry.get(serialize)
+        # Instantiate the serializer
+        self.serializer = serializer_class(cassette_name)
         #: Name of the cassette including path, e.g., "vcr/cassettes/name.json"
         self.cassette_name = cassette_name
         self.serialize_format = serialize
