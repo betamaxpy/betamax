@@ -29,13 +29,13 @@ class TestBaseSerializer(unittest.TestCase):
     def test_serialize_is_an_interface(self):
         serializer = TestSerializer(None)
         with pytest.raises(NotImplementedError):
-            serializer.serialize({})
+            serializer.serialize({}, 'path')
 
     def test_deserialize_is_an_interface(self):
         serializer = TestSerializer(None)
         with pytest.raises(NotImplementedError):
-            serializer.deserialize()
+            serializer.deserialize('path')
 
     def test_requires_a_name(self):
         with pytest.raises(ValueError):
-            BaseSerializer(None)
+            BaseSerializer()
