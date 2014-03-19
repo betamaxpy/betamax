@@ -1,7 +1,7 @@
 import pytest
 import unittest
 
-from betamax import Betamax, cassette
+from betamax import Betamax, new_cassette
 from requests import Session
 
 
@@ -22,5 +22,5 @@ class TestCassetteRecordMode(unittest.TestCase):
                 assert recorder.current_cassette is None
 
     def test_class_variables_retain_their_value(self):
-        opts = cassette.Cassette.default_cassette_options
+        opts = new_cassette.NewCassette.default_cassette_options
         assert opts['record_mode'] == 'never'

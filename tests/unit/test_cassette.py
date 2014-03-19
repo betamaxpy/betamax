@@ -3,6 +3,7 @@ import unittest
 from datetime import datetime
 
 from betamax import cassette
+from betamax import new_cassette
 from requests.models import Response, Request
 from requests.packages import urllib3
 from requests.structures import CaseInsensitiveDict
@@ -123,10 +124,10 @@ class TestCassette(unittest.TestCase):
     cassette_name = 'test_cassette.json'
 
     def setUp(self):
-        self.cassette = cassette.Cassette(
+        self.cassette = new_cassette.NewCassette(
             TestCassette.cassette_name,
             'json',
-            'w+'
+            record_mode='once'
         )
         r = Response()
         r.status_code = 200

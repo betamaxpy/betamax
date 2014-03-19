@@ -15,7 +15,7 @@ class TestJSONSerializer(unittest.TestCase):
                                                       self.cassette_name))
 
     def test_generate_cassette_name_with_instance(self):
-        serializer = JSONSerializer('name')
+        serializer = JSONSerializer()
         assert ('fake_dir/cassette_name.json' ==
                 serializer.generate_cassette_name(self.cassette_dir,
                                                   self.cassette_name))
@@ -27,12 +27,12 @@ class TestSerializer(BaseSerializer):
 
 class TestBaseSerializer(unittest.TestCase):
     def test_serialize_is_an_interface(self):
-        serializer = TestSerializer(None)
+        serializer = TestSerializer()
         with pytest.raises(NotImplementedError):
-            serializer.serialize({}, 'path')
+            serializer.serialize({})
 
     def test_deserialize_is_an_interface(self):
-        serializer = TestSerializer(None)
+        serializer = TestSerializer()
         with pytest.raises(NotImplementedError):
             serializer.deserialize('path')
 

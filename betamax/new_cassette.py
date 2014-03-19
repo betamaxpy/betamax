@@ -1,6 +1,10 @@
+from betamax.cassette import (Interaction, timestamp,
+                              serialize_prepared_request,
+                              serialize_response)
+from betamax.matchers import matcher_registry
 from betamax.serializers import serializer_registry, SerializerProxy
-from betamax.cassette import Interaction
 from datetime import datetime
+from functools import partial
 
 
 class NewCassette(object):
@@ -15,6 +19,8 @@ class NewCassette(object):
     def __init__(self, cassette_name, serialization_format, **kwargs):
         #: Short name of the cassette
         self.cassette_name = cassette_name
+
+        self.serialized = None
 
         # Determine the record mode
         self.record_mode = kwargs.get(
@@ -46,6 +52,12 @@ class NewCassette(object):
 
         self.load_interactions()
 
+    def clear(self):
+        # Clear out the interactions
+        self.interactions = []
+        # Serialize to the cassette file
+        self._save_cassette()
+
     @property
     def earliest_recorded_date(self):
         """The earliest date of all of the interactions this cassette."""
@@ -53,6 +65,34 @@ class NewCassette(object):
             i = sorted(self.interactions, key=lambda i: i.recorded_at)[0]
             return i.recorded_at
         return datetime.now()
+
+    def eject(self):
+        self._save_cassette()
+
+    def find_match(self, request):
+        """Find a matching interaction based on the matchers and request.
+
+        This uses all of the matchers selected via configuration or
+        ``use_cassette`` and passes in the request currently in progress.
+
+        :param request: ``requests.PreparedRequest``
+        :returns: :class:`Interaction <Interaction>`
+        """
+        opts = self.match_options
+        # Curry those matchers
+        matchers = [partial(matcher_registry[o].match, request) for o in opts]
+
+        for i in self.interactions:
+            if i.match(matchers):  # If the interaction matches everything
+                if self.record_mode == 'all':
+                    # If we're recording everything and there's a matching
+                    # interaction we want to overwrite it, so we remove it.
+                    self.interactions.remove(i)
+                    break
+                return i
+
+        # No matches. So sad.
+        return None
 
     def is_empty(self):
         """Determines if the cassette when loaded was empty."""
@@ -75,3 +115,25 @@ class NewCassette(object):
 
         for i in self.interactions:
             i.replace_all(self.placeholders, ('placeholder', 'replace'))
+
+    def sanitize_interactions(self):
+        for i in self.interactions:
+            i.replace_all(self.placeholders)
+
+    def serialize_interaction(self, response, request):
+        return {
+            'request': serialize_prepared_request(request,
+                                                  self.serialize_format),
+            'response': serialize_response(response, self.serialize_format),
+            'recorded_at': timestamp(),
+        }
+
+    # Private methods
+    def _save_cassette(self):
+        self.sanitize_interactions()
+
+        cassette_data = {
+            'http_interactions': [i.json for i in self.interactions],
+            'recorded_with': 'betamax/{version}'
+        }
+        self.serializer.serialize(cassette_data)

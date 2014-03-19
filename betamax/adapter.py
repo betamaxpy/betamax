@@ -2,7 +2,8 @@ import os
 
 from datetime import datetime, timedelta
 from requests.adapters import BaseAdapter, HTTPAdapter
-from betamax.cassette import Cassette
+#from betamax.cassette import Cassette
+from betamax.new_cassette import NewCassette
 from betamax.exceptions import BetamaxError
 
 
@@ -44,20 +45,25 @@ class BetamaxAdapter(BaseAdapter):
 
         match_requests_on = self.options.get(
             'match_requests_on',
-            Cassette.default_cassette_options['match_requests_on']
+            NewCassette.default_cassette_options['match_requests_on']
             )
 
-        # load cassette into memory
-        if self.cassette_exists():
-            self.cassette = Cassette(cassette_name, serialize,
-                                     placeholders=placeholders)
-        elif os.path.exists(os.path.dirname(cassette_name)):
-            self.cassette = Cassette(cassette_name, serialize, 'w+',
-                                     placeholders=placeholders)
-        else:
-            raise RuntimeError(
-                'No cassette could be loaded or %s does not exist.' %
-                os.path.dirname(cassette_name)
+        ## load cassette into memory
+        #if self.cassette_exists():
+        #    self.cassette = Cassette(cassette_name, serialize,
+        #                             placeholders=placeholders)
+        #elif os.path.exists(os.path.dirname(cassette_name)):
+        #    self.cassette = Cassette(cassette_name, serialize, 'w+',
+        #                             placeholders=placeholders)
+        #else:
+        #    raise RuntimeError(
+        #        'No cassette could be loaded or %s does not exist.' %
+        #        os.path.dirname(cassette_name)
+        #    )
+
+        self.cassette = NewCassette(
+            cassette_name, serialize, placeholders=placeholders,
+            record_mode=self.options.get('record')
             )
 
         if 'record' in self.options:

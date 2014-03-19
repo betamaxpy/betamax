@@ -1,4 +1,5 @@
-from betamax.cassette import Cassette
+#from betamax.cassette import Cassette
+from betamax.new_cassette import NewCassette
 
 
 def validate_record(record):
@@ -12,7 +13,7 @@ def validate_matchers(matchers):
 
 
 def translate_cassette_options():
-    for (k, v) in Cassette.default_cassette_options.items():
+    for (k, v) in NewCassette.default_cassette_options.items():
         yield (k, v) if k != 'record_mode' else ('record', v)
 
 

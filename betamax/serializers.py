@@ -115,7 +115,7 @@ class SerializerProxy(BaseSerializer):
 
     def _ensure_path_exists(self):
         if not os.path.exists(self.cassette_path):
-            os.mknod(self.cassette_path)
+            open(self.cassette_path, 'w+').close()
 
     @staticmethod
     def generate_cassette_name(serializer, cassette_library_dir,
@@ -138,7 +138,7 @@ class SerializerProxy(BaseSerializer):
 
         data = {}
         with open(self.cassette_path) as fd:
-            data = self.serializer.deserialize(fd.read())
+            data = self.proxied_serializer.deserialize(fd.read())
 
         return data
 
