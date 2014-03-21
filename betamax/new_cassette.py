@@ -25,10 +25,9 @@ class NewCassette(object):
         defaults = NewCassette.default_cassette_options
 
         # Determine the record mode
-        self.record_mode = kwargs.get(
-            'record_mode',
-            defaults['record_mode']
-            )
+        self.record_mode = kwargs.get('record_mode')
+        if self.record_mode is None:
+            self.record_mode = defaults['record_mode']
 
         # Retrieve the serializer for this cassette
         serializer = serializer_registry.get(serialization_format)
@@ -37,8 +36,7 @@ class NewCassette(object):
                 'No serializer registered for {0}'.format(serialization_format)
                 )
 
-        self.serializer = SerializerProxy(serializer, cassette_name,
-                                          self.is_recording())
+        self.serializer = SerializerProxy(serializer, cassette_name)
 
         # Determine which placeholders to use
         self.placeholders = kwargs.get('placeholders')
@@ -52,6 +50,7 @@ class NewCassette(object):
         self.match_options = set()
 
         self.load_interactions()
+        self.serializer.allow_serialization = self.is_recording()
 
     def clear(self):
         # Clear out the interactions
