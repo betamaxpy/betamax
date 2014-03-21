@@ -22,10 +22,12 @@ class NewCassette(object):
 
         self.serialized = None
 
+        defaults = NewCassette.default_cassette_options
+
         # Determine the record mode
         self.record_mode = kwargs.get(
             'record_mode',
-            NewCassette.default_cassette_options['record_mode']
+            defaults['record_mode']
             )
 
         # Retrieve the serializer for this cassette
@@ -39,10 +41,9 @@ class NewCassette(object):
                                           self.is_recording())
 
         # Determine which placeholders to use
-        self.placeholders = kwargs.get(
-            'placeholders',
-            NewCassette.default_cassette_options['placeholders']
-            )
+        self.placeholders = kwargs.get('placeholders')
+        if not self.placeholders:
+            self.placeholders = defaults['placeholders']
 
         # Initialize the interactions
         self.interactions = []
