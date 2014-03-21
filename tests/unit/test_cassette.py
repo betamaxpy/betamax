@@ -40,7 +40,7 @@ class TestSerialization(unittest.TestCase):
                 'encoding': 'utf-8'
             }
         }, r)
-        serialized = cassette.serialize_response(r, 'json')
+        serialized = cassette.serialize_response(r)
         assert serialized is not None
         assert serialized != {}
         assert serialized['status_code'] == 200
@@ -76,7 +76,7 @@ class TestSerialization(unittest.TestCase):
         r.headers = {'User-Agent': 'betamax/test header'}
         r.data = {'key': 'value'}
         p = r.prepare()
-        serialized = cassette.serialize_prepared_request(p, 'json')
+        serialized = cassette.serialize_prepared_request(p)
         assert serialized is not None
         assert serialized != {}
         assert serialized['method'] == 'GET'

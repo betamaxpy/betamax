@@ -120,11 +120,14 @@ class NewCassette(object):
         for i in self.interactions:
             i.replace_all(self.placeholders)
 
+    def save_interaction(self, response, request):
+        interaction = self.serialize_interaction(response, request)
+        self.interactions.append(Interaction(interaction, response))
+
     def serialize_interaction(self, response, request):
         return {
-            'request': serialize_prepared_request(request,
-                                                  self.serialize_format),
-            'response': serialize_response(response, self.serialize_format),
+            'request': serialize_prepared_request(request),
+            'response': serialize_response(response),
             'recorded_at': timestamp(),
         }
 

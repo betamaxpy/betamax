@@ -14,7 +14,7 @@ from requests.packages.urllib3 import HTTPResponse
 from requests.structures import CaseInsensitiveDict
 
 
-def serialize_prepared_request(request, method):
+def serialize_prepared_request(request):
     headers = request.headers
     return {
         'body': request.body or '',
@@ -35,7 +35,7 @@ def deserialize_prepared_request(serialized):
     return p
 
 
-def serialize_response(response, method):
+def serialize_response(response):
     body = {'encoding': response.encoding}
     if response.headers.get('Content-Encoding') == 'gzip':
         body['base64_string'] = base64.b64encode(response.raw.read()).decode()
