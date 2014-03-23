@@ -49,7 +49,8 @@ class TestSerialization(unittest.TestCase):
         assert serialized['headers'] == {}
         assert serialized['url'] == 'http://example.com'
 
-    def test_deserialize_response(self):
+    def test_deserialize_response_old(self):
+        """For the previous version of Betamax and backwards compatibility."""
         s = {
             'body': {
                 'string': decode('foo'),
@@ -68,6 +69,28 @@ class TestSerialization(unittest.TestCase):
         assert r.headers == {'Content-Type': 'application/json'}
         assert r.url == 'http://example.com/'
         assert r.status_code == 200
+
+    def test_deserialzie_response_new(self):
+        """This adheres to the correct cassette specification."""
+        s = {
+            'body': {
+                'string': decode('foo'),
+                'encoding': 'utf-8'
+            },
+            'headers': {
+                'Content-Type': decode('application/json')
+            },
+            'url': 'http://example.com/',
+            'status': {'code': 200, 'message': 'OK'},
+            'recorded_at': '2013-08-31T00:00:01'
+        }
+        r = cassette.deserialize_response(s)
+        assert r.content == b'foo'
+        assert r.encoding == 'utf-8'
+        assert r.headers == {'Content-Type': 'application/json'}
+        assert r.url == 'http://example.com/'
+        assert r.status_code == 200
+        assert r.reason == 'OK'
 
     def test_serialize_prepared_request(self):
         r = Request()

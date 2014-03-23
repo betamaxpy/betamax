@@ -64,8 +64,11 @@ def deserialize_response(serialized):
     h = [(k, from_list(v)) for k, v in serialized['headers'].items()]
     r.headers = CaseInsensitiveDict(h)
     r.url = serialized.get('url', '')
-    r.status_code = serialized['status']['code']
-    r.reason = serialized['status']['message']
+    if 'status' in serialized:
+        r.status_code = serialized['status']['code']
+        r.reason = serialized['status']['message']
+    else:
+        r.status_code = serialized['status_code']
     add_urllib3_response(serialized, r)
     return r
 
