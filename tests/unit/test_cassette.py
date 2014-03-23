@@ -3,7 +3,7 @@ import unittest
 from datetime import datetime
 
 from betamax import cassette
-from betamax import new_cassette
+from betamax import serializers
 from requests.models import Response, Request
 from requests.packages import urllib3
 from requests.structures import CaseInsensitiveDict
@@ -13,6 +13,22 @@ def decode(s):
     if hasattr(s, 'decode'):
         return s.decode()
     return s
+
+
+class TestSerializer(serializers.BaseSerializer):
+    name = 'test'
+
+    def on_init(self):
+        self.serialize_calls = []
+        self.deserialize_calls = []
+
+    def serialize(self, data):
+        self.serialize_calls.append(data)
+        return ''
+
+    def deserialize(self, data):
+        self.deserialize_calls.append(data)
+        return {}
 
 
 class TestSerialization(unittest.TestCase):
@@ -155,13 +171,21 @@ class TestCassette(unittest.TestCase):
     cassette_name = 'test_cassette.json'
 
     def setUp(self):
-        self.cassette = new_cassette.NewCassette(
+        # Make a new serializer to test with
+        self.test_serializer = TestSerializer()
+        serializers.serializer_registry['test'] = self.test_serializer
+
+        # Instantiate the cassette to test with
+        self.cassette = cassette.Cassette(
             TestCassette.cassette_name,
-            'json',
+            'test',
             record_mode='once'
         )
+
+        # Create a new object to serialize
         r = Response()
         r.status_code = 200
+        r.reason = 'OK'
         r.encoding = 'utf-8'
         r.headers = CaseInsensitiveDict({'Content-Type': decode('foo')})
         r.url = 'http://example.com'
@@ -172,6 +196,8 @@ class TestCassette(unittest.TestCase):
             }
         }, r)
         self.response = r
+
+        # Create an associated request
         r = Request()
         r.method = 'GET'
         r.url = 'http://example.com'
@@ -181,13 +207,15 @@ class TestCassette(unittest.TestCase):
         self.response.request.headers.update(
             {'User-Agent': 'betamax/test header'}
         )
+
+        # Expected serialized cassette data.
         self.json = {
             'request': {
                 'body': 'key=value',
                 'headers': {
-                    'User-Agent': 'betamax/test header',
-                    'Content-Length': '9',
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'User-Agent': ['betamax/test header'],
+                    'Content-Length': ['9'],
+                    'Content-Type': ['application/x-www-form-urlencoded'],
                 },
                 'method': 'GET',
                 'uri': 'http://example.com/',
@@ -197,8 +225,8 @@ class TestCassette(unittest.TestCase):
                     'string': decode('foo'),
                     'encoding': 'utf-8',
                 },
-                'headers': {'Content-Type': decode('foo')},
-                'status_code': 200,
+                'headers': {'Content-Type': [decode('foo')]},
+                'status': {'code': 200, 'message': 'OK'},
                 'url': 'http://example.com',
             },
             'recorded_at': '2013-08-31T00:00:00',
@@ -236,8 +264,12 @@ class TestCassette(unittest.TestCase):
         assert self.interaction is i
 
     def test_eject(self):
+        serializer = self.test_serializer
         self.cassette.eject()
-        assert self.cassette.fd.closed
+        assert serializer.serialize_calls == [
+            {'http_interactions': [self.cassette.interactions[0].json],
+             'recorded_with': 'betamax/{version}'}
+            ]
 
     def test_earliest_recorded_date(self):
         assert self.interaction.recorded_at is not None

@@ -52,7 +52,6 @@ def serialize_response(response):
     return {
         'body': body,
         'headers': dict((k, [v]) for k, v in response.headers.items()),
-        'status_code': response.status_code,
         'status': {'code': response.status_code, 'message': response.reason},
         'url': response.url,
     }
