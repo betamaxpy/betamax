@@ -82,9 +82,9 @@ class TestSerialization(unittest.TestCase):
         assert serialized['method'] == 'GET'
         assert serialized['uri'] == 'http://example.com/'
         assert serialized['headers'] == {
-            'Content-Length': '9',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'betamax/test header',
+            'Content-Length': ['9'],
+            'Content-Type': ['application/x-www-form-urlencoded'],
+            'User-Agent': ['betamax/test header'],
         }
         assert serialized['body'] == 'key=value'
 
@@ -104,6 +104,14 @@ class TestSerialization(unittest.TestCase):
         )
         assert p.method == 'GET'
         assert p.url == 'http://example.com/'
+
+    def test_from_list_returns_an_element(self):
+        a = ['value']
+        assert cassette.from_list(a) == 'value'
+
+    def test_from_list_handles_non_lists(self):
+        a = 'value'
+        assert cassette.from_list(a) == 'value'
 
     def test_add_urllib3_response(self):
         r = Response()
