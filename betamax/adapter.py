@@ -2,8 +2,7 @@ import os
 
 from datetime import datetime, timedelta
 from requests.adapters import BaseAdapter, HTTPAdapter
-#from betamax.cassette import Cassette
-from betamax.new_cassette import NewCassette
+from betamax.cassette import Cassette
 from betamax.exceptions import BetamaxError
 
 
@@ -45,7 +44,7 @@ class BetamaxAdapter(BaseAdapter):
 
         match_requests_on = self.options.get(
             'match_requests_on',
-            NewCassette.default_cassette_options['match_requests_on']
+            Cassette.default_cassette_options['match_requests_on']
             )
 
         ## load cassette into memory
@@ -61,7 +60,7 @@ class BetamaxAdapter(BaseAdapter):
         #        os.path.dirname(cassette_name)
         #    )
 
-        self.cassette = NewCassette(
+        self.cassette = Cassette(
             cassette_name, serialize, placeholders=placeholders,
             record_mode=self.options.get('record')
             )

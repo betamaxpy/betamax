@@ -1,11 +1,10 @@
 from betamax import Betamax
-#from betamax.cassette import Cassette
-from betamax.new_cassette import NewCassette
+from betamax.cassette import Cassette
 
 from copy import deepcopy
 from tests.integration.helper import IntegrationHelper
 
-original_cassette_options = deepcopy(NewCassette.default_cassette_options)
+original_cassette_options = deepcopy(Cassette.default_cassette_options)
 b64_foobar = 'Zm9vOmJhcg=='  # base64.b64encode('foo:bar')
 
 
@@ -17,10 +16,10 @@ class TestPlaceholders(IntegrationHelper):
 
     def tearDown(self):
         super(TestPlaceholders, self).tearDown()
-        NewCassette.default_cassette_options = original_cassette_options
+        Cassette.default_cassette_options = original_cassette_options
 
     def test_placeholders_work(self):
-        placeholders = NewCassette.default_cassette_options['placeholders']
+        placeholders = Cassette.default_cassette_options['placeholders']
         placeholder = {
             'placeholder': '<AUTHORIZATION>',
             'replace': b64_foobar
@@ -41,4 +40,5 @@ class TestPlaceholders(IntegrationHelper):
         self.cassette_path = cassette.cassette_name
         i = cassette.interactions[0]
         auth = i.json['request']['headers']['Authorization']
-        assert '<AUTHORIZATION>' in auth
+        for value in auth:
+            assert '<AUTHORIZATION>' in value

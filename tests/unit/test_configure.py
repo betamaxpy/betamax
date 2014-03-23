@@ -2,25 +2,25 @@ import copy
 import unittest
 
 from betamax.configure import Configuration
-from betamax.new_cassette import NewCassette
+from betamax.cassette import Cassette
 
 
 class TestConfiguration(unittest.TestCase):
     def setUp(self):
         self.cassette_options = copy.deepcopy(
-            NewCassette.default_cassette_options
+            Cassette.default_cassette_options
             )
         self.cassette_dir = Configuration.CASSETTE_LIBRARY_DIR
 
     def tearDown(self):
-        NewCassette.default_cassette_options = self.cassette_options
+        Cassette.default_cassette_options = self.cassette_options
         Configuration.CASSETTE_LIBRARY_DIR = self.cassette_dir
 
     def test_acts_as_pass_through(self):
         c = Configuration()
         c.default_cassette_options['foo'] = 'bar'
-        assert 'foo' in NewCassette.default_cassette_options
-        assert NewCassette.default_cassette_options.get('foo') == 'bar'
+        assert 'foo' in Cassette.default_cassette_options
+        assert Cassette.default_cassette_options.get('foo') == 'bar'
 
     def test_sets_cassette_library(self):
         c = Configuration()
@@ -32,11 +32,11 @@ class TestConfiguration(unittest.TestCase):
             assert isinstance(c, Configuration)
 
     def test_allows_registration_of_placeholders(self):
-        opts = copy.deepcopy(NewCassette.default_cassette_options)
+        opts = copy.deepcopy(Cassette.default_cassette_options)
         c = Configuration()
 
         c.define_cassette_placeholder('<TEST>', 'test')
-        assert opts != NewCassette.default_cassette_options
-        placeholders = NewCassette.default_cassette_options['placeholders']
+        assert opts != Cassette.default_cassette_options
+        placeholders = Cassette.default_cassette_options['placeholders']
         assert placeholders[0]['placeholder'] == '<TEST>'
         assert placeholders[0]['replace'] == 'test'

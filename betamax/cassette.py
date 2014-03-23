@@ -292,8 +292,9 @@ class Interaction(object):
         for obj in ('request', 'response'):
             headers = self.json[obj]['headers']
             for k, v in list(headers.items()):
-                if text_to_replace in v:
-                    headers[k] = v.replace(text_to_replace, placeholder)
+                headers[k] = [
+                    s.replace(text_to_replace, placeholder) for s in v
+                    ]
 
     def replace_in_body(self, text_to_replace, placeholder):
         body = self.json['request']['body']

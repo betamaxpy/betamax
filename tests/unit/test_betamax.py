@@ -2,7 +2,7 @@ import unittest
 
 from betamax import Betamax, matchers
 from betamax.adapter import BetamaxAdapter
-from betamax.new_cassette import NewCassette
+from betamax.cassette import Cassette
 from requests import Session
 from requests.adapters import HTTPAdapter
 
@@ -31,7 +31,7 @@ class TestBetamax(unittest.TestCase):
     def test_current_cassette(self):
         assert self.vcr.current_cassette is None
         self.vcr.use_cassette('test')
-        assert isinstance(self.vcr.current_cassette, NewCassette)
+        assert isinstance(self.vcr.current_cassette, Cassette)
 
     def test_use_cassette_returns_cassette_object(self):
         assert self.vcr.use_cassette('test') is self.vcr

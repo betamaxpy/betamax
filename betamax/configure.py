@@ -1,5 +1,4 @@
-#from betamax.cassette import Cassette
-from betamax.new_cassette import NewCassette
+from betamax.cassette import Cassette
 
 
 class Configuration(object):
@@ -49,11 +48,11 @@ class Configuration(object):
 
         Other options will be ignored.
         """
-        return NewCassette.default_cassette_options
+        return Cassette.default_cassette_options
 
     @default_cassette_options.setter
     def default_cassette_options(self, value):
-        NewCassette.default_cassette_options = value
+        Cassette.default_cassette_options = value
 
     def define_cassette_placeholder(self, placeholder, replace):
         """Define a placeholder value for some text.
