@@ -47,6 +47,7 @@ class TestSerialization(unittest.TestCase):
     def test_serialize_response(self):
         r = Response()
         r.status_code = 200
+        r.reason = 'OK'
         r.encoding = 'utf-8'
         r.headers = CaseInsensitiveDict()
         r.url = 'http://example.com'
@@ -59,11 +60,11 @@ class TestSerialization(unittest.TestCase):
         serialized = cassette.serialize_response(r)
         assert serialized is not None
         assert serialized != {}
-        assert serialized['status_code'] == 200
         assert serialized['body']['encoding'] == 'utf-8'
         assert serialized['body']['string'] == 'foo'
         assert serialized['headers'] == {}
         assert serialized['url'] == 'http://example.com'
+        assert serialized['status'] == {'code': 200, 'message': 'OK'}
 
     def test_deserialize_response_old(self):
         """For the previous version of Betamax and backwards compatibility."""
