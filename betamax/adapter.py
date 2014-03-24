@@ -40,24 +40,29 @@ class BetamaxAdapter(BaseAdapter):
         self.cassette_name = cassette_name
         self.serialize = serialize
         self.options.update(options.items())
-        placeholders = self.options.get('placeholders')
+        placeholders = self.options.get('placeholders', [])
 
         match_requests_on = self.options.get(
             'match_requests_on',
             Cassette.default_cassette_options['match_requests_on']
             )
 
-        # load cassette into memory
-        if self.cassette_exists():
-            self.cassette = Cassette(cassette_name, serialize,
-                                     placeholders=placeholders)
-        elif os.path.exists(os.path.dirname(cassette_name)):
-            self.cassette = Cassette(cassette_name, serialize, 'w+',
-                                     placeholders=placeholders)
-        else:
-            raise RuntimeError(
-                'No cassette could be loaded or %s does not exist.' %
-                os.path.dirname(cassette_name)
+        ## load cassette into memory
+        #if self.cassette_exists():
+        #    self.cassette = Cassette(cassette_name, serialize,
+        #                             placeholders=placeholders)
+        #elif os.path.exists(os.path.dirname(cassette_name)):
+        #    self.cassette = Cassette(cassette_name, serialize, 'w+',
+        #                             placeholders=placeholders)
+        #else:
+        #    raise RuntimeError(
+        #        'No cassette could be loaded or %s does not exist.' %
+        #        os.path.dirname(cassette_name)
+        #    )
+
+        self.cassette = Cassette(
+            cassette_name, serialize, placeholders=placeholders,
+            record_mode=self.options.get('record')
             )
 
         if 'record' in self.options:

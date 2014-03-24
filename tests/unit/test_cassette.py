@@ -3,6 +3,7 @@ import unittest
 from datetime import datetime
 
 from betamax import cassette
+from betamax import serializers
 from requests.models import Response, Request
 from requests.packages import urllib3
 from requests.structures import CaseInsensitiveDict
@@ -12,6 +13,22 @@ def decode(s):
     if hasattr(s, 'decode'):
         return s.decode()
     return s
+
+
+class TestSerializer(serializers.BaseSerializer):
+    name = 'test'
+
+    def on_init(self):
+        self.serialize_calls = []
+        self.deserialize_calls = []
+
+    def serialize(self, data):
+        self.serialize_calls.append(data)
+        return ''
+
+    def deserialize(self, data):
+        self.deserialize_calls.append(data)
+        return {}
 
 
 class TestSerialization(unittest.TestCase):
@@ -30,6 +47,7 @@ class TestSerialization(unittest.TestCase):
     def test_serialize_response(self):
         r = Response()
         r.status_code = 200
+        r.reason = 'OK'
         r.encoding = 'utf-8'
         r.headers = CaseInsensitiveDict()
         r.url = 'http://example.com'
@@ -39,16 +57,17 @@ class TestSerialization(unittest.TestCase):
                 'encoding': 'utf-8'
             }
         }, r)
-        serialized = cassette.serialize_response(r, 'json')
+        serialized = cassette.serialize_response(r)
         assert serialized is not None
         assert serialized != {}
-        assert serialized['status_code'] == 200
         assert serialized['body']['encoding'] == 'utf-8'
         assert serialized['body']['string'] == 'foo'
         assert serialized['headers'] == {}
         assert serialized['url'] == 'http://example.com'
+        assert serialized['status'] == {'code': 200, 'message': 'OK'}
 
-    def test_deserialize_response(self):
+    def test_deserialize_response_old(self):
+        """For the previous version of Betamax and backwards compatibility."""
         s = {
             'body': {
                 'string': decode('foo'),
@@ -68,6 +87,28 @@ class TestSerialization(unittest.TestCase):
         assert r.url == 'http://example.com/'
         assert r.status_code == 200
 
+    def test_deserialize_response_new(self):
+        """This adheres to the correct cassette specification."""
+        s = {
+            'body': {
+                'string': decode('foo'),
+                'encoding': 'utf-8'
+            },
+            'headers': {
+                'Content-Type': [decode('application/json')]
+            },
+            'url': 'http://example.com/',
+            'status': {'code': 200, 'message': 'OK'},
+            'recorded_at': '2013-08-31T00:00:01'
+        }
+        r = cassette.deserialize_response(s)
+        assert r.content == b'foo'
+        assert r.encoding == 'utf-8'
+        assert r.headers == {'Content-Type': 'application/json'}
+        assert r.url == 'http://example.com/'
+        assert r.status_code == 200
+        assert r.reason == 'OK'
+
     def test_serialize_prepared_request(self):
         r = Request()
         r.method = 'GET'
@@ -75,15 +116,15 @@ class TestSerialization(unittest.TestCase):
         r.headers = {'User-Agent': 'betamax/test header'}
         r.data = {'key': 'value'}
         p = r.prepare()
-        serialized = cassette.serialize_prepared_request(p, 'json')
+        serialized = cassette.serialize_prepared_request(p)
         assert serialized is not None
         assert serialized != {}
         assert serialized['method'] == 'GET'
         assert serialized['uri'] == 'http://example.com/'
         assert serialized['headers'] == {
-            'Content-Length': '9',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'betamax/test header',
+            'Content-Length': ['9'],
+            'Content-Type': ['application/x-www-form-urlencoded'],
+            'User-Agent': ['betamax/test header'],
         }
         assert serialized['body'] == 'key=value'
 
@@ -104,6 +145,14 @@ class TestSerialization(unittest.TestCase):
         assert p.method == 'GET'
         assert p.url == 'http://example.com/'
 
+    def test_from_list_returns_an_element(self):
+        a = ['value']
+        assert cassette.from_list(a) == 'value'
+
+    def test_from_list_handles_non_lists(self):
+        a = 'value'
+        assert cassette.from_list(a) == 'value'
+
     def test_add_urllib3_response(self):
         r = Response()
         r.status_code = 200
@@ -123,13 +172,21 @@ class TestCassette(unittest.TestCase):
     cassette_name = 'test_cassette.json'
 
     def setUp(self):
+        # Make a new serializer to test with
+        self.test_serializer = TestSerializer()
+        serializers.serializer_registry['test'] = self.test_serializer
+
+        # Instantiate the cassette to test with
         self.cassette = cassette.Cassette(
             TestCassette.cassette_name,
-            'json',
-            'w+'
+            'test',
+            record_mode='once'
         )
+
+        # Create a new object to serialize
         r = Response()
         r.status_code = 200
+        r.reason = 'OK'
         r.encoding = 'utf-8'
         r.headers = CaseInsensitiveDict({'Content-Type': decode('foo')})
         r.url = 'http://example.com'
@@ -140,6 +197,8 @@ class TestCassette(unittest.TestCase):
             }
         }, r)
         self.response = r
+
+        # Create an associated request
         r = Request()
         r.method = 'GET'
         r.url = 'http://example.com'
@@ -149,13 +208,15 @@ class TestCassette(unittest.TestCase):
         self.response.request.headers.update(
             {'User-Agent': 'betamax/test header'}
         )
+
+        # Expected serialized cassette data.
         self.json = {
             'request': {
                 'body': 'key=value',
                 'headers': {
-                    'User-Agent': 'betamax/test header',
-                    'Content-Length': '9',
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'User-Agent': ['betamax/test header'],
+                    'Content-Length': ['9'],
+                    'Content-Type': ['application/x-www-form-urlencoded'],
                 },
                 'method': 'GET',
                 'uri': 'http://example.com/',
@@ -165,8 +226,8 @@ class TestCassette(unittest.TestCase):
                     'string': decode('foo'),
                     'encoding': 'utf-8',
                 },
-                'headers': {'Content-Type': decode('foo')},
-                'status_code': 200,
+                'headers': {'Content-Type': [decode('foo')]},
+                'status': {'code': 200, 'message': 'OK'},
                 'url': 'http://example.com',
             },
             'recorded_at': '2013-08-31T00:00:00',
@@ -204,8 +265,12 @@ class TestCassette(unittest.TestCase):
         assert self.interaction is i
 
     def test_eject(self):
+        serializer = self.test_serializer
         self.cassette.eject()
-        assert self.cassette.fd.closed
+        assert serializer.serialize_calls == [
+            {'http_interactions': [self.cassette.interactions[0].json],
+             'recorded_with': 'betamax/{version}'}
+            ]
 
     def test_earliest_recorded_date(self):
         assert self.interaction.recorded_at is not None
@@ -217,10 +282,10 @@ class TestInteraction(unittest.TestCase):
         self.request = {
             'body': 'key=value&key2=secret_value',
             'headers': {
-                'User-Agent': 'betamax/test header',
-                'Content-Length': '9',
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': '123456789abcdef',
+                'User-Agent': ['betamax/test header'],
+                'Content-Length': ['9'],
+                'Content-Type': ['application/x-www-form-urlencoded'],
+                'Authorization': ['123456789abcdef'],
                 },
             'method': 'GET',
             'uri': 'http://example.com/',
@@ -231,8 +296,8 @@ class TestInteraction(unittest.TestCase):
                 'encoding': 'utf-8'
             },
             'headers': {
-                'Content-Type': decode('foo'),
-                'Set-Cookie': 'cookie_name=cookie_value'
+                'Content-Type': [decode('foo')],
+                'Set-Cookie': ['cookie_name=cookie_value']
             },
             'status_code': 200,
             'url': 'http://example.com',
@@ -256,14 +321,20 @@ class TestInteraction(unittest.TestCase):
                 return 'url'
             return attr
         r = self.interaction.as_response()
-        for attr in ['status_code', 'headers', 'url']:
+        for attr in ['status_code', 'url']:
             assert self.response[attr] == decode(getattr(r, attr))
+
+        headers = dict((k, v[0]) for k, v in self.response['headers'].items())
+        assert headers == r.headers
+
         assert self.response['body']['string'] == decode(r.content)
         actual_req = r.request
         expected_req = self.request
-        for attr in ['method', 'uri', 'headers', 'body']:
+        for attr in ['method', 'uri', 'body']:
             assert expected_req[attr] == getattr(actual_req, check_uri(attr))
 
+        headers = dict((k, v[0]) for k, v in expected_req['headers'].items())
+        assert headers == actual_req.headers
         assert self.date == self.interaction.recorded_at
 
     def test_match(self):
@@ -280,9 +351,9 @@ class TestInteraction(unittest.TestCase):
         self.interaction.replace('http://example.com', '<EXAMPLE_URI>')
 
         header = self.interaction.json['request']['headers']['Authorization']
-        assert header == '<AUTH_TOKEN>'
+        assert header == ['<AUTH_TOKEN>']
         header = self.interaction.json['response']['headers']['Set-Cookie']
-        assert header == 'cookie_name=<COOKIE_VALUE>'
+        assert header == ['cookie_name=<COOKIE_VALUE>']
         body = self.interaction.json['request']['body']
         assert body == 'key=value&key2=<SECRET_VALUE>'
         body = self.interaction.json['response']['body']
@@ -296,9 +367,9 @@ class TestInteraction(unittest.TestCase):
         self.interaction.replace_in_headers('123456789abcdef', '<AUTH_TOKEN>')
         self.interaction.replace_in_headers('cookie_value', '<COOKIE_VALUE>')
         header = self.interaction.json['request']['headers']['Authorization']
-        assert header == '<AUTH_TOKEN>'
+        assert header == ['<AUTH_TOKEN>']
         header = self.interaction.json['response']['headers']['Set-Cookie']
-        assert header == 'cookie_name=<COOKIE_VALUE>'
+        assert header == ['cookie_name=<COOKIE_VALUE>']
 
     def test_replace_in_body(self):
         self.interaction.replace_in_body('secret_value', '<SECRET_VALUE>')

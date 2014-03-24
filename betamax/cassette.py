@@ -1,24 +1,31 @@
 import base64
 import email.message
 import io
-import json
+#import json
 
 from datetime import datetime
 from functools import partial
 
 from betamax.utils import body_io, coerce_content
 from betamax.matchers import matcher_registry
+from betamax.serializers import serializer_registry, SerializerProxy
 from requests.models import PreparedRequest, Response
 from requests.packages.urllib3 import HTTPResponse
 from requests.structures import CaseInsensitiveDict
 
 
-def serialize_prepared_request(request, method):
+def from_list(value):
+    if isinstance(value, list):
+        return value[0]
+    return value
+
+
+def serialize_prepared_request(request):
     headers = request.headers
     return {
         'body': request.body or '',
         'headers': dict(
-            (coerce_content(k, 'utf-8'), v) for (k, v) in headers.items()
+            (coerce_content(k, 'utf-8'), [v]) for (k, v) in headers.items()
         ),
         'method': request.method,
         'uri': request.url,
@@ -28,13 +35,14 @@ def serialize_prepared_request(request, method):
 def deserialize_prepared_request(serialized):
     p = PreparedRequest()
     p.body = serialized['body']
-    p.headers = CaseInsensitiveDict(serialized['headers'])
+    h = [(k, from_list(v)) for k, v in serialized['headers'].items()]
+    p.headers = CaseInsensitiveDict(h)
     p.method = serialized['method']
     p.url = serialized['uri']
     return p
 
 
-def serialize_response(response, method):
+def serialize_response(response):
     body = {'encoding': response.encoding}
     if response.headers.get('Content-Encoding') == 'gzip':
         body['base64_string'] = base64.b64encode(response.raw.read()).decode()
@@ -43,8 +51,8 @@ def serialize_response(response, method):
 
     return {
         'body': body,
-        'headers': dict(response.headers),
-        'status_code': response.status_code,
+        'headers': dict((k, [v]) for k, v in response.headers.items()),
+        'status': {'code': response.status_code, 'message': response.reason},
         'url': response.url,
     }
 
@@ -52,9 +60,14 @@ def serialize_response(response, method):
 def deserialize_response(serialized):
     r = Response()
     r.encoding = serialized['body']['encoding']
-    r.headers = CaseInsensitiveDict(serialized['headers'])
+    h = [(k, from_list(v)) for k, v in serialized['headers'].items()]
+    r.headers = CaseInsensitiveDict(h)
     r.url = serialized.get('url', '')
-    r.status_code = serialized['status_code']
+    if 'status' in serialized:
+        r.status_code = serialized['status']['code']
+        r.reason = serialized['status']['message']
+    else:
+        r.status_code = serialized['status_code']
     add_urllib3_response(serialized, r)
     return r
 
@@ -89,21 +102,6 @@ def timestamp():
 
 class Cassette(object):
 
-    """The Cassette object abstracts how requests are saved.
-
-    Example usage::
-
-        c = Cassette('vcr/cassettes/httpbin.json', 'json', 'w+')
-        r = requests.get('https://httpbin.org/get')
-        c.save(r)
-
-    No methods or attributes -- other than ``cassette_name`` -- on this object
-    are considered public or part of the public API. As such they are entirely
-    considered implementation details and subject to change. Using or relying
-    on them is not wise or advised.
-
-    """
-
     default_cassette_options = {
         'record_mode': 'once',
         'match_requests_on': ['method', 'uri'],
@@ -111,27 +109,47 @@ class Cassette(object):
         'placeholders': []
     }
 
-    def __init__(self, cassette_name, serialize, mode='r', placeholders=None):
-        #: Name of the cassette including path, e.g., "vcr/cassettes/name.json"
+    def __init__(self, cassette_name, serialization_format, **kwargs):
+        #: Short name of the cassette
         self.cassette_name = cassette_name
-        self.serialize_format = serialize
+
         self.serialized = None
+
+        defaults = Cassette.default_cassette_options
+
+        # Determine the record mode
+        self.record_mode = kwargs.get('record_mode')
+        if self.record_mode is None:
+            self.record_mode = defaults['record_mode']
+
+        # Retrieve the serializer for this cassette
+        serializer = serializer_registry.get(serialization_format)
+        if serializer is None:
+            raise ValueError(
+                'No serializer registered for {0}'.format(serialization_format)
+                )
+
+        self.serializer = SerializerProxy(serializer, cassette_name)
+
+        # Determine which placeholders to use
+        self.placeholders = kwargs.get('placeholders')
+        if not self.placeholders:
+            self.placeholders = defaults['placeholders']
+
+        # Initialize the interactions
         self.interactions = []
+
+        # Initialize the match options
         self.match_options = set()
-        self.record_mode = Cassette.default_cassette_options['record_mode']
-        self.placeholders = (placeholders or
-                             Cassette.default_cassette_options['placeholders'])
-        self.fd = open(cassette_name, mode)
+
         self.load_interactions()
+        self.serializer.allow_serialization = self.is_recording()
 
     def clear(self):
-        """Clears out this cassette"""
-        # Start a new list
+        # Clear out the interactions
         self.interactions = []
-        # Save that empty list
-        self.save_cassette()
-        # Reset the file object to the start of the file
-        self.fd.seek(0, 0)
+        # Serialize to the cassette file
+        self._save_cassette()
 
     @property
     def earliest_recorded_date(self):
@@ -142,9 +160,7 @@ class Cassette(object):
         return datetime.now()
 
     def eject(self):
-        """Save the interactions to the cassette and close the file."""
-        self.save_cassette()
-        self.fd.close()
+        self._save_cassette()
 
     def find_match(self, request):
         """Find a matching interaction based on the matchers and request.
@@ -173,9 +189,7 @@ class Cassette(object):
 
     def is_empty(self):
         """Determines if the cassette when loaded was empty."""
-        if self.serialized:
-            return False
-        return True
+        return not self.serialized
 
     def is_recording(self):
         """Returns if the cassette is recording."""
@@ -187,56 +201,38 @@ class Cassette(object):
 
     def load_interactions(self):
         if self.serialized is None:
-            self.load_serialized_data()
+            self.serialized = self.serializer.deserialize()
 
-        if 'http_interactions' not in self.serialized:
-            return
+        interactions = self.serialized.get('http_interactions', [])
+        self.interactions = [Interaction(i) for i in interactions]
 
-        self.interactions = [
-            Interaction(i) for i in self.serialized['http_interactions']
-        ]
         for i in self.interactions:
             i.replace_all(self.placeholders, ('placeholder', 'replace'))
 
-    def load_serialized_data(self):
-        if self.serialized:
-            return
-        try:
-            self.serialized = json.load(self.fd)
-        except ValueError:
-            self.serialized = {}
+    def sanitize_interactions(self):
+        for i in self.interactions:
+            i.replace_all(self.placeholders)
 
     def save_interaction(self, response, request):
         interaction = self.serialize_interaction(response, request)
         self.interactions.append(Interaction(interaction, response))
 
-    def save_cassette(self):
-        self.sanitize_interactions()
-
-        if self.record_mode in ('new_episodes', 'all'):
-            self.fd.close()
-            self.fd = open(self.fd.name, 'w')
-
-        if 'w' in self.fd.mode or 'r+' in self.fd.mode:
-            json.dump({
-                'http_interactions': [i.json for i in self.interactions],
-                'recorded_with': 'betamax',
-            }, self.fd)
-            # Flush the file so that people can inspect files immediately (if
-            # they so please)
-            self.fd.flush()
-
     def serialize_interaction(self, response, request):
         return {
-            'request': serialize_prepared_request(request,
-                                                  self.serialize_format),
-            'response': serialize_response(response, self.serialize_format),
+            'request': serialize_prepared_request(request),
+            'response': serialize_response(response),
             'recorded_at': timestamp(),
         }
 
-    def sanitize_interactions(self):
-        for i in self.interactions:
-            i.replace_all(self.placeholders)
+    # Private methods
+    def _save_cassette(self):
+        self.sanitize_interactions()
+
+        cassette_data = {
+            'http_interactions': [i.json for i in self.interactions],
+            'recorded_with': 'betamax/{version}'
+        }
+        self.serializer.serialize(cassette_data)
 
 
 class Interaction(object):
@@ -296,8 +292,9 @@ class Interaction(object):
         for obj in ('request', 'response'):
             headers = self.json[obj]['headers']
             for k, v in list(headers.items()):
-                if text_to_replace in v:
-                    headers[k] = v.replace(text_to_replace, placeholder)
+                headers[k] = [
+                    s.replace(text_to_replace, placeholder) for s in v
+                    ]
 
     def replace_in_body(self, text_to_replace, placeholder):
         body = self.json['request']['body']
