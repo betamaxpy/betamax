@@ -321,14 +321,20 @@ class TestInteraction(unittest.TestCase):
                 return 'url'
             return attr
         r = self.interaction.as_response()
-        for attr in ['status_code', 'headers', 'url']:
+        for attr in ['status_code', 'url']:
             assert self.response[attr] == decode(getattr(r, attr))
+
+        headers = dict((k, v[0]) for k, v in self.response['headers'].items())
+        assert headers == r.headers
+
         assert self.response['body']['string'] == decode(r.content)
         actual_req = r.request
         expected_req = self.request
-        for attr in ['method', 'uri', 'headers', 'body']:
+        for attr in ['method', 'uri', 'body']:
             assert expected_req[attr] == getattr(actual_req, check_uri(attr))
 
+        headers = dict((k, v[0]) for k, v in expected_req['headers'].items())
+        assert headers == actual_req.headers
         assert self.date == self.interaction.recorded_at
 
     def test_match(self):
