@@ -20,10 +20,24 @@ def from_list(value):
     return value
 
 
-def serialize_prepared_request(request):
+def add_body(r, preserve_exact_body_bytes, body_dict):
+    body = getattr(r, 'raw', r.body)
+    if hasattr(body, 'read'):
+        body = body.read()
+
+    if (preserve_exact_body_bytes or
+            'gzip' in r.headers.get('Content-Encoding', '')):
+        body_dict['base64_string'] = base64.b64encode(body).decode()
+    else:
+        body_dict['string'] = coerce_content(body, body_dict['encoding'])
+
+
+def serialize_prepared_request(request, preserve_exact_body_bytes):
     headers = request.headers
+    body = {'encoding': 'utf-8'}
+    add_body(request, preserve_exact_body_bytes, body)
     return {
-        'body': request.body or '',
+        'body': body,
         'headers': dict(
             (coerce_content(k, 'utf-8'), [v]) for (k, v) in headers.items()
         ),
@@ -42,12 +56,9 @@ def deserialize_prepared_request(serialized):
     return p
 
 
-def serialize_response(response):
+def serialize_response(response, preserve_exact_body_bytes):
     body = {'encoding': response.encoding}
-    if response.headers.get('Content-Encoding') == 'gzip':
-        body['base64_string'] = base64.b64encode(response.raw.read()).decode()
-    else:
-        body['string'] = coerce_content(response.content, body['encoding'])
+    add_body(response, preserve_exact_body_bytes, body)
 
     return {
         'body': body,
@@ -100,13 +111,21 @@ def timestamp():
         return stamp[:i]
 
 
+def _option_from(option, kwargs, defaults):
+    value = kwargs.get(option)
+    if value is None:
+        value = defaults.get(option)
+    return value
+
+
 class Cassette(object):
 
     default_cassette_options = {
         'record_mode': 'once',
         'match_requests_on': ['method', 'uri'],
         're_record_interval': None,
-        'placeholders': []
+        'placeholders': [],
+        'preserve_exact_body_bytes': False
     }
 
     def __init__(self, cassette_name, serialization_format, **kwargs):
@@ -118,9 +137,7 @@ class Cassette(object):
         defaults = Cassette.default_cassette_options
 
         # Determine the record mode
-        self.record_mode = kwargs.get('record_mode')
-        if self.record_mode is None:
-            self.record_mode = defaults['record_mode']
+        self.record_mode = _option_from('record_mode', kwargs, defaults)
 
         # Retrieve the serializer for this cassette
         serializer = serializer_registry.get(serialization_format)
@@ -135,6 +152,11 @@ class Cassette(object):
         self.placeholders = kwargs.get('placeholders')
         if not self.placeholders:
             self.placeholders = defaults['placeholders']
+
+        # Determine whether to preserve exact body bytes
+        self.preserve_exact_body_bytes = _option_from(
+            'preserve_exact_body_bytes', kwargs, defaults
+            )
 
         # Initialize the interactions
         self.interactions = []
@@ -219,8 +241,14 @@ class Cassette(object):
 
     def serialize_interaction(self, response, request):
         return {
-            'request': serialize_prepared_request(request),
-            'response': serialize_response(response),
+            'request': serialize_prepared_request(
+                request,
+                self.preserve_exact_body_bytes
+                ),
+            'response': serialize_response(
+                response,
+                self.preserve_exact_body_bytes
+                ),
             'recorded_at': timestamp(),
         }
 
