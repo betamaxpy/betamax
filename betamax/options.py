@@ -11,6 +11,11 @@ def validate_matchers(matchers):
     return all(m in available_matchers for m in matchers)
 
 
+def validate_serializer(serializer):
+    from betamax.serializers import serializer_registry
+    return serializer in list(serializer_registry.keys())
+
+
 def translate_cassette_options():
     for (k, v) in Cassette.default_cassette_options.items():
         yield (k, v) if k != 'record_mode' else ('record', v)
@@ -21,7 +26,8 @@ class Options(object):
         'match_requests_on': validate_matchers,
         're_record_interval': lambda x: x is None or x > 0,
         'record': validate_record,
-        'serialize': lambda x: x in ['json'],
+        'serialize': validate_serializer,
+        'preserve_exact_body_bytes': lambda x: x in [True, False],
     }
 
     defaults = {
@@ -29,6 +35,7 @@ class Options(object):
         're_record_interval': None,
         'record': 'once',
         'serialize': 'json',
+        'preserve_exact_body_bytes': False,
     }
 
     def __init__(self, data=None):
