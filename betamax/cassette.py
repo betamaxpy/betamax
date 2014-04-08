@@ -1,7 +1,6 @@
 import base64
 import email.message
 import io
-#import json
 
 from datetime import datetime
 from functools import partial
@@ -21,7 +20,20 @@ def from_list(value):
 
 
 def add_body(r, preserve_exact_body_bytes, body_dict):
-    body = getattr(r, 'raw', r.body)
+    """Simple function which takes a response or request and coerces the body.
+
+    This function adds either ``'string'`` or ``'base64_string'`` to
+    ``body_dict``. If ``preserve_exact_body_bytes`` is ``True`` then it
+    encodes the body as a base64 string and saves it like that. Otherwise,
+    it saves the plain string.
+
+    :param r: This is either a PreparedRequest instance or a Response
+        instance.
+    :param preserve_exact_body_bytes bool: Either True or False.
+    :param body_dict dict: A dictionary already containing the encoding to be
+        used.
+    """
+    body = getattr(r, 'raw', getattr(r, 'body', None))
     if hasattr(body, 'read'):
         body = body.read()
 
@@ -48,7 +60,13 @@ def serialize_prepared_request(request, preserve_exact_body_bytes):
 
 def deserialize_prepared_request(serialized):
     p = PreparedRequest()
-    p.body = serialized['body']
+    body = serialized['body']
+    if isinstance(body, dict):
+        original_body = body.get('string')
+        p.body = original_body or base64.b64decode(
+            body.get('base64_string', '').encode())
+    else:
+        p.body = body
     h = [(k, from_list(v)) for k, v in serialized['headers'].items()]
     p.headers = CaseInsensitiveDict(h)
     p.method = serialized['method']
