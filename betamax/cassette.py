@@ -11,6 +11,7 @@ from betamax.serializers import serializer_registry, SerializerProxy
 from requests.models import PreparedRequest, Response
 from requests.packages.urllib3 import HTTPResponse
 from requests.structures import CaseInsensitiveDict
+from requests.status_codes import _codes
 
 
 def from_list(value):
@@ -97,6 +98,7 @@ def deserialize_response(serialized):
         r.reason = serialized['status']['message']
     else:
         r.status_code = serialized['status_code']
+        r.reason = _codes[r.status_code][0].upper()
     add_urllib3_response(serialized, r)
     return r
 
