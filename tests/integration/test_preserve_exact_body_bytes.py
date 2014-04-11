@@ -1,5 +1,8 @@
 from .helper import IntegrationHelper
 from betamax import Betamax
+from betamax.cassette import Cassette
+
+import copy
 
 
 class TestPreserveExactBodyBytes(IntegrationHelper):
@@ -12,3 +15,29 @@ class TestPreserveExactBodyBytes(IntegrationHelper):
                            preserve_exact_body_bytes=True)
             r = self.session.get('https://httpbin.org/get')
             assert 'headers' in r.json()
+
+            interaction = b.current_cassette.interactions[0].json
+            assert 'base64_string' in interaction['response']['body']
+
+
+class TestPreserveExactBodyBytesForAllCassettes(IntegrationHelper):
+    def setUp(self):
+        super(TestPreserveExactBodyBytesForAllCassettes, self).setUp()
+        self.orig = copy.deepcopy(Cassette.default_cassette_options)
+        self.cassette_created = False
+
+    def tearDown(self):
+        super(TestPreserveExactBodyBytesForAllCassettes, self).tearDown()
+        Cassette.default_cassette_options = self.orig
+
+    def test_preserve_exact_body_bytes(self):
+        with Betamax.configure() as config:
+            config.preserve_exact_body_bytes = True
+
+        with Betamax(self.session) as b:
+            b.use_cassette('global_preserve_exact_body_bytes')
+            r = self.session.get('https://httpbin.org/get')
+            assert 'headers' in r.json()
+
+            interaction = b.current_cassette.interactions[0].json
+            assert 'base64_string' in interaction['response']['body']

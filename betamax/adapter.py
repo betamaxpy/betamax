@@ -50,10 +50,7 @@ class BetamaxAdapter(BaseAdapter):
 
         preserve_bytes = self.options.get(
             'preserve_exact_body_bytes',
-            False
             )
-        if preserve_bytes is None:
-            preserve_bytes = default_options['preserve_exact_body_byte']
 
         self.cassette = Cassette(
             cassette_name, serialize, placeholders=placeholders,

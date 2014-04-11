@@ -15,6 +15,7 @@ class Configuration(object):
             config.default_cassette_options['record_mode'] = 'once'
             config.default_cassette_options['match_requests_on'] = ['uri']
             config.define_cassette_placeholder('<URI>', 'http://httpbin.org')
+            config.preserve_exact_body_bytes = True
 
     """
 
@@ -25,6 +26,12 @@ class Configuration(object):
 
     def __exit__(self, *args):
         pass
+
+    def __setattr__(self, prop, value):
+        if prop == 'preserve_exact_body_bytes':
+            self.default_cassette_options[prop] = True
+        else:
+            super(Configuration, self).__setattr__(prop, value)
 
     @property
     def cassette_library_dir(self):
