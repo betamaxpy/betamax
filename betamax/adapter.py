@@ -48,14 +48,14 @@ class BetamaxAdapter(BaseAdapter):
             'match_requests_on', default_options['match_requests_on']
             )
 
-        preserve_bytes = self.options.get(
+        preserve_exact_body_bytes = self.options.get(
             'preserve_exact_body_bytes',
             )
 
         self.cassette = Cassette(
             cassette_name, serialize, placeholders=placeholders,
             record_mode=self.options.get('record'),
-            preserve_exact_body_bytes=preserve_bytes
+            preserve_exact_body_bytes=preserve_exact_body_bytes
             )
 
         if 'record' in self.options:
