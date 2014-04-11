@@ -36,7 +36,10 @@ headers. A serialized request looks like:
 .. code:: javascript
 
     {
-      "body": "...",
+      "body": {
+        "string": "...",
+        "encoding": "utf-8"
+      },
       "method": "GET",
       "uri": "http://example.com",
       "headers": {
@@ -70,7 +73,10 @@ If you put everything together, you get:
         {
           "request": {
             {
-              "body": "...",
+              "body": {
+                "string": "...",
+                "encoding": "utf-8"
+              },
               "method": "GET",
               "uri": "http://example.com",
               "headers": {

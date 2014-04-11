@@ -1,7 +1,7 @@
 History
 =======
 
-0.x.y - 2014-__-__
+0.2.0 - 2014-04-11
 ------------------
 
 - Fix bug where new interactions recorded under ``new_episodes`` or ``all``
@@ -16,6 +16,10 @@ History
 
 - Add ``on_init`` hook to ``BaseMatcher`` so matcher authors can customize 
   initialization
+
+- Add support for custom Serialization formats. See the docs for more info.
+
+- Add support for preserving exact body bytes.
 
 0.1.6 - 2013-12-07
 ------------------
