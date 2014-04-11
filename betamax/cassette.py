@@ -1,7 +1,6 @@
 import base64
 import email.message
 import io
-#import json
 
 from datetime import datetime
 from functools import partial
@@ -12,6 +11,7 @@ from betamax.serializers import serializer_registry, SerializerProxy
 from requests.models import PreparedRequest, Response
 from requests.packages.urllib3 import HTTPResponse
 from requests.structures import CaseInsensitiveDict
+from requests.status_codes import _codes
 
 
 def from_list(value):
@@ -20,10 +20,37 @@ def from_list(value):
     return value
 
 
-def serialize_prepared_request(request):
+def add_body(r, preserve_exact_body_bytes, body_dict):
+    """Simple function which takes a response or request and coerces the body.
+
+    This function adds either ``'string'`` or ``'base64_string'`` to
+    ``body_dict``. If ``preserve_exact_body_bytes`` is ``True`` then it
+    encodes the body as a base64 string and saves it like that. Otherwise,
+    it saves the plain string.
+
+    :param r: This is either a PreparedRequest instance or a Response
+        instance.
+    :param preserve_exact_body_bytes bool: Either True or False.
+    :param body_dict dict: A dictionary already containing the encoding to be
+        used.
+    """
+    body = getattr(r, 'raw', getattr(r, 'body', None))
+    if hasattr(body, 'read'):
+        body = body.read()
+
+    if (preserve_exact_body_bytes or
+            'gzip' in r.headers.get('Content-Encoding', '')):
+        body_dict['base64_string'] = base64.b64encode(body).decode()
+    else:
+        body_dict['string'] = coerce_content(body, body_dict['encoding'])
+
+
+def serialize_prepared_request(request, preserve_exact_body_bytes):
     headers = request.headers
+    body = {'encoding': 'utf-8'}
+    add_body(request, preserve_exact_body_bytes, body)
     return {
-        'body': request.body or '',
+        'body': body,
         'headers': dict(
             (coerce_content(k, 'utf-8'), [v]) for (k, v) in headers.items()
         ),
@@ -34,7 +61,13 @@ def serialize_prepared_request(request):
 
 def deserialize_prepared_request(serialized):
     p = PreparedRequest()
-    p.body = serialized['body']
+    body = serialized['body']
+    if isinstance(body, dict):
+        original_body = body.get('string')
+        p.body = original_body or base64.b64decode(
+            body.get('base64_string', '').encode())
+    else:
+        p.body = body
     h = [(k, from_list(v)) for k, v in serialized['headers'].items()]
     p.headers = CaseInsensitiveDict(h)
     p.method = serialized['method']
@@ -42,12 +75,9 @@ def deserialize_prepared_request(serialized):
     return p
 
 
-def serialize_response(response):
+def serialize_response(response, preserve_exact_body_bytes):
     body = {'encoding': response.encoding}
-    if response.headers.get('Content-Encoding') == 'gzip':
-        body['base64_string'] = base64.b64encode(response.raw.read()).decode()
-    else:
-        body['string'] = coerce_content(response.content, body['encoding'])
+    add_body(response, preserve_exact_body_bytes, body)
 
     return {
         'body': body,
@@ -68,6 +98,7 @@ def deserialize_response(serialized):
         r.reason = serialized['status']['message']
     else:
         r.status_code = serialized['status_code']
+        r.reason = _codes[r.status_code][0].upper()
     add_urllib3_response(serialized, r)
     return r
 
@@ -100,13 +131,21 @@ def timestamp():
         return stamp[:i]
 
 
+def _option_from(option, kwargs, defaults):
+    value = kwargs.get(option)
+    if value is None:
+        value = defaults.get(option)
+    return value
+
+
 class Cassette(object):
 
     default_cassette_options = {
         'record_mode': 'once',
         'match_requests_on': ['method', 'uri'],
         're_record_interval': None,
-        'placeholders': []
+        'placeholders': [],
+        'preserve_exact_body_bytes': False
     }
 
     def __init__(self, cassette_name, serialization_format, **kwargs):
@@ -118,9 +157,7 @@ class Cassette(object):
         defaults = Cassette.default_cassette_options
 
         # Determine the record mode
-        self.record_mode = kwargs.get('record_mode')
-        if self.record_mode is None:
-            self.record_mode = defaults['record_mode']
+        self.record_mode = _option_from('record_mode', kwargs, defaults)
 
         # Retrieve the serializer for this cassette
         serializer = serializer_registry.get(serialization_format)
@@ -135,6 +172,11 @@ class Cassette(object):
         self.placeholders = kwargs.get('placeholders')
         if not self.placeholders:
             self.placeholders = defaults['placeholders']
+
+        # Determine whether to preserve exact body bytes
+        self.preserve_exact_body_bytes = _option_from(
+            'preserve_exact_body_bytes', kwargs, defaults
+            )
 
         # Initialize the interactions
         self.interactions = []
@@ -219,8 +261,14 @@ class Cassette(object):
 
     def serialize_interaction(self, response, request):
         return {
-            'request': serialize_prepared_request(request),
-            'response': serialize_response(response),
+            'request': serialize_prepared_request(
+                request,
+                self.preserve_exact_body_bytes
+                ),
+            'response': serialize_response(
+                response,
+                self.preserve_exact_body_bytes
+                ),
             'recorded_at': timestamp(),
         }
 
@@ -292,9 +340,12 @@ class Interaction(object):
         for obj in ('request', 'response'):
             headers = self.json[obj]['headers']
             for k, v in list(headers.items()):
-                headers[k] = [
-                    s.replace(text_to_replace, placeholder) for s in v
-                    ]
+                if isinstance(v, list):
+                    headers[k] = [
+                        s.replace(text_to_replace, placeholder) for s in v
+                        ]
+                else:
+                    headers[k] = v.replace(text_to_replace, placeholder)
 
     def replace_in_body(self, text_to_replace, placeholder):
         body = self.json['request']['body']

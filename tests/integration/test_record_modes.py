@@ -35,7 +35,7 @@ class TestRecordNone(IntegrationHelper):
         s = self.session
         with Betamax(s) as betamax:
             betamax.use_cassette('test', record='none')
-            self.cassette_path = betamax.current_cassette.cassette_name
+            self.cassette_created = False
             assert betamax.current_cassette is not None
             self.assertRaises(BetamaxError, s.get, 'http://httpbin.org/get')
 

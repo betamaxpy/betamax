@@ -57,7 +57,7 @@ class TestSerialization(unittest.TestCase):
                 'encoding': 'utf-8'
             }
         }, r)
-        serialized = cassette.serialize_response(r)
+        serialized = cassette.serialize_response(r, False)
         assert serialized is not None
         assert serialized != {}
         assert serialized['body']['encoding'] == 'utf-8'
@@ -116,7 +116,7 @@ class TestSerialization(unittest.TestCase):
         r.headers = {'User-Agent': 'betamax/test header'}
         r.data = {'key': 'value'}
         p = r.prepare()
-        serialized = cassette.serialize_prepared_request(p)
+        serialized = cassette.serialize_prepared_request(p, False)
         assert serialized is not None
         assert serialized != {}
         assert serialized['method'] == 'GET'
@@ -126,7 +126,7 @@ class TestSerialization(unittest.TestCase):
             'Content-Type': ['application/x-www-form-urlencoded'],
             'User-Agent': ['betamax/test header'],
         }
-        assert serialized['body'] == 'key=value'
+        assert serialized['body']['string'] == 'key=value'
 
     def test_deserialize_prepared_request(self):
         s = {
@@ -212,7 +212,10 @@ class TestCassette(unittest.TestCase):
         # Expected serialized cassette data.
         self.json = {
             'request': {
-                'body': 'key=value',
+                'body': {
+                    'encoding': 'utf-8',
+                    'string': 'key=value',
+                },
                 'headers': {
                     'User-Agent': ['betamax/test header'],
                     'Content-Length': ['9'],
@@ -246,9 +249,7 @@ class TestCassette(unittest.TestCase):
             os.unlink(TestCassette.cassette_name)
 
     def test_serialize_interaction(self):
-        serialized = self.cassette.serialize_interaction(
-            self.response, self.response.request
-        )
+        serialized = self.interaction.json
         assert serialized['request'] == self.json['request']
         assert serialized['response'] == self.json['response']
         assert serialized.get('recorded_at') is not None
