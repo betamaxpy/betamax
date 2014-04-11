@@ -74,7 +74,10 @@ class HeadersMatcher(BaseMatcher):
     name = 'headers'
 
     def match(self, request, recorded_request):
-        return dict(request.headers) == recorded_request['headers']
+        request_headers = dict(
+            (k, [v]) for (k, v) in request.headers.items()
+            )
+        return request_headers == recorded_request['headers']
 
 
 class HostMatcher(BaseMatcher):
