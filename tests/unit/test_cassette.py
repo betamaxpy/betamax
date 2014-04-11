@@ -352,9 +352,9 @@ class TestInteraction(unittest.TestCase):
         self.interaction.replace('http://example.com', '<EXAMPLE_URI>')
 
         header = self.interaction.json['request']['headers']['Authorization']
-        assert header == ['<AUTH_TOKEN>']
+        assert header == '<AUTH_TOKEN>'
         header = self.interaction.json['response']['headers']['Set-Cookie']
-        assert header == ['cookie_name=<COOKIE_VALUE>']
+        assert header == 'cookie_name=<COOKIE_VALUE>'
         body = self.interaction.json['request']['body']
         assert body == 'key=value&key2=<SECRET_VALUE>'
         body = self.interaction.json['response']['body']
@@ -368,9 +368,9 @@ class TestInteraction(unittest.TestCase):
         self.interaction.replace_in_headers('123456789abcdef', '<AUTH_TOKEN>')
         self.interaction.replace_in_headers('cookie_value', '<COOKIE_VALUE>')
         header = self.interaction.json['request']['headers']['Authorization']
-        assert header == ['<AUTH_TOKEN>']
+        assert header == '<AUTH_TOKEN>'
         header = self.interaction.json['response']['headers']['Set-Cookie']
-        assert header == ['cookie_name=<COOKIE_VALUE>']
+        assert header == 'cookie_name=<COOKIE_VALUE>'
 
     def test_replace_in_body(self):
         self.interaction.replace_in_body('secret_value', '<SECRET_VALUE>')
