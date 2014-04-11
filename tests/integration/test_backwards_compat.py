@@ -39,5 +39,5 @@ class TestBackwardsCompatibleSerialization(IntegrationHelper):
         with betamax.Betamax(self.session).use_cassette('GitHub_emojis') as b:
             self.session.get('https://api.github.com/emojis')
             interaction = b.current_cassette.interactions[0].json
-            assert isinstance(interaction['request']['headers']['Accept'],
-                              list)
+            header = interaction['request']['headers']['Accept']
+            assert not isinstance(header, list)
