@@ -5,10 +5,11 @@ from requests import Session
 
 
 class IntegrationHelper(unittest.TestCase):
+    cassette_created = True
+
     def setUp(self):
         self.cassette_path = None
         self.session = Session()
-        self.cassette_created = True
 
     def tearDown(self):
         if self.cassette_created:

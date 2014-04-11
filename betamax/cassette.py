@@ -38,6 +38,9 @@ def add_body(r, preserve_exact_body_bytes, body_dict):
     if hasattr(body, 'read'):
         body = body.read()
 
+    if not body:
+        body = ''
+
     if (preserve_exact_body_bytes or
             'gzip' in r.headers.get('Content-Encoding', '')):
         body_dict['base64_string'] = base64.b64encode(body).decode()
@@ -104,7 +107,7 @@ def deserialize_response(serialized):
 
 
 def add_urllib3_response(serialized, response):
-    if response.headers.get('Content-Encoding') == 'gzip':
+    if 'base64_string' in serialized['body']:
         body = io.BytesIO(
             base64.b64decode(serialized['body']['base64_string'].encode())
         )
