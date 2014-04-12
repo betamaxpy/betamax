@@ -146,15 +146,14 @@ class Betamax(object):
             return os.path.exists(name) or recording
 
         kwargs = Options(kwargs)
-        serialize = kwargs['serialize']
+        serialize = kwargs['serialize'] or kwargs['serialize_with']
 
         cassette_name = os.path.join(
             self.config.cassette_library_dir, '{0}.{1}'.format(
                 cassette_name, serialize
             ))
 
-        if (_can_load_cassette(cassette_name) and
-                serialize in ('json', 'yaml')):
+        if _can_load_cassette(cassette_name):
             self.betamax_adapter.load_cassette(cassette_name, serialize,
                                                kwargs)
         else:
