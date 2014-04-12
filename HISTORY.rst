@@ -21,6 +21,9 @@ History
 
 - Add support for preserving exact body bytes.
 
+- Deprecate ``serialize`` keyword to ``Betamax#use_cassette`` in preference 
+  for ``serialize_with`` (to be more similar to VCR).
+
 0.1.6 - 2013-12-07
 ------------------
 
