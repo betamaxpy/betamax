@@ -122,7 +122,7 @@ class Betamax(object):
             :class:`BaseSerializer <betamax.serializers.BaseSerializer>`
         """
         name = serializer_class.name
-        serializers.serializer_registery[name] = serializer_class()
+        serializers.serializer_registry[name] = serializer_class()
 
     def use_cassette(self, cassette_name, **kwargs):
         """Tell Betamax which cassette you wish to use for the context.

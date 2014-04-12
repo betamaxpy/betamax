@@ -1,6 +1,6 @@
 import unittest
 
-from betamax import matchers
+from betamax import matchers, serializers
 from betamax.adapter import BetamaxAdapter
 from betamax.cassette import Cassette
 from betamax.recorder import Betamax
@@ -39,11 +39,21 @@ class TestBetamax(unittest.TestCase):
 
     def test_register_request_matcher(self):
         class FakeMatcher(object):
-            name = 'fake'
+            name = 'fake_matcher'
 
         Betamax.register_request_matcher(FakeMatcher)
-        assert 'fake' in matchers.matcher_registry
-        assert isinstance(matchers.matcher_registry['fake'], FakeMatcher)
+        assert 'fake_matcher' in matchers.matcher_registry
+        assert isinstance(matchers.matcher_registry['fake_matcher'],
+                          FakeMatcher)
+
+    def test_register_serializer(self):
+        class FakeSerializer(object):
+            name = 'fake_serializer'
+
+        Betamax.register_serializer(FakeSerializer)
+        assert 'fake_serializer' in serializers.serializer_registry
+        assert isinstance(serializers.serializer_registry['fake_serializer'],
+                          FakeSerializer)
 
     def test_stores_the_session_instance(self):
         assert self.session is self.vcr.session
