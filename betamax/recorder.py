@@ -1,5 +1,5 @@
 import os
-from betamax import matchers
+from betamax import matchers, serializers
 from betamax.adapter import BetamaxAdapter
 from betamax.configure import Configuration
 from betamax.options import Options
@@ -113,6 +113,16 @@ class Betamax(object):
             :class:`BaseMatcher <betamax.matchers.BaseMatcher>`
         """
         matchers.matcher_registry[matcher_class.name] = matcher_class()
+
+    @staticmethod
+    def register_serializer(serializer_class):
+        """Register a new serializer.
+
+        :param matcher_class: (required), this must sub-class
+            :class:`BaseSerializer <betamax.serializers.BaseSerializer>`
+        """
+        name = serializer_class.name
+        serializers.serializer_registery[name] = serializer_class()
 
     def use_cassette(self, cassette_name, **kwargs):
         """Tell Betamax which cassette you wish to use for the context.

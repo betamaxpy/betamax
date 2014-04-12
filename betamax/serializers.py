@@ -4,6 +4,8 @@ import os
 NOT_IMPLEMENTED_ERROR_MSG = ('This method must be implemented by classes'
                              ' inheriting from BaseSerializer.')
 
+serializer_registry = {}
+
 
 class BaseSerializer(object):
 
@@ -164,5 +166,6 @@ class JSONSerializer(BaseSerializer):
         return deserialized_data
 
 
-serializer_registry = {}
-serializer_registry.update({JSONSerializer.name: JSONSerializer()})
+_serializers = [JSONSerializer]
+serializer_registry.update(dict((s.name, s()) for s in _serializers))
+del _serializers
