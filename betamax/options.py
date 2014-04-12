@@ -26,7 +26,8 @@ class Options(object):
         'match_requests_on': validate_matchers,
         're_record_interval': lambda x: x is None or x > 0,
         'record': validate_record,
-        'serialize': validate_serializer,
+        'serialize': validate_serializer,  # TODO: Remove this
+        'serialize_with': validate_serializer,
         'preserve_exact_body_bytes': lambda x: x in [True, False],
     }
 
@@ -34,7 +35,8 @@ class Options(object):
         'match_requests_on': ['method', 'uri'],
         're_record_interval': None,
         'record': 'once',
-        'serialize': 'json',
+        'serialize': None,  # TODO: Remove this
+        'serialize_with': 'json',
         'preserve_exact_body_bytes': False,
     }
 

@@ -129,8 +129,10 @@ class Betamax(object):
 
         :param str cassette_name: relative name, without the serialization
             format, of the cassette you wish Betamax would use
-        :param str serialize: the format you want Betamax to serialize the
-            request and response data to and from
+        :param str serialize_with: the format you want Betamax to serialize
+            the cassette with
+        :param str serialize: DEPRECATED the format you want Betamax to
+            serialize the request and response data to and from
         """
         def _can_load_cassette(name):
             # If we want to record a cassette we don't care if the file exists
