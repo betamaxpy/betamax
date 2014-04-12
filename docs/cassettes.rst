@@ -66,6 +66,8 @@ representing the headers and the body. A serialized response looks like:
 
 If you put everything together, you get:
 
+.. _cassette-dict:
+
 .. code:: javascript
 
     {
