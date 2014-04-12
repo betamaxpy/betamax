@@ -29,7 +29,7 @@ implement three methods:
 .. autoclass:: betamax.BaseSerializer
     :members:
 
-Here's an example using the default serializer:
+Here's the default (JSON) serializer as an example:
 
 .. literalinclude:: ../betamax/serializers.py
     :language: python
@@ -37,4 +37,14 @@ Here's an example using the default serializer:
 
 
 This is incredibly simple. We take advantage of the :mod:`os.path` to properly 
-join the directory name and the file name.
+join the directory name and the file name. Betamax uses this method to find an 
+existing cassette or create a new one.
+
+Next we have the :py:meth:`betamax.serializers.JSONSerializer.serialize` which 
+takes the cassette dictionary and turns it into a string for us. Here we are 
+just leveraging the :mod:`json` module and its ability to dump any valid 
+dictionary to a string.
+
+Finally, there is the 
+:py:meth:`betamax.serializers.JSONSerializer.deserialize` method which takes a 
+string and turns it into the dictionary that betamax needs to function.

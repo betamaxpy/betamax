@@ -10,6 +10,7 @@ Contents of Betamax's Documentation
    cassettes
    implementation_details
    matchers
+   serializers
    usage_patterns
 
 
