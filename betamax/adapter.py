@@ -89,7 +89,9 @@ class BetamaxAdapter(BaseAdapter):
             raise BetamaxError(unhandled_request_message(request,
                                                          self.cassette))
 
-        return interaction.as_response()
+        resp = interaction.as_response()
+        resp.connection = self
+        return resp
 
     def send_and_record(self, request, stream=False, timeout=None,
                         verify=True, cert=None, proxies=None):
