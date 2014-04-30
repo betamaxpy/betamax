@@ -7,3 +7,4 @@
 htmlcov
 vcr/*
 docs/_build
+tags
