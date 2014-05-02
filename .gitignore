@@ -8,3 +8,5 @@ htmlcov
 vcr/*
 docs/_build
 tags
+build/
+dist/
