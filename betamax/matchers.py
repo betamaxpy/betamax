@@ -74,7 +74,12 @@ class HeadersMatcher(BaseMatcher):
     name = 'headers'
 
     def match(self, request, recorded_request):
-        return dict(request.headers) == recorded_request['headers']
+        return dict(request.headers) == self.flatten_headers(recorded_request)
+
+    def flatten_headers(self, request):
+        from betamax.cassette.util import from_list
+        headers = request['headers'].items()
+        return dict((k, from_list(v)) for (k, v) in headers)
 
 
 class HostMatcher(BaseMatcher):

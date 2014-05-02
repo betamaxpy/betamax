@@ -1,5 +1,4 @@
-import io
-import email.message
+from email import parser, message
 
 
 class MockHTTPResponse(object):
@@ -8,17 +7,18 @@ class MockHTTPResponse(object):
 
         h = ["%s: %s" % (k, v) for (k, v) in headers.items()]
         h = map(coerce_content, h)
-        h = io.StringIO('\r\n'.join(h) or None)
+        h = '\r\n'.join(h)
+        p = parser.Parser(EmailMessage)
         # Thanks to Python 3, we have to use the slightly more awful API below
         # mimetools was deprecated so we have to use email.message.Message
         # which takes no arguments in its initializer.
-        self.msg = EmailMessage()
+        self.msg = p.parsestr(h)
         self.msg.set_payload(h)
 
     def isclosed(self):
         return False
 
 
-class EmailMessage(email.message.Message):
+class EmailMessage(message.Message):
     def getheaders(self, value, *args):
-        return self.get(value, *args)
+        return [self.get(value, b'', *args)]
