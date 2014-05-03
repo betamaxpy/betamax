@@ -1,4 +1,4 @@
-from betamax.cassette import Cassette
+from .cassette import Cassette
 
 
 class Configuration(object):

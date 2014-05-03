@@ -1,8 +1,8 @@
 import os
-from betamax import matchers, serializers
-from betamax.adapter import BetamaxAdapter
-from betamax.configure import Configuration
-from betamax.options import Options
+from . import matchers, serializers
+from .adapter import BetamaxAdapter
+from .configure import Configuration
+from .options import Options
 
 
 class Betamax(object):

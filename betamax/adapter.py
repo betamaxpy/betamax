@@ -1,9 +1,9 @@
 import os
 
+from .cassette import Cassette
+from .exceptions import BetamaxError
 from datetime import datetime, timedelta
 from requests.adapters import BaseAdapter, HTTPAdapter
-from betamax.cassette import Cassette
-from betamax.exceptions import BetamaxError
 
 
 class BetamaxAdapter(BaseAdapter):
