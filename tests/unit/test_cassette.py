@@ -1,9 +1,11 @@
+import email
 import os
 import unittest
 from datetime import datetime
 
 from betamax import cassette
 from betamax import serializers
+from betamax.cassette import util
 from requests.models import Response, Request
 from requests.packages import urllib3
 from requests.structures import CaseInsensitiveDict
@@ -51,13 +53,13 @@ class TestSerialization(unittest.TestCase):
         r.encoding = 'utf-8'
         r.headers = CaseInsensitiveDict()
         r.url = 'http://example.com'
-        cassette.add_urllib3_response({
+        util.add_urllib3_response({
             'body': {
                 'string': decode('foo'),
                 'encoding': 'utf-8'
             }
         }, r)
-        serialized = cassette.serialize_response(r, False)
+        serialized = util.serialize_response(r, False)
         assert serialized is not None
         assert serialized != {}
         assert serialized['body']['encoding'] == 'utf-8'
@@ -80,7 +82,7 @@ class TestSerialization(unittest.TestCase):
             'status_code': 200,
             'recorded_at': '2013-08-31T00:00:01'
         }
-        r = cassette.deserialize_response(s)
+        r = util.deserialize_response(s)
         assert r.content == b'foo'
         assert r.encoding == 'utf-8'
         assert r.headers == {'Content-Type': 'application/json'}
@@ -101,7 +103,7 @@ class TestSerialization(unittest.TestCase):
             'status': {'code': 200, 'message': 'OK'},
             'recorded_at': '2013-08-31T00:00:01'
         }
-        r = cassette.deserialize_response(s)
+        r = util.deserialize_response(s)
         assert r.content == b'foo'
         assert r.encoding == 'utf-8'
         assert r.headers == {'Content-Type': 'application/json'}
@@ -116,7 +118,7 @@ class TestSerialization(unittest.TestCase):
         r.headers = {'User-Agent': 'betamax/test header'}
         r.data = {'key': 'value'}
         p = r.prepare()
-        serialized = cassette.serialize_prepared_request(p, False)
+        serialized = util.serialize_prepared_request(p, False)
         assert serialized is not None
         assert serialized != {}
         assert serialized['method'] == 'GET'
@@ -137,7 +139,7 @@ class TestSerialization(unittest.TestCase):
             'method': 'GET',
             'uri': 'http://example.com/',
         }
-        p = cassette.deserialize_prepared_request(s)
+        p = util.deserialize_prepared_request(s)
         assert p.body == 'key=value'
         assert p.headers == CaseInsensitiveDict(
             {'User-Agent': 'betamax/test header'}
@@ -147,17 +149,17 @@ class TestSerialization(unittest.TestCase):
 
     def test_from_list_returns_an_element(self):
         a = ['value']
-        assert cassette.from_list(a) == 'value'
+        assert util.from_list(a) == 'value'
 
     def test_from_list_handles_non_lists(self):
         a = 'value'
-        assert cassette.from_list(a) == 'value'
+        assert util.from_list(a) == 'value'
 
     def test_add_urllib3_response(self):
         r = Response()
         r.status_code = 200
         r.headers = {}
-        cassette.add_urllib3_response({
+        util.add_urllib3_response({
             'body': {
                 'string': decode('foo'),
                 'encoding': 'utf-8'
@@ -190,7 +192,7 @@ class TestCassette(unittest.TestCase):
         r.encoding = 'utf-8'
         r.headers = CaseInsensitiveDict({'Content-Type': decode('foo')})
         r.url = 'http://example.com'
-        cassette.add_urllib3_response({
+        util.add_urllib3_response({
             'body': {
                 'string': decode('foo'),
                 'encoding': 'utf-8'
@@ -398,4 +400,4 @@ class TestMockHTTPResponse(unittest.TestCase):
         assert self.resp.isclosed() is False
 
     def test_is_Message(self):
-        assert isinstance(self.resp.msg, cassette.email.message.Message)
+        assert isinstance(self.resp.msg, email.message.Message)

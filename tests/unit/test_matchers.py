@@ -17,6 +17,9 @@ class TestMatchers(unittest.TestCase):
     def test_matcher_registry_has_body_matcher(self):
         assert 'body' in matchers.matcher_registry
 
+    def test_matcher_registry_has_digest_auth_matcher(self):
+        assert 'digest-auth' in matchers.matcher_registry
+
     def test_matcher_registry_has_headers_matcher(self):
         assert 'headers' in matchers.matcher_registry
 
@@ -39,6 +42,27 @@ class TestMatchers(unittest.TestCase):
         match = matchers.matcher_registry['body'].match
         assert match(self.p, {'body': 'Foo bar'})
         assert match(self.p, {'body': ''}) is False
+
+    def test_digest_matcher(self):
+        match = matchers.matcher_registry['digest-auth'].match
+        assert match(self.p, {'headers': {}})
+        saved_auth = (
+            'Digest username="user", realm="realm", nonce="nonce", uri="/", '
+            'response="r", opaque="o", qop="auth", nc=00000001, cnonce="c"'
+            )
+        self.p.headers['Authorization'] = saved_auth
+        assert match(self.p, {'headers': {}}) is False
+        assert match(self.p, {'headers': {'Authorization': saved_auth}})
+        new_auth = (
+            'Digest username="user", realm="realm", nonce="nonce", uri="/", '
+            'response="e", opaque="o", qop="auth", nc=00000001, cnonce="n"'
+            )
+        assert match(self.p, {'headers': {'Authorization': new_auth}})
+        new_auth = (
+            'Digest username="u", realm="realm", nonce="nonce", uri="/", '
+            'response="e", opaque="o", qop="auth", nc=00000001, cnonce="n"'
+            )
+        assert match(self.p, {'headers': {'Authorization': new_auth}}) is False
 
     def test_headers_matcher(self):
         match = matchers.matcher_registry['headers'].match
