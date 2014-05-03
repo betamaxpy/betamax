@@ -1,6 +1,14 @@
 History
 =======
 
+0.3.0 - 2014-xx-xx
+------------------
+
+- Add ``digest-auth`` matcher to help users match the right request when using 
+  requests' ``HTTPDigestAuth``.
+
+- Reorganize and refactor the cassettes, matchers, and serializers modules.
+
 0.2.0 - 2014-04-12
 ------------------
 
