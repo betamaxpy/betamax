@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .base import BaseMatcher
+from betamax.cassette.util import from_list
 
 
 class DigestAuthMatcher(BaseMatcher):
@@ -14,6 +15,6 @@ class DigestAuthMatcher(BaseMatcher):
         auth = headers.get('Authorization') or headers.get('authorization')
         if not auth:
             return None
-        auth = auth.strip('Digest ')
+        auth = from_list(auth).strip('Digest ')
         excludes = ('cnonce', 'response')
         return [p for p in auth.split(', ') if not p.startswith(excludes)]
