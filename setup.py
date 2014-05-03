@@ -1,9 +1,9 @@
 import os
 import re
 import sys
-from setuptools import setup
+from setuptools import setup, find_packages
 
-packages = ['betamax']
+packages = find_packages(exclude=['tests'])
 requires = ['requests >= 2.0']
 
 __version__ = ''
