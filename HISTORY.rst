@@ -4,7 +4,7 @@ History
 0.3.0 - 2014-xx-xx
 ------------------
 
-- Add ``digest-auth`` matcher to help users match the right request when using 
+- Add ``digest-auth`` matcher to help users match the right request when using
   requests' ``HTTPDigestAuth``.
 
 - Reorganize and refactor the cassettes, matchers, and serializers modules.
@@ -19,23 +19,23 @@ History
 
 - Use the Session's original adapters when making new requests
 
-  In the event the Session has a custom adapter mounted, e.g., the SSLAdapter 
+  In the event the Session has a custom adapter mounted, e.g., the SSLAdapter
   in requests-toolbelt, then we should probably use that.
 
-- Add ``on_init`` hook to ``BaseMatcher`` so matcher authors can customize 
+- Add ``on_init`` hook to ``BaseMatcher`` so matcher authors can customize
   initialization
 
 - Add support for custom Serialization formats. See the docs for more info.
 
 - Add support for preserving exact body bytes.
 
-- Deprecate ``serialize`` keyword to ``Betamax#use_cassette`` in preference 
+- Deprecate ``serialize`` keyword to ``Betamax#use_cassette`` in preference
   for ``serialize_with`` (to be more similar to VCR).
 
 0.1.6 - 2013-12-07
 ------------------
 
-- Fix how global settings and per-invocation options are persisted and 
+- Fix how global settings and per-invocation options are persisted and
   honored. (#10)
 
 - Support ``match_requests_on`` as a parameter sent to
@@ -50,11 +50,11 @@ History
 ------------------
 
 - Do not try to sanitize something that may not exist.
- 
+
 0.1.3 - 2013-09-27
 ------------------
 
-- Fix issue when response has a Content-Encoding of gzip and we need to 
+- Fix issue when response has a Content-Encoding of gzip and we need to
   preserve the original bytes of the message.
 
 0.1.2 - 2013-09-21
