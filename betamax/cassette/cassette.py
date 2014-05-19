@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from .interaction import Interaction
 from .util import (_option_from, serialize_prepared_request,
                    serialize_response, timestamp)
@@ -5,6 +6,8 @@ from betamax.matchers import matcher_registry
 from betamax.serializers import serializer_registry, SerializerProxy
 from datetime import datetime
 from functools import partial
+
+import os.path
 
 
 class Cassette(object):
@@ -29,13 +32,10 @@ class Cassette(object):
         self.record_mode = _option_from('record_mode', kwargs, defaults)
 
         # Retrieve the serializer for this cassette
-        serializer = serializer_registry.get(serialization_format)
-        if serializer is None:
-            raise ValueError(
-                'No serializer registered for {0}'.format(serialization_format)
-                )
-
-        self.serializer = SerializerProxy(serializer, cassette_name)
+        self.serializer = SerializerProxy.find(
+            serialization_format, kwargs.get('cassette_library_dir'),
+            cassette_name
+            )
 
         # Determine which placeholders to use
         self.placeholders = kwargs.get('placeholders')
@@ -55,6 +55,29 @@ class Cassette(object):
 
         self.load_interactions()
         self.serializer.allow_serialization = self.is_recording()
+
+    @staticmethod
+    def can_load_cassette(cassette_library_dir, cassette_name,
+                          serialize_with, record_mode):
+        # If we want to record a cassette we don't care if the file exists
+        # yet
+        recording = False
+        if record_mode in ['once', 'all', 'new_episodes']:
+            recording = True
+
+        serializer = serializer_registry.get(serialize_with)
+        if not serializer:
+            raise ValueError(
+                'Serializer {0} is not registered with Betamax'.format(
+                    serialize_with
+                    ))
+
+        cassette_path = serializer.generate_cassette_name(
+            cassette_library_dir, cassette_name
+            )
+        # Otherwise if we're only replaying responses, we should probably
+        # have the cassette the user expects us to load and raise.
+        return os.path.exists(cassette_path) or recording
 
     def clear(self):
         # Clear out the interactions

@@ -55,7 +55,8 @@ class BetamaxAdapter(BaseAdapter):
         self.cassette = Cassette(
             cassette_name, serialize, placeholders=placeholders,
             record_mode=self.options.get('record'),
-            preserve_exact_body_bytes=preserve_exact_body_bytes
+            preserve_exact_body_bytes=preserve_exact_body_bytes,
+            cassette_library_dir=self.options.get('cassette_library_dir')
             )
 
         if 'record' in self.options:
