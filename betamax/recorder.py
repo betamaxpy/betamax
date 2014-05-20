@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 from . import matchers, serializers
 from .adapter import BetamaxAdapter
@@ -64,18 +65,11 @@ class Betamax(object):
             self.config.cassette_library_dir = cassette_library_dir
 
     def __enter__(self):
-        for k in self.http_adapters:
-            self.session.mount(k, self.betamax_adapter)
+        self.start()
         return self
 
     def __exit__(self, *ex_args):
-        # No need to keep the cassette in memory any longer.
-        self.betamax_adapter.eject_cassette()
-        # On exit, we no longer wish to use our adapter and we want the
-        # session to behave normally! Woooo!
-        self.betamax_adapter.close()
-        for (k, v) in self.http_adapters.items():
-            self.session.mount(k, v)
+        self.stop()
         # ex_args comes through as the exception type, exception value and
         # exception traceback. If any of them are not None, we should probably
         # try to raise the exception and not muffle anything.
@@ -123,6 +117,23 @@ class Betamax(object):
         """
         name = serializer_class.name
         serializers.serializer_registry[name] = serializer_class()
+
+    # ❙▸
+    def start(self):
+        """Start recording or replaying interactions."""
+        for k in self.http_adapters:
+            self.session.mount(k, self.betamax_adapter)
+
+    # ■
+    def stop(self):
+        """Stop recording or replaying interactions."""
+        # No need to keep the cassette in memory any longer.
+        self.betamax_adapter.eject_cassette()
+        # On exit, we no longer wish to use our adapter and we want the
+        # session to behave normally! Woooo!
+        self.betamax_adapter.close()
+        for (k, v) in self.http_adapters.items():
+            self.session.mount(k, v)
 
     def use_cassette(self, cassette_name, **kwargs):
         """Tell Betamax which cassette you wish to use for the context.
