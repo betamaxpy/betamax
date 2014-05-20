@@ -63,12 +63,11 @@ class Betamax(object):
         if cassette_library_dir:
             self.config.cassette_library_dir = cassette_library_dir
 
-    def __enter__(self):
+    def open(self):
         for k in self.http_adapters:
             self.session.mount(k, self.betamax_adapter)
-        return self
 
-    def __exit__(self, *ex_args):
+    def close(self):
         # No need to keep the cassette in memory any longer.
         self.betamax_adapter.eject_cassette()
         # On exit, we no longer wish to use our adapter and we want the
@@ -76,6 +75,13 @@ class Betamax(object):
         self.betamax_adapter.close()
         for (k, v) in self.http_adapters.items():
             self.session.mount(k, v)
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, *ex_args):
+        self.close()
         # ex_args comes through as the exception type, exception value and
         # exception traceback. If any of them are not None, we should probably
         # try to raise the exception and not muffle anything.
