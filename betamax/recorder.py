@@ -138,7 +138,7 @@ class Betamax(object):
         serialize = kwargs['serialize'] or kwargs['serialize_with']
         kwargs['cassette_library_dir'] = self.config.cassette_library_dir
 
-        can_load = Cassette.can_load_cassette(
+        can_load = Cassette.can_be_loaded(
             self.config.cassette_library_dir,
             cassette_name,
             serialize,

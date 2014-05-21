@@ -57,8 +57,8 @@ class Cassette(object):
         self.serializer.allow_serialization = self.is_recording()
 
     @staticmethod
-    def can_load_cassette(cassette_library_dir, cassette_name,
-                          serialize_with, record_mode):
+    def can_be_loaded(cassette_library_dir, cassette_name, serialize_with,
+                      record_mode):
         # If we want to record a cassette we don't care if the file exists
         # yet
         recording = False
