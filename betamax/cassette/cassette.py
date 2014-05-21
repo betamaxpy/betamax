@@ -36,6 +36,7 @@ class Cassette(object):
             serialization_format, kwargs.get('cassette_library_dir'),
             cassette_name
             )
+        self.cassette_path = self.serializer.cassette_path
 
         # Determine which placeholders to use
         self.placeholders = kwargs.get('placeholders')
