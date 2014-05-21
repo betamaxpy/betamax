@@ -20,6 +20,10 @@ def decode(s):
 class TestSerializer(serializers.BaseSerializer):
     name = 'test'
 
+    @staticmethod
+    def generate_cassette_name(cassette_library_dir, cassette_name):
+        return 'test_cassette.test'
+
     def on_init(self):
         self.serialize_calls = []
         self.deserialize_calls = []
@@ -171,7 +175,7 @@ class TestSerialization(unittest.TestCase):
 
 
 class TestCassette(unittest.TestCase):
-    cassette_name = 'test_cassette.json'
+    cassette_name = 'test_cassette'
 
     def setUp(self):
         # Make a new serializer to test with

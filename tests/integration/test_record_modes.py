@@ -7,7 +7,7 @@ class TestRecordOnce(IntegrationHelper):
     def test_records_new_interaction(self):
         s = self.session
         with Betamax(s).use_cassette('test_record_once') as betamax:
-            self.cassette_path = betamax.current_cassette.cassette_name
+            self.cassette_path = betamax.current_cassette.cassette_path
             assert betamax.current_cassette.is_empty() is True
             r = s.get('http://httpbin.org/get')
             assert r.status_code == 200
@@ -17,7 +17,7 @@ class TestRecordOnce(IntegrationHelper):
     def test_replays_response_from_cassette(self):
         s = self.session
         with Betamax(s).use_cassette('test_replays_response') as betamax:
-            self.cassette_path = betamax.current_cassette.cassette_name
+            self.cassette_path = betamax.current_cassette.cassette_path
             assert betamax.current_cassette.is_empty() is True
             r0 = s.get('http://httpbin.org/get')
             assert r0.status_code == 200
@@ -59,7 +59,7 @@ class TestRecordNewEpisodes(IntegrationHelper):
         opts = {'record': 'new_episodes'}
         with Betamax(s).use_cassette('test_record_new', **opts) as betamax:
             cassette = betamax.current_cassette
-            self.cassette_path = cassette.cassette_name
+            self.cassette_path = cassette.cassette_path
             assert cassette.interactions != []
             assert len(cassette.interactions) == 3
             assert cassette.is_empty() is False
@@ -79,7 +79,7 @@ class TestRecordNewEpisodesCreatesCassettes(IntegrationHelper):
         opts = {'record': 'new_episodes'}
         cassette_name = 'test_record_new_makes_new_cassettes'
         with recorder.use_cassette(cassette_name, **opts) as betamax:
-            self.cassette_path = betamax.current_cassette.cassette_name
+            self.cassette_path = betamax.current_cassette.cassette_path
             self.session.get('https://httpbin.org/get')
 
 
@@ -95,7 +95,7 @@ class TestRecordAll(IntegrationHelper):
         opts = {'record': 'all'}
         with Betamax(s).use_cassette('test_record_all', **opts) as betamax:
             cassette = betamax.current_cassette
-            self.cassette_path = cassette.cassette_name
+            self.cassette_path = cassette.cassette_path
             assert cassette.interactions != []
             assert len(cassette.interactions) == 3
             assert cassette.is_empty() is False
@@ -110,7 +110,7 @@ class TestRecordAll(IntegrationHelper):
         opts = {'record': 'all'}
         with Betamax(s).use_cassette('test_record_all', **opts) as betamax:
             cassette = betamax.current_cassette
-            self.cassette_path = cassette.cassette_name
+            self.cassette_path = cassette.cassette_path
             assert cassette.interactions != []
             assert len(cassette.interactions) == 3
             assert cassette.is_empty() is False

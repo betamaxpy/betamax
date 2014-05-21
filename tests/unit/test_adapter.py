@@ -26,9 +26,10 @@ class TestBetamaxAdapter(unittest.TestCase):
         assert self.adapter.serialize is None
 
     def test_load_cassette(self):
-        filename = 'tests/cassettes/test.json'
+        filename = 'test'
         self.adapter.load_cassette(filename, 'json', {
-            'record': 'none'
+            'record': 'none',
+            'cassette_library_dir': 'tests/cassettes/'
         })
         assert self.adapter.cassette is not None
         assert self.adapter.cassette_name == filename
