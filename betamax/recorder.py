@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import os
 from . import matchers, serializers
 from .adapter import BetamaxAdapter
+from .cassette import Cassette
 from .configure import Configuration
 from .options import Options
 
@@ -145,26 +145,18 @@ class Betamax(object):
         :param str serialize: DEPRECATED the format you want Betamax to
             serialize the request and response data to and from
         """
-        def _can_load_cassette(name):
-            # If we want to record a cassette we don't care if the file exists
-            # yet
-            recording = False
-            if kwargs['record'] in ['once', 'all', 'new_episodes']:
-                recording = True
-
-            # Otherwise if we're only replaying responses, we should probably
-            # have the cassette the user expects us to load and raise.
-            return os.path.exists(name) or recording
-
         kwargs = Options(kwargs)
         serialize = kwargs['serialize'] or kwargs['serialize_with']
+        kwargs['cassette_library_dir'] = self.config.cassette_library_dir
 
-        cassette_name = os.path.join(
-            self.config.cassette_library_dir, '{0}.{1}'.format(
-                cassette_name, serialize
-            ))
+        can_load = Cassette.can_be_loaded(
+            self.config.cassette_library_dir,
+            cassette_name,
+            serialize,
+            kwargs['record']
+            )
 
-        if _can_load_cassette(cassette_name):
+        if can_load:
             self.betamax_adapter.load_cassette(cassette_name, serialize,
                                                kwargs)
         else:

@@ -30,6 +30,20 @@ class SerializerProxy(BaseSerializer):
         if not os.path.exists(self.cassette_path):
             open(self.cassette_path, 'w+').close()
 
+    @classmethod
+    def find(cls, serialize_with, cassette_library_dir, cassette_name):
+        from . import serializer_registry
+        serializer = serializer_registry.get(serialize_with)
+        if serializer is None:
+            raise ValueError(
+                'No serializer registered for {0}'.format(serialize_with)
+                )
+
+        cassette_path = cls.generate_cassette_name(
+            serializer, cassette_library_dir, cassette_name
+            )
+        return cls(serializer, cassette_path)
+
     @staticmethod
     def generate_cassette_name(serializer, cassette_library_dir,
                                cassette_name):

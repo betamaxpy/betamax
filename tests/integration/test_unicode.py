@@ -9,5 +9,5 @@ class TestUnicode(IntegrationHelper):
         url = 'http://www.amazon.com/review/RAYTXRF3122TO'
 
         with Betamax(s).use_cassette('test_unicode') as beta:
-            self.cassette_path = beta.current_cassette.cassette_name
+            self.cassette_path = beta.current_cassette.cassette_path
             s.get(url)
