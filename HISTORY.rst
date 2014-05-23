@@ -4,10 +4,20 @@ History
 0.3.0 - 2014-xx-xx
 ------------------
 
+- Add ``Betamax#start`` and ``Betamax#stop`` to allow users to start recording
+  and stop without using a context-manager.
+
 - Add ``digest-auth`` matcher to help users match the right request when using
   requests' ``HTTPDigestAuth``.
 
 - Reorganize and refactor the cassettes, matchers, and serializers modules.
+
+- Refactor some portions of code a bit.
+
+- ``Cassette.cassette_name`` no longer is the relative path to the file in
+  which the cassette is saved. To access that information use
+  ``Cassette.cassette_path``. The ``cassette_name`` attribute is now the name
+  that you pass to ``Betamax#use_cassette``.
 
 0.2.0 - 2014-04-12
 ------------------
