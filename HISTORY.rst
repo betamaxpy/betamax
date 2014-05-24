@@ -1,7 +1,7 @@
 History
 =======
 
-0.3.0 - 2014-xx-xx
+0.3.0 - 2014-05-23
 ------------------
 
 - Add ``Betamax#start`` and ``Betamax#stop`` to allow users to start recording
