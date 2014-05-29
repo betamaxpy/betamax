@@ -1,6 +1,13 @@
 History
 =======
 
+0.3.1 - 2014-05-28
+------------------
+
+- Fix GitHub Issue #35 - Placeholders were not being properly applied to
+  request bodies. This release fixes that so placeholders are now behave as
+  expected with recorded request bodies.
+
 0.3.0 - 2014-05-23
 ------------------
 
