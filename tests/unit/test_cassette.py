@@ -287,7 +287,10 @@ class TestCassette(unittest.TestCase):
 class TestInteraction(unittest.TestCase):
     def setUp(self):
         self.request = {
-            'body': 'key=value&key2=secret_value',
+            'body': {
+                'string': 'key=value&key2=secret_value',
+                'encoding': 'utf-8'
+            },
             'headers': {
                 'User-Agent': ['betamax/test header'],
                 'Content-Length': ['9'],
@@ -337,9 +340,10 @@ class TestInteraction(unittest.TestCase):
         assert self.response['body']['string'] == decode(r.content)
         actual_req = r.request
         expected_req = self.request
-        for attr in ['method', 'uri', 'body']:
+        for attr in ['method', 'uri']:
             assert expected_req[attr] == getattr(actual_req, check_uri(attr))
 
+        assert self.request['body']['string'] == decode(actual_req.body)
         headers = dict((k, v[0]) for k, v in expected_req['headers'].items())
         assert headers == actual_req.headers
         assert self.date == self.interaction.recorded_at
@@ -361,7 +365,7 @@ class TestInteraction(unittest.TestCase):
         assert header == '<AUTH_TOKEN>'
         header = self.interaction.json['response']['headers']['Set-Cookie']
         assert header == 'cookie_name=<COOKIE_VALUE>'
-        body = self.interaction.json['request']['body']
+        body = self.interaction.json['request']['body']['string']
         assert body == 'key=value&key2=<SECRET_VALUE>'
         body = self.interaction.json['response']['body']
         assert body == {'encoding': 'utf-8', 'string': '<FOO>'}
@@ -381,7 +385,7 @@ class TestInteraction(unittest.TestCase):
     def test_replace_in_body(self):
         self.interaction.replace_in_body('secret_value', '<SECRET_VALUE>')
         self.interaction.replace_in_body('foo', '<FOO>')
-        body = self.interaction.json['request']['body']
+        body = self.interaction.json['request']['body']['string']
         assert body == 'key=value&key2=<SECRET_VALUE>'
         body = self.interaction.json['response']['body']
         assert body == {'encoding': 'utf-8', 'string': '<FOO>'}

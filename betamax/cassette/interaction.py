@@ -65,10 +65,19 @@ class Interaction(object):
 
     def replace_in_body(self, text_to_replace, placeholder):
         body = self.json['request']['body']
-        if text_to_replace in body:
-            self.json['request']['body'] = body.replace(
-                text_to_replace, placeholder
-            )
+        # If body is not a string
+        if hasattr(body, 'replace'):
+            if text_to_replace in body:
+                self.json['request']['body'] = body.replace(
+                    text_to_replace, placeholder
+                )
+        # If body is a dictionary
+        else:
+            body = self.json['request']['body'].get('string', '')
+            if text_to_replace in body:
+                self.json['request']['body']['string'] = body.replace(
+                    text_to_replace, placeholder
+                )
 
         body = self.json['response']['body'].get('string', '')
         if text_to_replace in body:
