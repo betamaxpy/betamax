@@ -43,6 +43,13 @@ class TestMatchers(unittest.TestCase):
         assert match(self.p, {'body': 'Foo bar'})
         assert match(self.p, {'body': ''}) is False
 
+    def test_body_matcher_without_body(self):
+        p = self.p.copy()
+        p.body = None
+        match = matchers.matcher_registry['body'].match
+        assert match(p, {'body': ''})
+        assert match(p, {'body': 'Foo bar'}) is False
+
     def test_digest_matcher(self):
         match = matchers.matcher_registry['digest-auth'].match
         assert match(self.p, {'headers': {}})

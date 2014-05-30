@@ -7,4 +7,5 @@ class BodyMatcher(BaseMatcher):
     name = 'body'
 
     def match(self, request, recorded_request):
-        return request.body == recorded_request['body']
+        request_body = request.body or ''
+        return request_body == recorded_request['body']
