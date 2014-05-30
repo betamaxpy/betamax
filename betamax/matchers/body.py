@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .base import BaseMatcher
+from ..cassette.util import deserialize_prepared_request
 
 
 class BodyMatcher(BaseMatcher):
@@ -7,5 +8,5 @@ class BodyMatcher(BaseMatcher):
     name = 'body'
 
     def match(self, request, recorded_request):
-        request_body = request.body or ''
-        return request_body == recorded_request['body']
+        recorded_request = deserialize_prepared_request(recorded_request)
+        return recorded_request.body == (request.body or '')
