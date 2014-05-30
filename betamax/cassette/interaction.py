@@ -64,26 +64,18 @@ class Interaction(object):
                 headers[k] = v.replace(text_to_replace, placeholder)
 
     def replace_in_body(self, text_to_replace, placeholder):
-        body = self.json['request']['body']
-        # If body is not a string
-        if hasattr(body, 'replace'):
-            if text_to_replace in body:
-                self.json['request']['body'] = body.replace(
-                    text_to_replace, placeholder
-                )
-        # If body is a dictionary
-        else:
-            body = self.json['request']['body'].get('string', '')
-            if text_to_replace in body:
-                self.json['request']['body']['string'] = body.replace(
-                    text_to_replace, placeholder
-                )
+        for obj in ('request', 'response'):
+            body = self.json[obj]['body']
+            old_style = hasattr(body, 'replace')
+            if not old_style:
+                body = body.get('string', '')
 
-        body = self.json['response']['body'].get('string', '')
-        if text_to_replace in body:
-            self.json['response']['body']['string'] = body.replace(
-                text_to_replace, placeholder
-            )
+            if text_to_replace in body:
+                body = body.replace(text_to_replace, placeholder)
+            if old_style:
+                self.json[obj]['body'] = body
+            else:
+                self.json[obj]['body']['string'] = body
 
     def replace_in_uri(self, text_to_replace, placeholder):
         for (obj, key) in (('request', 'uri'), ('response', 'url')):
