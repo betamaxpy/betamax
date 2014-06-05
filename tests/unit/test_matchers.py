@@ -1,6 +1,7 @@
 import unittest
 
 from requests import PreparedRequest
+from requests.cookies import RequestsCookieJar
 from betamax import matchers
 
 
@@ -13,6 +14,7 @@ class TestMatchers(unittest.TestCase):
         self.p.headers = {'User-Agent': 'betamax/test'}
         self.p.url = 'http://example.com/path/to/end/point?query=string'
         self.p.method = 'GET'
+        self.p.cookies = RequestsCookieJar()
 
     def test_matcher_registry_has_body_matcher(self):
         assert 'body' in matchers.matcher_registry
@@ -40,15 +42,35 @@ class TestMatchers(unittest.TestCase):
 
     def test_body_matcher(self):
         match = matchers.matcher_registry['body'].match
-        assert match(self.p, {'body': 'Foo bar'})
-        assert match(self.p, {'body': ''}) is False
+        assert match(self.p, {
+            'body': 'Foo bar',
+            'headers': {'User-Agent': 'betamax/test'},
+            'uri': 'http://example.com/path/to/end/point?query=string',
+            'method': 'GET',
+        })
+        assert match(self.p, {
+            'body': '',
+            'headers': {'User-Agent': 'betamax/test'},
+            'uri': 'http://example.com/path/to/end/point?query=string',
+            'method': 'GET',
+        }) is False
 
     def test_body_matcher_without_body(self):
         p = self.p.copy()
         p.body = None
         match = matchers.matcher_registry['body'].match
-        assert match(p, {'body': ''})
-        assert match(p, {'body': 'Foo bar'}) is False
+        assert match(p, {
+            'body': 'Foo bar',
+            'headers': {'User-Agent': 'betamax/test'},
+            'uri': 'http://example.com/path/to/end/point?query=string',
+            'method': 'GET',
+        }) is False
+        assert match(p, {
+            'body': '',
+            'headers': {'User-Agent': 'betamax/test'},
+            'uri': 'http://example.com/path/to/end/point?query=string',
+            'method': 'GET',
+        })
 
     def test_digest_matcher(self):
         match = matchers.matcher_registry['digest-auth'].match
