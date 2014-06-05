@@ -14,7 +14,7 @@ class TestMatchers(unittest.TestCase):
         self.p.headers = {'User-Agent': 'betamax/test'}
         self.p.url = 'http://example.com/path/to/end/point?query=string'
         self.p.method = 'GET'
-        self.p.cookies = RequestsCookieJar()
+        self.p._cookies = RequestsCookieJar()
 
     def test_matcher_registry_has_body_matcher(self):
         assert 'body' in matchers.matcher_registry
