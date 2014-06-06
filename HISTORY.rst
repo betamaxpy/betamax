@@ -1,6 +1,11 @@
 History
 =======
 
+0.3.2 - 2014-06-05
+------------------
+
+- Fix request and response bodies courtesy of @dgouldin
+
 0.3.1 - 2014-05-28
 ------------------
 
