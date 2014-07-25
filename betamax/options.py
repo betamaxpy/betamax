@@ -16,6 +16,13 @@ def validate_serializer(serializer):
     return serializer in list(serializer_registry.keys())
 
 
+def validate_placeholders(placeholders):
+    keys = ['placeholder', 'replace']
+    return all(
+        placeholder.keys() == keys for placeholder in placeholders
+    )
+
+
 def translate_cassette_options():
     for (k, v) in Cassette.default_cassette_options.items():
         yield (k, v) if k != 'record_mode' else ('record', v)
@@ -29,6 +36,7 @@ class Options(object):
         'serialize': validate_serializer,  # TODO: Remove this
         'serialize_with': validate_serializer,
         'preserve_exact_body_bytes': lambda x: x in [True, False],
+        'placeholders': validate_placeholders,
     }
 
     defaults = {
@@ -38,6 +46,7 @@ class Options(object):
         'serialize': None,  # TODO: Remove this
         'serialize_with': 'json',
         'preserve_exact_body_bytes': False,
+        'placeholders': [],
     }
 
     def __init__(self, data=None):

@@ -57,3 +57,8 @@ class TestBetamax(unittest.TestCase):
 
     def test_stores_the_session_instance(self):
         assert self.session is self.vcr.session
+
+    def test_use_cassette_passes_along_placeholders(self):
+        placeholders = [{'placeholder': '<FOO>', 'replace': 'replace-with'}]
+        self.vcr.use_cassette('test', placeholders=placeholders)
+        assert self.vcr.current_cassette.placeholders == placeholders
