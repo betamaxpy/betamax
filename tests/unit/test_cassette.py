@@ -3,6 +3,7 @@ import os
 import unittest
 from datetime import datetime
 
+from betamax import __version__
 from betamax import cassette
 from betamax import serializers
 from betamax.cassette import util
@@ -276,7 +277,7 @@ class TestCassette(unittest.TestCase):
         self.cassette.eject()
         assert serializer.serialize_calls == [
             {'http_interactions': [self.cassette.interactions[0].json],
-             'recorded_with': 'betamax/{version}'}
+             'recorded_with': 'betamax/{0}'.format(__version__)}
             ]
 
     def test_earliest_recorded_date(self):

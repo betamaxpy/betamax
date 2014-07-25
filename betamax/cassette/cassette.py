@@ -143,7 +143,7 @@ class Cassette(object):
 
         for i in self.interactions:
             i.replace_all(self.placeholders, ('placeholder', 'replace'))
-            i.deserialize() # this needs to happen *after* replace_all
+            i.deserialize()  # this needs to happen *after* replace_all
 
     def sanitize_interactions(self):
         for i in self.interactions:
@@ -168,10 +168,11 @@ class Cassette(object):
 
     # Private methods
     def _save_cassette(self):
+        from .. import __version__
         self.sanitize_interactions()
 
         cassette_data = {
             'http_interactions': [i.json for i in self.interactions],
-            'recorded_with': 'betamax/{version}'
+            'recorded_with': 'betamax/{0}'.format(__version__)
         }
         self.serializer.serialize(cassette_data)
