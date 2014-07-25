@@ -19,7 +19,7 @@ def validate_serializer(serializer):
 def validate_placeholders(placeholders):
     keys = ['placeholder', 'replace']
     return all(
-        list(placeholder.keys()) == keys for placeholder in placeholders
+        sorted(list(p.keys())) == keys for p in placeholders
     )
 
 
