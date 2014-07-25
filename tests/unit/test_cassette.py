@@ -17,7 +17,7 @@ def decode(s):
     return s
 
 
-class TestSerializer(serializers.BaseSerializer):
+class Serializer(serializers.BaseSerializer):
     name = 'test'
 
     @staticmethod
@@ -179,7 +179,7 @@ class TestCassette(unittest.TestCase):
 
     def setUp(self):
         # Make a new serializer to test with
-        self.test_serializer = TestSerializer()
+        self.test_serializer = Serializer()
         serializers.serializer_registry['test'] = self.test_serializer
 
         # Instantiate the cassette to test with

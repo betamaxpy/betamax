@@ -21,18 +21,18 @@ class TestJSONSerializer(unittest.TestCase):
                                                   self.cassette_name))
 
 
-class TestSerializer(BaseSerializer):
+class Serializer(BaseSerializer):
     name = 'test'
 
 
 class TestBaseSerializer(unittest.TestCase):
     def test_serialize_is_an_interface(self):
-        serializer = TestSerializer()
+        serializer = Serializer()
         with pytest.raises(NotImplementedError):
             serializer.serialize({})
 
     def test_deserialize_is_an_interface(self):
-        serializer = TestSerializer()
+        serializer = Serializer()
         with pytest.raises(NotImplementedError):
             serializer.deserialize('path')
 
