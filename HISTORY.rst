@@ -1,6 +1,13 @@
 History
 =======
 
+0.4.0 - 2014-07-29
+------------------
+
+- Allow the user to pass placeholders to ``Betamax#use_cassette``.
+
+- Include Betamax's version number in cassettes
+
 0.3.2 - 2014-06-05
 ------------------
 
