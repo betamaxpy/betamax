@@ -23,3 +23,12 @@ class JSONSerializer(BaseSerializer):
             deserialized_data = {}
 
         return deserialized_data
+
+
+class PrettyJSONSerializer(JSONSerializer):
+    # Serializes and deserializes a cassette to pretty JSON
+    name = 'prettyjson'
+
+    def serialize(self, cassette_data):
+        return json.dumps(
+            cassette_data, sort_keys=True, indent=2, separators=(',', ': '))
