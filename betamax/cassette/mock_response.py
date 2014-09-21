@@ -1,3 +1,5 @@
+import re
+
 from email import parser, message
 
 
@@ -21,4 +23,4 @@ class MockHTTPResponse(object):
 
 class EmailMessage(message.Message):
     def getheaders(self, value, *args):
-        return [self.get(value, b'', *args)]
+        return re.split(b', ', self.get(value, b'', *args))
