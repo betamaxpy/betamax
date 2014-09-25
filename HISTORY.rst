@@ -1,6 +1,14 @@
 History
 =======
 
+0.4.1 - 2014-09-24
+------------------
+
+- Fix issue #39 reported by @buttscicles
+
+  This bug did not properly parse the Set-Cookie header with multiple cookies
+  when replaying a recorded response.
+
 0.4.0 - 2014-07-29
 ------------------
 
