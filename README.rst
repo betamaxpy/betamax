@@ -10,7 +10,7 @@ does not have to."
 Example Use
 -----------
 
-::
+.. code-block:: python
 
     from betamax import Betamax
     from requests import Session
