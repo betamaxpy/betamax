@@ -65,9 +65,23 @@ Each request matcher has to inherit from ``betamax.BaseMatcher`` and implement
 
 Some examples of matchers are in the source reproduced here:
 
-.. literalinclude:: ../betamax/matchers.py
+.. literalinclude:: ../betamax/matchers/headers.py
     :language: python
-    :lines: 53-120
+
+.. literalinclude:: ../betamax/matchers/host.py
+    :language: python
+
+.. literalinclude:: ../betamax/matchers/method.py
+    :language: python
+
+.. literalinclude:: ../betamax/matchers/path.py
+    :language: python
+
+.. literalinclude:: ../betamax/matchers/path.py
+    :language: python
+
+.. literalinclude:: ../betamax/matchers/uri.py
+    :language: python
 
 When you have finished writing your own matcher, you can instruct betamax to 
 use it like so:
