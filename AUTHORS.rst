@@ -12,3 +12,8 @@ Design Advice
 -------------
 
 - Cory Benfield
+
+Contributors
+------------
+
+- Marc Abramowitz (@msabramo)
