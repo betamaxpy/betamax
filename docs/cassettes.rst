@@ -58,7 +58,10 @@ representing the headers and the body. A serialized response looks like:
         "string": "..."
       },
       "url": "http://example.com",
-      "status_code": 200,
+      "status": {
+        "code": 200,
+        "message": "OK"
+      },
       "headers": {
         // ...
       }
@@ -93,7 +96,10 @@ If you put everything together, you get:
                 "string": "..."
               },
               "url": "http://example.com",
-              "status_code": 200,
+              "status": {
+                "code": 200,
+                "message": "OK"
+              },
               "headers": {
                 // ...
               }

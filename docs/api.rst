@@ -38,7 +38,10 @@ content:
               "encoding": "utf-8"
             },
             "headers": {},
-            "status_code": 200,
+            "status": {
+              "code": 200,
+              "message": "OK"
+            },
             "url": "https://httpbin.org/get"
           }
         }
@@ -111,7 +114,10 @@ like this:
             "headers": {
               "Content-Encoding": ["gzip"]
             },
-            "status_code": 200,
+            "status": {
+              "code": 200,
+              "message": "OK"
+            },
             "url": "https://httpbin.org/get"
           }
         }
@@ -140,7 +146,8 @@ The first, is on a per-cassette basis, like so:
     with Betamax.configure() as config:
         c.cassette_library_dir = '.'
 
-    with Betamax(session).use_cassette('some_cassette', preserve_exact_body_bytes=True):
+    with Betamax(session).use_cassette('some_cassette',
+                                       preserve_exact_body_bytes=True):
         r = session.get('http://example.com')
 
 
