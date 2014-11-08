@@ -8,7 +8,9 @@ class BaseSerializer(object):
     """
     Base Serializer class that provides an interface for other serializers.
 
-    Usage::
+    Usage:
+
+    .. code-block:: python
 
         from betamax import Betamax, BaseSerializer
 

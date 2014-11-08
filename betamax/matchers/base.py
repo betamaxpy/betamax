@@ -7,7 +7,9 @@ class BaseMatcher(object):
     Base class that ensures sub-classes that implement custom matchers can be
     registered and have the only method that is required.
 
-    Usage::
+    Usage:
+
+    .. code-block:: python
 
         from betamax import Betamax, BaseMatcher
 
