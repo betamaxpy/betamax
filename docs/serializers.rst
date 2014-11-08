@@ -31,7 +31,7 @@ implement three methods:
 
 Here's the default (JSON) serializer as an example:
 
-.. literalinclude:: ../betamax/serializers/json.py
+.. literalinclude:: ../betamax/serializers/json_serializer.py
     :language: python
 
 
