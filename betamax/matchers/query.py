@@ -13,7 +13,7 @@ class QueryMatcher(BaseMatcher):
     name = 'query'
 
     def to_dict(self, query):
-        """Turn the query string into a dictionary"""
+        """Turn the query string into a dictionary."""
         return parse_qs(query or '')  # Protect against None
 
     def match(self, request, recorded_request):

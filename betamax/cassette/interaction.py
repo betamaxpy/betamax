@@ -27,11 +27,11 @@ class Interaction(object):
         self.deserialize()
 
     def as_response(self):
-        """Returns the Interaction as a Response object."""
+        """Return the Interaction as a Response object."""
         return self.recorded_response
 
     def deserialize(self):
-        """Turns a serialized interaction into a Response."""
+        """Turn a serialized interaction into a Response."""
         r = deserialize_response(self.json['response'])
         r.request = deserialize_prepared_request(self.json['request'])
         self.recorded_at = datetime.strptime(

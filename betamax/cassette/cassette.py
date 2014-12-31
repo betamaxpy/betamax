@@ -123,11 +123,11 @@ class Cassette(object):
         return None
 
     def is_empty(self):
-        """Determines if the cassette when loaded was empty."""
+        """Determine if the cassette was empty when loaded."""
         return not self.serialized
 
     def is_recording(self):
-        """Returns if the cassette is recording."""
+        """Return whether the cassette is recording."""
         values = {
             'none': False,
             'once': self.is_empty(),
