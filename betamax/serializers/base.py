@@ -60,7 +60,7 @@ class BaseSerializer(object):
         return None
 
     def serialize(self, cassette_data):
-        """This is a method that must be implemented by the Serializer author.
+        """A method that must be implemented by the Serializer author.
 
         :param dict cassette_data: A dictionary with two keys:
             ``http_interactions``, ``recorded_with``.
@@ -69,7 +69,7 @@ class BaseSerializer(object):
         raise NotImplementedError(NOT_IMPLEMENTED_ERROR_MSG)
 
     def deserialize(self, cassette_data):
-        """This is a method that must be implemented by the Serializer author.
+        """A method that must be implemented by the Serializer author.
 
         The return value is extremely important. If it is not empty, the
         dictionary returned must have the following structure::

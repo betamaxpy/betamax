@@ -51,7 +51,7 @@ class BaseMatcher(object):
         return None
 
     def match(self, request, recorded_request):
-        """This is a method that must be implemented by the user.
+        """A method that must be implemented by the user.
 
         :param PreparedRequest request: A requests PreparedRequest object
         :param dict recorded_request: A dictionary containing the serialized
