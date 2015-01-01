@@ -11,9 +11,9 @@ from .query import QueryMatcher
 from .uri import URIMatcher
 
 
-__all__ = ['BaseMatcher', 'BodyMatcher', 'DigestAuthMatcher',
+__all__ = ('BaseMatcher', 'BodyMatcher', 'DigestAuthMatcher',
            'HeadersMatcher', 'HostMatcher', 'MethodMatcher', 'PathMatcher',
-           'QueryMatcher', 'URIMatcher']
+           'QueryMatcher', 'URIMatcher')
 
 
 _matchers = [BodyMatcher, DigestAuthMatcher, HeadersMatcher, HostMatcher,

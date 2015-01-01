@@ -10,4 +10,4 @@ _serializers = [JSONSerializer]
 serializer_registry.update(dict((s.name, s()) for s in _serializers))
 del _serializers
 
-__all__ = ['BaseSerializer', 'JSONSerializer', 'SerializerProxy']
+__all__ = ('BaseSerializer', 'JSONSerializer', 'SerializerProxy')
