@@ -52,6 +52,7 @@ class Configuration(object):
         - ``placeholders``
         - ``re_record_interval``
         - ``record_mode``
+        - ``preserve_exact_body_bytes``
 
         Other options will be ignored.
         """
