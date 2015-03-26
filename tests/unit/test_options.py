@@ -5,7 +5,7 @@ from betamax.options import Options, validate_record, validate_matchers
 
 class TestValidators(unittest.TestCase):
     def test_validate_record(self):
-        for mode in ['once', 'none', 'all', 'new_episodes']:
+        for mode in ['once', 'none', 'all', 'new_episodes', 'never']:
             assert validate_record(mode) is True
 
     def test_validate_matchers(self):

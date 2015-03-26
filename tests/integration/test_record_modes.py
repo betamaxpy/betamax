@@ -47,6 +47,23 @@ class TestRecordNone(IntegrationHelper):
         self.cassette_created = False
 
 
+class TestRecordNever(IntegrationHelper):
+    def test_raises_exception_when_no_interactions_present(self):
+        s = self.session
+        with Betamax(s) as betamax:
+            betamax.use_cassette('test', record='never')
+            self.cassette_created = False
+            assert betamax.current_cassette is not None
+            self.assertRaises(BetamaxError, s.get, 'http://httpbin.org/get')
+
+    def test_record_never_does_not_create_cassettes(self):
+        s = self.session
+        with Betamax(s) as betamax:
+            self.assertRaises(ValueError, betamax.use_cassette,
+                              'test_record_never', record='never')
+        self.cassette_created = False
+
+
 class TestRecordNewEpisodes(IntegrationHelper):
     def setUp(self):
         super(TestRecordNewEpisodes, self).setUp()
