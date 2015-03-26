@@ -2,7 +2,7 @@ from .cassette import Cassette
 
 
 def validate_record(record):
-    return record in ['all', 'new_episodes', 'none', 'once']
+    return record in ['all', 'new_episodes', 'none', 'once', 'never']
 
 
 def validate_matchers(matchers):
