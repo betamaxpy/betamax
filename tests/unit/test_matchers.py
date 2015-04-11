@@ -49,7 +49,7 @@ class TestMatchers(unittest.TestCase):
             'method': 'GET',
         })
         assert match(self.p, {
-            'body': '',
+            'body': b'',
             'headers': {'User-Agent': 'betamax/test'},
             'uri': 'http://example.com/path/to/end/point?query=string',
             'method': 'GET',
@@ -66,7 +66,7 @@ class TestMatchers(unittest.TestCase):
             'method': 'GET',
         }) is False
         assert match(p, {
-            'body': '',
+            'body': b'',
             'headers': {'User-Agent': 'betamax/test'},
             'uri': 'http://example.com/path/to/end/point?query=string',
             'method': 'GET',
