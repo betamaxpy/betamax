@@ -338,6 +338,13 @@ class TestInteraction(unittest.TestCase):
         headers = dict((k, v[0]) for k, v in self.response['headers'].items())
         assert headers == r.headers
 
+        tested_cookie = False
+        for cookie in r.cookies:
+            cookie_str = "{0}={1}".format(cookie.name, cookie.value)
+            assert cookie_str == r.headers['Set-Cookie']
+            tested_cookie = True
+        assert tested_cookie
+
         assert self.response['body']['string'] == decode(r.content)
         actual_req = r.request
         expected_req = self.request
