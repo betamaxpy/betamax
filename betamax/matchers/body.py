@@ -9,4 +9,4 @@ class BodyMatcher(BaseMatcher):
 
     def match(self, request, recorded_request):
         recorded_request = deserialize_prepared_request(recorded_request)
-        return recorded_request.body == (request.body or '')
+        return recorded_request.body == (request.body or b'')
