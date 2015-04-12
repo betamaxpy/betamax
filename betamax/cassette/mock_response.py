@@ -1,6 +1,5 @@
-import re
-
 from email import parser, message
+import sys
 
 
 class MockHTTPResponse(object):
@@ -10,6 +9,8 @@ class MockHTTPResponse(object):
         h = ["%s: %s" % (k, v) for (k, v) in headers.items()]
         h = map(coerce_content, h)
         h = '\r\n'.join(h)
+        if sys.version_info < (2, 7):
+            h = h.encode()
         p = parser.Parser(EmailMessage)
         # Thanks to Python 3, we have to use the slightly more awful API below
         # mimetools was deprecated so we have to use email.message.Message
@@ -23,4 +24,4 @@ class MockHTTPResponse(object):
 
 class EmailMessage(message.Message):
     def getheaders(self, value, *args):
-        return re.split(b', ', self.get(value, b'', *args))
+        return self.get_all(value, [])
