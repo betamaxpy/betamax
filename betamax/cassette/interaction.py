@@ -35,7 +35,8 @@ class Interaction(object):
         """Turn a serialized interaction into a Response."""
         r = deserialize_response(self.json['response'])
         r.request = deserialize_prepared_request(self.json['request'])
-        extract_cookies_to_jar(r.cookies, r.request, r.raw)
+        if not r.cookies:  # Load from headers only for backwards compatability
+            extract_cookies_to_jar(r.cookies, r.request, r.raw)
         self.recorded_at = datetime.strptime(
             self.json['recorded_at'], '%Y-%m-%dT%H:%M:%S'
         )
