@@ -73,6 +73,15 @@ class TestSerialization(unittest.TestCase):
         assert serialized['url'] == 'http://example.com'
         assert serialized['status'] == {'code': 200, 'message': 'OK'}
 
+    def test_serialize_response__with_cookies(self):
+        r = Response()
+        r.headers = CaseInsensitiveDict({'set-cookie': 'a=1, b=2'})
+        r.cookies.set('a', '1')
+        r.cookies.set('b', '2')
+        serialized = util.serialize_response(r, False)
+        assert serialized['headers'] == {'set-cookie': ['a=1, b=2']}
+        assert serialized['cookies'] == util.encode_cookiejar(r.cookies)
+
     def test_deserialize_response_old(self):
         """For the previous version of Betamax and backwards compatibility."""
         s = {
@@ -115,6 +124,25 @@ class TestSerialization(unittest.TestCase):
         assert r.url == 'http://example.com/'
         assert r.status_code == 200
         assert r.reason == 'OK'
+        assert not r.cookies
+
+    def test_deserialize_response__with_cookies(self):
+        cookie_dict = {'name': 'serialized', 'value': 'cookie', 'domain': 'a'}
+        dummy = Response()
+        dummy.cookies.set(**cookie_dict)
+        s = {
+            'body': {
+                'string': decode('foo'),
+                'encoding': 'utf-8'
+            },
+            'cookies': [cookie_dict],
+            'headers': {},
+            'url': 'http://example.com/',
+            'status': {'code': 200, 'message': 'OK'},
+            'recorded_at': '2013-08-31T00:00:01'
+        }
+        r = util.deserialize_response(s)
+        assert r.cookies == dummy.cookies
 
     def test_serialize_prepared_request(self):
         r = Request()

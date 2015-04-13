@@ -91,12 +91,15 @@ def serialize_response(response, preserve_exact_body_bytes):
     body = {'encoding': response.encoding}
     add_body(response, preserve_exact_body_bytes, body)
 
-    return {
+    serialized = {
         'body': body,
         'headers': dict((k, [v]) for k, v in response.headers.items()),
         'status': {'code': response.status_code, 'message': response.reason},
         'url': response.url,
     }
+    if response.cookies:
+        serialized['cookies'] = encode_cookiejar(response.cookies)
+    return serialized
 
 
 def deserialize_response(serialized):
@@ -111,6 +114,8 @@ def deserialize_response(serialized):
     else:
         r.status_code = serialized['status_code']
         r.reason = _codes[r.status_code][0].upper()
+    if 'cookies' in serialized:
+        r.cookies = decode_cookiejar(serialized['cookies'])
     add_urllib3_response(serialized, r)
     return r
 
@@ -131,6 +136,24 @@ def add_urllib3_response(serialized, response):
         original_response=MockHTTPResponse(response.headers)
     )
     response.raw = h
+
+
+def decode_cookiejar(cookies_list):
+    cookiejar = RequestsCookieJar()
+    for cookie_dict in cookies_list:
+        cookiejar.set(**cookie_dict)
+    return cookiejar
+
+
+def encode_cookiejar(cookiejar):
+    attrs = ['name', 'version', 'value', 'port', 'domain', 'path', 'secure',
+             'expires', 'discard', 'comment', 'comment_url', 'rfc2109']
+    cookies = []
+    for cookie in cookiejar:
+        cookie_dict = dict((attr, getattr(cookie, attr)) for attr in attrs)
+        cookie_dict['rest'] = cookie._rest
+        cookies.append(cookie_dict)
+    return cookies
 
 
 def timestamp():
