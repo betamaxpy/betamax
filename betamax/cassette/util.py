@@ -112,7 +112,7 @@ def deserialize_response(serialized):
     for header_name, header_list in serialized['headers'].items():
         if isinstance(header_list, list):
             for header_value in header_list:
-                header_dict.add(header_name, header_list)
+                header_dict.add(header_name, header_value)
         else:
             header_dict.add(header_name, header_list)
     r.headers = CaseInsensitiveDict(header_dict)
