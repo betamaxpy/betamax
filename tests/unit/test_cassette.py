@@ -9,6 +9,7 @@ from betamax import serializers
 from betamax.cassette import util
 from requests.models import Response, Request
 from requests.packages import urllib3
+from requests.packages.urllib3._collections import HTTPHeaderDict
 from requests.structures import CaseInsensitiveDict
 
 
@@ -63,7 +64,7 @@ class TestSerialization(unittest.TestCase):
                 'string': decode('foo'),
                 'encoding': 'utf-8'
             }
-        }, r)
+        }, r, HTTPHeaderDict())
         serialized = util.serialize_response(r, False)
         assert serialized is not None
         assert serialized != {}
@@ -169,7 +170,7 @@ class TestSerialization(unittest.TestCase):
                 'string': decode('foo'),
                 'encoding': 'utf-8'
             }
-        }, r)
+        }, r, HTTPHeaderDict())
         assert isinstance(r.raw, urllib3.response.HTTPResponse)
         assert r.content == b'foo'
         assert isinstance(r.raw._original_response, cassette.MockHTTPResponse)
@@ -202,7 +203,7 @@ class TestCassette(unittest.TestCase):
                 'string': decode('foo'),
                 'encoding': 'utf-8'
             }
-        }, r)
+        }, r, HTTPHeaderDict({'Content-Type': decode('foo')}))
         self.response = r
 
         # Create an associated request
@@ -236,7 +237,7 @@ class TestCassette(unittest.TestCase):
                     'string': decode('foo'),
                     'encoding': 'utf-8',
                 },
-                'headers': {'Content-Type': [decode('foo')]},
+                'headers': {'content-type': [decode('foo')]},
                 'status': {'code': 200, 'message': 'OK'},
                 'url': 'http://example.com',
             },
@@ -408,9 +409,9 @@ class TestInteraction(unittest.TestCase):
 
 class TestMockHTTPResponse(unittest.TestCase):
     def setUp(self):
-        self.resp = cassette.MockHTTPResponse({
+        self.resp = cassette.MockHTTPResponse(HTTPHeaderDict({
             decode('Header'): decode('value')
-        })
+        }))
 
     def test_isclosed(self):
         assert self.resp.isclosed() is False
