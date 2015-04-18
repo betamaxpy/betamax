@@ -1,6 +1,16 @@
 History
 =======
 
+0.4.2 - 2015-04-18
+------------------
+
+- Fix issue #58 reported by @bboe
+
+  Multiple cookies were not being properly stored or replayed after being
+  recorded.
+
+- @leighlondon converted ``__all__`` to a tuple
+
 0.4.1 - 2014-09-24
 ------------------
 
