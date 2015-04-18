@@ -2,6 +2,7 @@ from .mock_response import MockHTTPResponse
 from datetime import datetime
 from requests.models import PreparedRequest, Response
 from requests.packages.urllib3 import HTTPResponse
+from requests.packages.urllib3._collections import HTTPHeaderDict
 from requests.structures import CaseInsensitiveDict
 from requests.status_codes import _codes
 from requests.cookies import RequestsCookieJar
@@ -90,10 +91,14 @@ def deserialize_prepared_request(serialized):
 def serialize_response(response, preserve_exact_body_bytes):
     body = {'encoding': response.encoding}
     add_body(response, preserve_exact_body_bytes, body)
+    header_map = response.raw.headers
+    headers = {}
+    for header_name in header_map.keys():
+        headers[header_name] = header_map.getlist(header_name)
 
     return {
         'body': body,
-        'headers': dict((k, [v]) for k, v in response.headers.items()),
+        'headers': headers,
         'status': {'code': response.status_code, 'message': response.reason},
         'url': response.url,
     }
@@ -102,8 +107,16 @@ def serialize_response(response, preserve_exact_body_bytes):
 def deserialize_response(serialized):
     r = Response()
     r.encoding = serialized['body']['encoding']
-    h = [(k, from_list(v)) for k, v in serialized['headers'].items()]
-    r.headers = CaseInsensitiveDict(h)
+    header_dict = HTTPHeaderDict()
+
+    for header_name, header_list in serialized['headers'].items():
+        if isinstance(header_list, list):
+            for header_value in header_list:
+                header_dict.add(header_name, header_list)
+        else:
+            header_dict.add(header_name, header_list)
+    r.headers = CaseInsensitiveDict(header_dict)
+
     r.url = serialized.get('url', '')
     if 'status' in serialized:
         r.status_code = serialized['status']['code']
@@ -111,11 +124,11 @@ def deserialize_response(serialized):
     else:
         r.status_code = serialized['status_code']
         r.reason = _codes[r.status_code][0].upper()
-    add_urllib3_response(serialized, r)
+    add_urllib3_response(serialized, r, header_dict)
     return r
 
 
-def add_urllib3_response(serialized, response):
+def add_urllib3_response(serialized, response, headers):
     if 'base64_string' in serialized['body']:
         body = io.BytesIO(
             base64.b64decode(serialized['body']['base64_string'].encode())
@@ -126,9 +139,9 @@ def add_urllib3_response(serialized, response):
     h = HTTPResponse(
         body,
         status=response.status_code,
-        headers=response.headers,
+        headers=headers,
         preload_content=False,
-        original_response=MockHTTPResponse(response.headers)
+        original_response=MockHTTPResponse(headers)
     )
     response.raw = h
 
