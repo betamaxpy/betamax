@@ -203,7 +203,7 @@ class TestCassette(unittest.TestCase):
                 'string': decode('foo'),
                 'encoding': 'utf-8'
             }
-        }, r, HTTPHeaderDict())
+        }, r, HTTPHeaderDict({'Content-Type': decode('foo')}))
         self.response = r
 
         # Create an associated request
