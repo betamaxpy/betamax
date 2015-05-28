@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-"""A set of fixtures to integrate Betamax with py.test."""
+"""A set of fixtures to integrate Betamax with py.test.
+
+.. autofunction:: betamax_session
+
+"""
 
 from __future__ import absolute_import
 
