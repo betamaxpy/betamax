@@ -30,10 +30,10 @@ def betamax_session(request):
     cassette_name = ''
 
     if request.module is not None:
-        cassette_name += request.module.__name__ + '_'
+        cassette_name += request.module.__name__ + '.'
 
     if request.cls is not None:
-        cassette_name += request.cls.__name__ + '_'
+        cassette_name += request.cls.__name__ + '.'
 
     cassette_name += request.function.__name__
 

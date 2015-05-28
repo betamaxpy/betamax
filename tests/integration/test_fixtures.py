@@ -10,8 +10,8 @@ class TestPyTestFixtures:
         """After test hook to assert everything."""
         def finalizer():
             test_dir = os.path.abspath('.')
-            cassette_name = ('tests.integration.test_fixtures_'  # Module name
-                             'TestPyTestFixtures_'  # Class name
+            cassette_name = ('tests.integration.test_fixtures.'  # Module name
+                             'TestPyTestFixtures.'  # Class name
                              'test_pytest_fixture'  # Test function name
                              '.json')
             file_name = os.path.join(test_dir, 'tests', 'cassettes',
