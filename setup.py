@@ -42,6 +42,9 @@ setup(
     package_data={'': ['LICENSE', 'AUTHORS.rst']},
     include_package_data=True,
     install_requires=requires,
+    entry_points={
+        'pytest11': ['pytest-betamax = betamax.fixtures.pytest']
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved',
