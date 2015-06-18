@@ -1,4 +1,5 @@
 import functools
+import unittest
 
 import requests
 
@@ -17,8 +18,15 @@ def use_cassette(cassette_name, cassette_library_dir=None,
                 cassette_library_dir=cassette_library_dir,
                 default_cassette_options=default_cassette_options
             )
+
+            fst, args = args[0], args[1:]
+            if isinstance(fst, unittest.TestCase):
+                args = (fst, session) + args
+            else:
+                args = (session, fst) + args
+
             with recr.use_cassette(cassette_name, **use_cassette_kwargs):
-                func(session, *args, **kwargs)
+                func(*args, **kwargs)
 
         return test_wrapper
     return actual_decorator
