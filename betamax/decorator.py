@@ -19,11 +19,14 @@ def use_cassette(cassette_name, cassette_library_dir=None,
                 default_cassette_options=default_cassette_options
             )
 
-            fst, args = args[0], args[1:]
-            if isinstance(fst, unittest.TestCase):
-                args = (fst, session) + args
+            if args:
+                fst, args = args[0], args[1:]
+                if isinstance(fst, unittest.TestCase):
+                    args = (fst, session) + args
+                else:
+                    args = (session, fst) + args
             else:
-                args = (session, fst) + args
+                args = (session,)
 
             with recr.use_cassette(cassette_name, **use_cassette_kwargs):
                 func(*args, **kwargs)
