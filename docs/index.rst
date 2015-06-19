@@ -6,6 +6,7 @@ Contents of Betamax's Documentation
 .. toctree::
    :maxdepth: 2
 
+   introduction
    api
    cassettes
    implementation_details
