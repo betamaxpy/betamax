@@ -1,0 +1,188 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2015-06-21T19:22:54",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "User-Agent": [
+            "python-requests/2.7.0 CPython/2.7.9 Darwin/14.1.0"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://httpbin.org/get"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"args\": {}, \n  \"headers\": {\n    \"Accept\": \"*/*\", \n    \"Accept-Encoding\": \"gzip, deflate\", \n    \"Host\": \"httpbin.org\", \n    \"User-Agent\": \"python-requests/2.7.0 CPython/2.7.9 Darwin/14.1.0\"\n  }, \n  \"origin\": \"127.0.0.1\", \n  \"url\": \"https://httpbin.org/get\"\n}\n"
+        },
+        "headers": {
+          "access-control-allow-credentials": [
+            "true"
+          ],
+          "access-control-allow-origin": [
+            "*"
+          ],
+          "connection": [
+            "keep-alive"
+          ],
+          "content-length": [
+            "265"
+          ],
+          "content-type": [
+            "application/json"
+          ],
+          "date": [
+            "Sun, 21 Jun 2015 19:22:54 GMT"
+          ],
+          "server": [
+            "nginx"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://httpbin.org/get"
+      }
+    },
+    {
+      "recorded_at": "2015-06-21T19:22:54",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\"some-attribute\": \"some-value\"}"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "32"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.7.0 CPython/2.7.9 Darwin/14.1.0"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://httpbin.org/post?id=20"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"args\": {\n    \"id\": \"20\"\n  }, \n  \"data\": \"{\\\"some-attribute\\\": \\\"some-value\\\"}\", \n  \"files\": {}, \n  \"form\": {}, \n  \"headers\": {\n    \"Accept\": \"*/*\", \n    \"Accept-Encoding\": \"gzip, deflate\", \n    \"Content-Length\": \"32\", \n    \"Content-Type\": \"application/json\", \n    \"Host\": \"httpbin.org\", \n    \"User-Agent\": \"python-requests/2.7.0 CPython/2.7.9 Darwin/14.1.0\"\n  }, \n  \"json\": {\n    \"some-attribute\": \"some-value\"\n  }, \n  \"origin\": \"127.0.0.1\", \n  \"url\": \"https://httpbin.org/post?id=20\"\n}\n"
+        },
+        "headers": {
+          "access-control-allow-credentials": [
+            "true"
+          ],
+          "access-control-allow-origin": [
+            "*"
+          ],
+          "connection": [
+            "keep-alive"
+          ],
+          "content-length": [
+            "495"
+          ],
+          "content-type": [
+            "application/json"
+          ],
+          "date": [
+            "Sun, 21 Jun 2015 19:22:54 GMT"
+          ],
+          "server": [
+            "nginx"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://httpbin.org/post?id=20"
+      }
+    },
+    {
+      "recorded_at": "2015-06-21T19:22:54",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "User-Agent": [
+            "python-requests/2.7.0 CPython/2.7.9 Darwin/14.1.0"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://httpbin.org/get?id=20"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"args\": {\n    \"id\": \"20\"\n  }, \n  \"headers\": {\n    \"Accept\": \"*/*\", \n    \"Accept-Encoding\": \"gzip, deflate\", \n    \"Host\": \"httpbin.org\", \n    \"User-Agent\": \"python-requests/2.7.0 CPython/2.7.9 Darwin/14.1.0\"\n  }, \n  \"origin\": \"127.0.0.1\", \n  \"url\": \"https://httpbin.org/get?id=20\"\n}\n"
+        },
+        "headers": {
+          "access-control-allow-credentials": [
+            "true"
+          ],
+          "access-control-allow-origin": [
+            "*"
+          ],
+          "connection": [
+            "keep-alive"
+          ],
+          "content-length": [
+            "289"
+          ],
+          "content-type": [
+            "application/json"
+          ],
+          "date": [
+            "Sun, 21 Jun 2015 19:22:54 GMT"
+          ],
+          "server": [
+            "nginx"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://httpbin.org/get?id=20"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.4.2"
+}

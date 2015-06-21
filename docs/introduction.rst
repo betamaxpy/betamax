@@ -80,8 +80,41 @@ specified cassette directory. It should look something like:
 .. literalinclude:: ../examples/cassettes/our-first-recorded-session.json
     :language: javascript
 
-Now, each subsequent time that we run that script, we will use the recorded 
+Now, each subsequent time that we run that script, we will use the recorded
 interaction instead of talking to the internet over and over again.
+
+Recording More Complex Cassettes
+--------------------------------
+
+Most times we cannot isolate our tests to a single request at a time, so we'll
+have cassettes that make multiple requests. Betamax can handle these with
+ease, let's take a look at an example.
+
+.. literalinclude:: ../examples/more_complicated_cassettes.py
+    :language: python
+
+Before we run this example, we have to install a new package:
+``betamax-serializers``, e.g., ``pip install betamax-serializers``.
+
+If we now run our new example, we'll see a new file appear in our
+:file:`examples/cassettes/` directory named
+:file:`more-complciated-cassettes.json`. This cassette will be much larger as
+a result of making 3 requests and receiving 3 responses. You'll also notice
+that we imported :mod:`betamax_serializers.pretty_json` and called
+:meth:`~betamax.Betamax.register_serializer` with
+:class:`~betamax_serializers.pretty_json.PrettyJSONSerializer`. Then we added
+a keyword argument to our invocation of :meth:`~betamax.Betamax.use_cassette`,
+``serialize_with='prettyjson'``.
+:class:`~betamax_serializers.pretty_json.PrettyJSONSerializer` is a class
+provided by the ``betamax-serializers`` package on PyPI that can serialize and
+deserialize cassette data into JSON while allowing it to be easily human
+readable and pretty. Let's see the results:
+
+.. literalinclude:: ../examples/cassettes/more-complicated-cassettes.json
+    :language: javascript
+
+This makes the cassette easy to read and helps us recognize that requests and
+responses are paired together.
 
 .. links
 
