@@ -17,3 +17,4 @@ Contributors
 ------------
 
 - Marc Abramowitz (@msabramo)
+- Bryce Boe <bbzbryce@gmail.com> (@bboe)

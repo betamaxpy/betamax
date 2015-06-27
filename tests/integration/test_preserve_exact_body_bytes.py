@@ -12,11 +12,14 @@ class TestPreserveExactBodyBytes(IntegrationHelper):
 
         with Betamax(self.session) as b:
             b.use_cassette('preserve_exact_bytes',
-                           preserve_exact_body_bytes=True)
-            r = self.session.get('https://httpbin.org/get')
+                           preserve_exact_body_bytes=True,
+                           match_requests_on=['uri', 'method', 'body'])
+            r = self.session.post('https://httpbin.org/post',
+                                  data={'a': 1, 'b': 2})
             assert 'headers' in r.json()
 
             interaction = b.current_cassette.interactions[0].json
+            assert 'base64_string' in interaction['request']['body']
             assert 'base64_string' in interaction['response']['body']
 
 
