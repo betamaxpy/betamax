@@ -9,4 +9,13 @@ class BodyMatcher(BaseMatcher):
 
     def match(self, request, recorded_request):
         recorded_request = deserialize_prepared_request(recorded_request)
-        return recorded_request.body == (request.body or b'')
+
+        if request.body:
+            if type(request.body) == type(recorded_request.body):
+                request_body = request.body
+            else:
+                request_body = request.body.encode('utf-8')
+        else:
+            request_body = b''
+
+        return recorded_request.body == request_body

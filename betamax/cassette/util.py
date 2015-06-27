@@ -9,6 +9,7 @@ from requests.cookies import RequestsCookieJar
 
 import base64
 import io
+import sys
 
 
 def coerce_content(content, encoding=None):
@@ -52,6 +53,9 @@ def add_body(r, preserve_exact_body_bytes, body_dict):
 
     if (preserve_exact_body_bytes or
             'gzip' in r.headers.get('Content-Encoding', '')):
+        if sys.version_info >= (3, 0) and hasattr(body, 'encode'):
+            body = body.encode(body_dict['encoding'] or 'utf-8')
+
         body_dict['base64_string'] = base64.b64encode(body).decode()
     else:
         body_dict['string'] = coerce_content(body, body_dict['encoding'])
