@@ -1,3 +1,5 @@
+.. _getting_started:
+
 Getting Started
 ===============
 
@@ -114,7 +116,7 @@ readable and pretty. Let's see the results:
     :language: javascript
 
 This makes the cassette easy to read and helps us recognize that requests and
-responses are paired together.
+responses are paired together. We'll explore cassettes more a bit later.
 
 .. links
 

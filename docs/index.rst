@@ -7,6 +7,7 @@ Contents of Betamax's Documentation
    :maxdepth: 2
 
    introduction
+   long_term_usage
    api
    cassettes
    implementation_details
