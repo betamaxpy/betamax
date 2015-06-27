@@ -15,7 +15,7 @@ class TestPreserveExactBodyBytes(IntegrationHelper):
                            preserve_exact_body_bytes=True,
                            match_requests_on=['uri', 'method', 'body'])
             r = self.session.post('https://httpbin.org/post',
-                                  data={'a': 1, 'b': 2})
+                                  data={'a': 1})
             assert 'headers' in r.json()
 
             interaction = b.current_cassette.interactions[0].json
