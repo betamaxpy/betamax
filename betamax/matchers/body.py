@@ -11,7 +11,7 @@ class BodyMatcher(BaseMatcher):
         recorded_request = deserialize_prepared_request(recorded_request)
 
         if request.body:
-            if type(request.body) == type(recorded_request.body):
+            if type(request.body) == type(recorded_request.body):  # flake8: noqa
                 request_body = request.body
             else:
                 request_body = request.body.encode('utf-8')
