@@ -41,3 +41,46 @@ Now when we run that we should see something like this:
 This is what we do expect to see. So, how do we fix it?
 
 We have a few options to fix it.
+
+Option 1: Re-recording the Cassette
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+One of the easiest ways to fix this situation is to simply remove the cassette
+that was recorded and run the script again. This will recreate the cassette
+and subsequent runs will work just fine.
+
+To be clear, we're advocating for this option that the user do:
+
+.. code::
+
+    $ rm examples/cassettes/{{ cassette-name }}
+
+This is the favorable option if you don't foresee yourself needing to add new
+interactions often.
+
+Option 2: Changing the Record Mode
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A different way would be to update the recording mode used by Betamax. We
+would update the line in our file that currently reads:
+
+.. code-block:: python
+
+    with recorder.use_cassette('more-complicated-cassettes',
+                               serialize_with='prettyjson',
+                               match_requests_on=matchers):
+
+to add one more parameter to the call to :meth:`~betamax.Betamax.use_cassette`.
+We want to use the ``record`` parameter to tell Betamax to use either the
+``new_episodes`` or ``all`` modes. Which you choose depends on your use case.
+
+``new_episodes`` will only record new request/response interactions that
+Betamax sees. ``all`` will just re-record every interaction every time. In our
+example, we'll use ``new_episodes`` so our code now looks like:
+
+.. code-block:: python
+
+    with recorder.use_cassette('more-complicated-cassettes',
+                               serialize_with='prettyjson',
+                               match_requests_on=matchers,
+                               record='new_episodes'):
