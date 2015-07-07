@@ -90,8 +90,80 @@ the default matchers and preserve exact body bytes, you would do
         'uri',
         'headers',
     ]
-    config.default_cassette_options['preserve_exact_body_bytes'] = True
+    config.preserve_exact_body_bytes = True
 
+Filtering Sensitive Data
+````````````````````````
+
+It's unlikely that you'll want to record an interaction that will not require
+authentication. For this we can define placeholders in our cassettes. Let's
+use a very real example.
+
+Let's say that you want to get your user data from GitHub using Requests. You
+might have code that looks like this:
+
+.. code-block:: python
+
+    def me(username, password, session):
+        r = session.get('https://api.github.com/user', auth=(username, password))
+        r.raise_for_status()
+        return r.json()
+
+You would test this something like:
+
+.. code-block:: python
+
+    import os
+
+    import betmax
+    import requests
+
+    from my_module import me
+
+    session = requests.Session()
+    recorder = betamax.Betamax(session)
+    username = os.environ.get('USERNAME', 'testuser')
+    password = os.environ.get('PASSWORD', 'testpassword')
+
+    with recorder.use_cassette('test-me'):
+        json = me(username, password, session)
+        # assertions about the JSON returned
+
+The problem is that now your username and password will be recorded in the
+cassette which you don't then want to push to your version control. How can we
+prevent that from happening?
+
+.. code-block:: python
+
+    import base64
+
+    username = os.environ.get('USERNAME', 'testuser')
+    password = os.environ.get('PASSWORD', 'testpassword')
+    config.define_cassette_placeholder(
+        '<GITHUB-AUTH>',
+        base64.b64encode(
+            '{0}:{1}'.format(username, password).encode('utf-8')
+        )
+    )
+
+.. note::
+
+    Obviously you can refactor this a bit so you can pull those environment
+    variables out in only one place, but I'd rather be clear than not here.
+
+The first time you run the test script you would invoke your tests like so:
+
+.. code-block:: sh
+
+    $ USERNAME='my-real-username' PASSWORD='supersecretep@55w0rd' \
+      python test_script.py
+
+Future runs of the script could simply be run without those environment
+variables, e.g.,
+
+.. code-block:: sh
+
+    $ python test_script.py
 
 .. links
 
