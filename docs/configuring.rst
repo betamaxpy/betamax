@@ -165,6 +165,101 @@ variables, e.g.,
 
     $ python test_script.py
 
+This means that you can run these tests on a service like Travis-CI without
+providing credentials.
+
+Per-Use Configuration
+---------------------
+
+Each time you create a :class:`~betamax.Betamax` instance or use
+:meth:`~betamax.Betamax.use_cassette`, you can pass some of the options from
+above.
+
+Setting the Directory in which Betamax Should Store Cassette Files
+``````````````````````````````````````````````````````````````````
+
+When using per-use configuration of Betamax, you can specify the cassette
+directory when you instantiate a :class:`~betamax.Betamax` object:
+
+.. code-block:: python
+
+    session = requests.Session()
+    recorder = betamax.Betamax(session,
+                               cassette_library_dir='tests/cassettes/')
+
+Setting Default Cassette Options
+````````````````````````````````
+
+You can also set default cassette options when instantiating a
+:class:`~betamax.Betamax` object:
+
+.. code-block:: python
+
+    session = requests.Session()
+    recorder = betamax.Betamax(session, default_cassette_options={
+        'record_mode': 'once',
+        'match_requests_on': ['method', 'uri', 'headers'],
+        'preserve_exact_body_bytes': True
+    })
+
+You can also set the above when calling :meth:`~betamax.Betamax.use_cassette`:
+
+.. code-block:: python
+
+    session = requests.Session()
+    recorder = betamax.Betamax(session)
+    with recorder.use_cassette('cassette-name',
+                               preserve_exact_body_bytes=True,
+                               match_requests_on=['method', 'uri', 'headers'],
+                               record='once'):
+        session.get('https://httpbin.org/get')
+
+Filtering Sensitive Data
+````````````````````````
+
+Filtering sensitive data on a per-usage basis is the only difficult (or
+perhaps, less convenient) case. Cassette placeholders are part of the default
+cassette options, so we'll set this value similarly to how we set the other
+default cassette options, the catch is that placeholders have a specific
+structure. Placeholders are stored as a list of dictionaries. Let's use our
+example above and convert it.
+
+.. code-block:: python
+
+    import base64
+
+    username = os.environ.get('USERNAME', 'testuser')
+    password = os.environ.get('PASSWORD', 'testpassword')
+    session = requests.Session()
+
+    recorder = betamax.Betamax(session, default_cassette_options={
+        'placeholders': [
+            {
+                'placeholder': '<GITHUB-AUTH>',
+                'replace': base64.b64encode(
+                    '{0}:{1}'.format(username, password).encode('utf-8')
+                )
+            }
+        ]
+    })
+
+Note that what we passed as our first argument is assigned to the
+``'placeholder'`` key while the value we're replacing is assigned to the
+``'replace'`` key.
+
+This isn't the typical way that people filter sensitive data because they tend
+to want to do it globally.
+
+Mixing and Matching
+-------------------
+
+It's not uncommon to mix and match configuration methodologies. I do this in
+`github3.py`_. I use global configuration to filter sensitive data and set
+defaults based on the environment the tests are running in. On Travis-CI, the
+record mode is set to ``'none'``. I also set how we match requests and when we
+preserve exact body bytes on a per-use basis.
+
 .. links
 
 .. _VCR: https://relishapp.com/vcr/vcr
+.. _github3.py: https://github.com/sigmavirus24/github3.py
