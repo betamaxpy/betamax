@@ -5,11 +5,12 @@ Contents of Betamax's Documentation
 
 .. toctree::
    :caption: Narrative Documentation
-   :maxdepth: 2
+   :maxdepth: 3
 
    introduction
    long_term_usage
    configuring
+   record_modes
 
 .. toctree::
    :caption: API Documentation
