@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "examples/record_modes/none/example_updated.py", line 23, in <module>
+    main()
+  File "examples/record_modes/none/example_updated.py", line 19, in main
+    session.get('https://httpbin.org/get', params={'id': '40'})
+  File "/usr/local/lib/python2.7/site-packages/requests/sessions.py", line 477, in get
+    return self.request('GET', url, **kwargs)
+  File "/usr/local/lib/python2.7/site-packages/requests/sessions.py", line 465, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/local/lib/python2.7/site-packages/requests/sessions.py", line 573, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/local/lib/python2.7/site-packages/betamax/adapter.py", line 91, in send
+    self.cassette))
+betamax.exceptions.BetamaxError: A request was made that could not be handled.
+
+A request was made to https://httpbin.org/get?id=40 that could not be found in none-example.
+
+The settings on the cassette are:
+
+    - record_mode: none
+    - match_options ['method', 'uri'].
+

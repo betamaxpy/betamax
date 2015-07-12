@@ -63,8 +63,66 @@ updating the other interactions that were already recorded.
 None
 ----
 
+The ``'none'`` record mode will:
+
+- Replay previously recorded interactions.
+- Cause an error to be raised for any new requests.
+
+This is useful when your code makes potentially dangerous HTTP requests. The
+``'none'`` record mode guarantees that no new HTTP requests will be made.
+
+Given our file, ``examples/record_modes/none/example_original.py``, with a 
+cassette that already has interactions recorded in 
+``examples/record_modes/none/none-example.json``
+
+.. literalinclude:: ../examples/record_modes/none/example_original.py
+    :language: python
+
+If we then run ``examples/record_modes/none/example_updated.py``
+
+.. literalinclude:: ../examples/record_modes/none/example_updated.py
+    :language: python
+
+We'll see an exception indicating that new interactions were prevented:
+
+.. literalinclude:: ../examples/record_modes/none/example_updated.traceback
+    :language: pytb
+
 Once
 ----
+
+The ``'once'`` record mode will:
+
+- Replay previously recorded interactions.
+- Record new interactions if there is no cassette file.
+- Cause an error to be raised for new requests if there is a cassette file.
+
+It is similar to the ``'new_episodes'`` record mode, but will prevent new,
+unexpected requests from being made (i.e. because the request URI changed
+or whatever).
+
+``'once'`` is the default record mode, used when you do not set one.
+
+If we have a file, ``examples/record_modes/once/example_original.py``,
+
+.. literalinclude:: ../examples/record_modes/once/example_original.py
+    :language: python
+
+And we run it, we'll see a cassette named 
+``examples/record_modes/once/once-example.json`` has been created.
+
+If we then run ``examples/record_modes/once/example_updated.py``,
+
+.. literalinclude:: ../examples/record_modes/once/example_updated.py
+    :language: python
+
+We'll see an exception similar to the one we see when using the ``'none'`` 
+record mode.
+
+.. literalinclude:: ../examples/record_modes/once/example_updated.traceback
+    :language: pytb
+
+
 
 .. _VCR: https://relishapp.com/vcr/vcr
 .. _Record Modes documentation:
