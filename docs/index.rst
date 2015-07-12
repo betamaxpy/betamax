@@ -11,6 +11,7 @@ Contents of Betamax's Documentation
    long_term_usage
    configuring
    record_modes
+   third_party_packages
 
 .. toctree::
    :caption: API Documentation
