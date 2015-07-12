@@ -53,5 +53,5 @@ the cassettes when they're replayed.
 
 
 .. _py.test: http://pytest.org/latest/
-.. _[#]: http://pytest.org/latest/plugins.html
 .. _TravisCI: https://travis-ci.org/
+.. [#] http://pytest.org/latest/plugins.html
