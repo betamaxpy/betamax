@@ -12,6 +12,7 @@ Contents of Betamax's Documentation
    configuring
    record_modes
    third_party_packages
+   usage_patterns
 
 .. toctree::
    :caption: API Documentation
@@ -22,9 +23,6 @@ Contents of Betamax's Documentation
    implementation_details
    matchers
    serializers
-   usage_patterns
-
-
 
 Indices and tables
 ------------------
