@@ -82,55 +82,6 @@ On the other hand, this will raise an exception:
         r = s.post("https://httpbin.org/post",
                    data={"key": "value"})
 
-
-pytest Integration
-^^^^^^^^^^^^^^^^^^
-
-.. versionadded:: 0.5.0
-
-When you install Betamax, it now installs a `pytest`_ fixture by default. To
-use it in your tests you need only follow the `instructions`_ on pytest's
-documentation. To use the ``betamax_session`` fixture for an entire class of
-tests you would do:
-
-.. code-block:: python
-
-    # tests/test_http_integration.py
-    import pytest
-
-    @pytest.mark.usefixtures('betamax_session')
-    class TestMyHttpClient:
-        def test_get(self, betamax_session):
-            betamax_session.get('https://httpbin.org/get')
-
-This will generate a cassette name for you, e.g.,
-``tests.test_http_integration.TestMyHttpClient.test_get``. After running this
-test you would have a cassette file stored in your cassette library directory
-named ``tests.test_http_integration.TestMyHttpClient.test_get.json``. To use
-this fixture at the module level, you need only do
-
-.. code-block:: python
-
-    # tests/test_http_integration.py
-    import pytest
-
-    pytest.mark.usefixtures('betamax_session')
-
-
-    class TestMyHttpClient:
-        def test_get(self, betamax_session):
-            betamax_session.get('https://httpbin.org/get')
-
-    class TestMyOtherHttpClient:
-        def test_post(self, betamax_session):
-            betamax_session.post('https://httpbin.org/post')
-
-
-.. _pytest: http://pytest.org/latest/
-.. _instructions:
-    http://pytest.org/latest/fixture.html#using-fixtures-from-classes-modules-or-projects
-
-
 .. _opinions:
 
 Opinions at Work
