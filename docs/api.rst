@@ -6,6 +6,8 @@ API
 .. autoclass:: Betamax
     :members:
 
+.. autofunction:: betamax.decorator.use_cassette
+
 .. autoclass:: betamax.configure.Configuration
     :members:
 

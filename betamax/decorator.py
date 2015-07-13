@@ -8,7 +8,29 @@ from . import recorder
 
 def use_cassette(cassette_name, cassette_library_dir=None,
                  default_cassette_options={}, **use_cassette_kwargs):
-    """Decorator that provides a Betamax-wrapped Session for tests."""
+    """Provide a Betamax-wrapped Session for convenience.
+
+    This decorator can be used to get a plain Session that has been wrapped in
+    Betamax. For example,
+
+    .. code-block:: python
+
+        from betamax.decorator import use_cassette
+
+        @use_cassette('example-decorator', cassette_library_dir='.')
+        def test_get(session):
+            # do things with session
+
+    :param str cassette_name:
+        Name of the cassette file in which interactions will be stored.
+    :param str cassette_library_dir:
+        Directory in which cassette files will be stored.
+    :param dict default_cassette_options:
+        Dictionary of default cassette options to set for the cassette used
+        when recording these interactions.
+    :param \*\*use_cassette_kwargs:
+        Keyword arguments passed to :meth:`~betamax.Betamax.use_cassette`
+    """
     def actual_decorator(func):
         @functools.wraps(func)
         def test_wrapper(*args, **kwargs):
