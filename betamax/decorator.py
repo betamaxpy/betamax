@@ -10,6 +10,8 @@ def use_cassette(cassette_name, cassette_library_dir=None,
                  default_cassette_options={}, **use_cassette_kwargs):
     """Provide a Betamax-wrapped Session for convenience.
 
+    .. versionadded:: 0.5.0
+
     This decorator can be used to get a plain Session that has been wrapped in
     Betamax. For example,
 
