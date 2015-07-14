@@ -6,6 +6,8 @@ API
 .. autoclass:: Betamax
     :members:
 
+.. autofunction:: betamax.decorator.use_cassette
+
 .. autoclass:: betamax.configure.Configuration
     :members:
 
@@ -81,6 +83,26 @@ On the other hand, this will raise an exception:
         betamax.use_cassette('example', record='none')
         r = s.post("https://httpbin.org/post",
                    data={"key": "value"})
+
+
+Finally, we can also use a decorator in order to simplify things:
+
+.. code-block:: python
+
+    import unittest
+
+    from betamax.decorator import use_cassette
+
+    class TestExample(unittest.TestCase):
+        @use_cassette('example', cassette_library_dir='cassettes')
+        def test_example(self, session):
+            session.get('https://httpbin.org/get')
+
+
+    # Or if you're using something like py.test
+    @use_cassette('example', cassette_library_dir='cassettes')
+    def test_example_pytest(session):
+        session.get('https://httpbin.org/get')
 
 .. _opinions:
 
