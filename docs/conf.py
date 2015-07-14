@@ -244,6 +244,6 @@ texinfo_appendices = []
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.4',
                (None, 'python-inv.txt')),
-#    'requests': ('http://docs.python-requests.org',
-#                 (None, 'requests-inv.txt')),
+    'requests': ('http://docs.python-requests.org/en/latest',
+                 (None, 'requests-inv.txt')),
 }
