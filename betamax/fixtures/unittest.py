@@ -90,6 +90,11 @@ class BetamaxTestCase(unittest.TestCase):
         create a new :class:`requests.Session` and wrap that in a Betamax
         object to record it. At the end of ``setUp``, it will start recording.
         """
+        # Bail out early if the SESSION_CLASS isn't a subclass of
+        # requests.Session
+        self.assertTrue(issubclass(self.SESSION_CLASS, requests.Session))
+        # Make sure if the user is multiply inheriting that all setUps are
+        # called. (If that confuses you, see: https://youtu.be/EiOglTERPEo)
         super(BetamaxTestCase, self).setUp()
 
         cassette_name = self.generate_cassette_name()
