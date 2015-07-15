@@ -1,5 +1,8 @@
 """Minimal :class:`unittest.TestCase` subclass adding Betamax integration.
 
+.. autoclass:: betamax.fixtures.unittest.BetamaxTestCase
+    :members:
+
 When using Betamax with unittest, you can use the traditional style of Betamax
 covered in the documentation thoroughly, or you can use your fixture methods,
 :meth:`unittest.TestCase.setUp` and :meth:`unittest.TestCase.tearDown` to wrap
@@ -65,7 +68,17 @@ class BetamaxTestCase(unittest.TestCase):
     #: Class that is a subclass of :class:`requests.Session`
     SESSION_CLASS = requests.Session
 
-    def _generate_cassette_name(self):
+    def generate_cassette_name(self):
+        """Generates a cassette name for the current test.
+
+        The default format is "%(classname)s.%(testMethodName)s"
+
+        To change the default cassette format, override this method in a
+        subclass.
+
+        :returns: Cassette name for the current test.
+        :rtype: str
+        """
         cls = self.__class_.__name__
         test = self._testMethodName
         return '{0}.{1}'.format(cls, test)
@@ -79,9 +92,9 @@ class BetamaxTestCase(unittest.TestCase):
         """
         super(BetamaxTestCase, self).setUp()
 
-        cassette_name = self._generate_cassette_name()
+        cassette_name = self.generate_cassette_name()
 
-        self.sesion = self.SESSION_CLASS()
+        self.session = self.SESSION_CLASS()
         self.recorder = recorder.Betamax(session=self.session)
         self.recorder.use_cassette(cassette_name)
         self.recorder.start()
