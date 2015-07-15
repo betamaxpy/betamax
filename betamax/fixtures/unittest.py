@@ -79,9 +79,9 @@ class BetamaxTestCase(unittest.TestCase):
         :returns: Cassette name for the current test.
         :rtype: str
         """
-        cls = self.__class_.__name__
+        cls = getattr(self, '__class__')
         test = self._testMethodName
-        return '{0}.{1}'.format(cls, test)
+        return '{0}.{1}'.format(cls.__name__, test)
 
     def setUp(self):
         """Betamax-ified setUp fixture.
