@@ -38,7 +38,7 @@ example, in github3.py, I do the following:
 
     import os
 
-    record_mode = 'never' if os.environ.get('TRAVIS_GH3') else 'once'
+    record_mode = 'none' if os.environ.get('TRAVIS_GH3') else 'once'
 
     with betamax.Betamax.configure() as config:
         config.cassette_library_dir = 'tests/cassettes/'
