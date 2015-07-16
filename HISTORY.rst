@@ -1,6 +1,19 @@
 History
 =======
 
+0.5.0 - 2015-07-15
+------------------
+
+- Add unittest integration in ``betamax.fixtures.unittest``
+
+- Add pytest integration in ``betamax.fixtures.pytest``
+
+- Add a decorator as a short cut for ``use_cassette``
+
+- Fix bug where body bytes were not always encoded on Python 3.2+
+
+  Fixed by @bboe
+
 0.4.2 - 2015-04-18
 ------------------
 
