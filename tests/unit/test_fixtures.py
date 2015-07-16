@@ -43,31 +43,27 @@ class TestPyTestFixture(unittest.TestCase):
         self.mocked_betamax.start.assert_called_once_with()
 
 
+class FakeBetamaxTestCase(unittest_fixture.BetamaxTestCase):
+    def test_fake(self):
+        pass
+
+
 class TestUnittestFixture(unittest.TestCase):
     def setUp(self):
         self.mocked_betamax = mock.MagicMock()
         self.patched_betamax = mock.patch.object(
             betamax.recorder, 'Betamax', return_value=self.mocked_betamax)
         self.betamax = self.patched_betamax.start()
-        self.fixture = unittest_fixture.BetamaxTestCase()
+        self.fixture = FakeBetamaxTestCase(methodName='test_fake')
 
     def tearDown(self):
         self.patched_betamax.stop()
-
-    def test_generate_cassete_name(self):
-        test_method = mock.MagicMock()
-        test_method.__class__.__name__ = 'Testing123'
-        test_method._testMethodName = 'test_method_name'
-
-        name = unittest_fixture.BetamaxTestCase.generate_cassette_name(
-            test_method)
-        assert name == 'Testing123.test_method_name'
 
     def test_setUp(self):
         self.fixture.setUp()
 
         self.mocked_betamax.use_cassette.assert_called_once_with(
-            'BetamaxTestCase.runTest'
+            'FakeBetamaxTestCase.test_fake'
         )
         self.mocked_betamax.start.assert_called_once_with()
 
