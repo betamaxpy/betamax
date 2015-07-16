@@ -13,6 +13,7 @@ Contents of Betamax's Documentation
    record_modes
    third_party_packages
    usage_patterns
+   integrations
 
 .. toctree::
    :caption: API Documentation

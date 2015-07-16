@@ -13,6 +13,8 @@ API
 
 .. automodule:: betamax.fixtures.pytest
 
+.. automodule:: betamax.fixtures.unittest
+
 Examples
 --------
 

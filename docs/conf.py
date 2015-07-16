@@ -31,7 +31,7 @@ import betamax
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -220,7 +220,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'github3.py', u'github3.py Documentation',
+    ('index', 'betamax', u'Betamax Documentation',
      [u'Ian Cordasco'], 1)
 ]
 
@@ -239,3 +239,11 @@ texinfo_documents = [
 
 # Documents to append as an appendix to all manuals.
 texinfo_appendices = []
+
+# Intersphinx configuration
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3.4',
+               (None, 'python-inv.txt')),
+    'requests': ('http://docs.python-requests.org/en/latest',
+                 (None, 'requests-inv.txt')),
+}
