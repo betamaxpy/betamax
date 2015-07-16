@@ -9,12 +9,14 @@ See http://betamax.rtfd.org/ for documentation.
 
 """
 
+from .decorator import use_cassette
 from .exceptions import BetamaxError
-from .recorder import Betamax
 from .matchers import BaseMatcher
+from .recorder import Betamax
 from .serializers import BaseSerializer
 
-__all__ = ('BetamaxError', 'Betamax', 'BaseMatcher', 'BaseSerializer')
+__all__ = ('BetamaxError', 'Betamax', 'BaseMatcher', 'BaseSerializer',
+           'use_cassette')
 __author__ = 'Ian Cordasco'
 __copyright__ = 'Copyright 2013-2014 Ian Cordasco'
 __license__ = 'Apache 2.0'
