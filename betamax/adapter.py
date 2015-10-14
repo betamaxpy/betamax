@@ -1,3 +1,10 @@
+"""
+betamax.adapter.
+
+==============
+
+adapter for betamax
+"""
 import os
 
 from .cassette import Cassette
@@ -7,7 +14,6 @@ from requests.adapters import BaseAdapter, HTTPAdapter
 
 
 class BetamaxAdapter(BaseAdapter):
-
     """This object is an implementation detail of the library.
 
     It is not meant to be a public API and is not exported as such.
@@ -15,6 +21,7 @@ class BetamaxAdapter(BaseAdapter):
     """
 
     def __init__(self, **kwargs):
+        """__init__ for BetamaxAdapater."""
         super(BetamaxAdapter, self).__init__()
         self.cassette = None
         self.cassette_name = None
@@ -24,19 +31,31 @@ class BetamaxAdapter(BaseAdapter):
         self.options = {}
 
     def cassette_exists(self):
+        """Check if cassette exists on file system.
+
+        :returns: bool -- True if exists, False otherwise
+        """
         if self.cassette_name and os.path.exists(self.cassette_name):
             return True
         return False
 
     def close(self):
+        """Close http connection for adapter."""
         self.http_adapter.close()
 
     def eject_cassette(self):
+        """Eject cassette."""
         if self.cassette:
             self.cassette.eject()
         self.cassette = None  # Allow self.cassette to be garbage-collected
 
     def load_cassette(self, cassette_name, serialize, options):
+        """Load cassette.
+
+        :param str cassette_name: (required), name of cassette
+        :param str serialize: (required), type of serialization i.e 'json'
+        :options dict options: (required), options for cassette
+        """
         self.cassette_name = cassette_name
         self.serialize = serialize
         self.options.update(options.items())
@@ -73,6 +92,11 @@ class BetamaxAdapter(BaseAdapter):
 
     def send(self, request, stream=False, timeout=None, verify=True,
              cert=None, proxies=None):
+        """Send request.
+
+        :param request request: request
+        :returns: A Response object
+        """
         interaction = None
 
         if not self.cassette:
@@ -96,6 +120,18 @@ class BetamaxAdapter(BaseAdapter):
 
     def send_and_record(self, request, stream=False, timeout=None,
                         verify=True, cert=None, proxies=None):
+        """Send request and records response.
+
+        :param request request: request
+        :param bool stream: (optional) defer download until content is accessed
+        :param float timeout: (optional) time to wait for a response
+        :param bool verify: (optional) verify SSL certificate
+        :param str cert: (optional) path to SSL client
+        :param proxies dict: (optional) mapping protocol to URL of the proxy
+        :return: Iteraction
+        :rtype: class:`betamax.cassette.iteraction`
+
+        """
         adapter = self.find_adapter(request.url)
         response = adapter.send(
             request, stream=True, timeout=timeout, verify=verify,
@@ -105,6 +141,11 @@ class BetamaxAdapter(BaseAdapter):
         return self.cassette.interactions[-1]
 
     def find_adapter(self, url):
+        """Find adapter.
+
+        :param url str: (required) url of the adapter
+        :returns:  betamax adapter
+        """
         for (prefix, adapter) in self.old_adapters.items():
 
             if url.lower().startswith(prefix):
@@ -125,6 +166,7 @@ The settings on the cassette are:
 
 
 def unhandled_request_message(request, cassette):
+    """Exception for unhandled requests."""
     return UNHANDLED_REQUEST_EXCEPTION.format(
         url=request.url, cassette_file_path=cassette.cassette_name,
         cassette_record_mode=cassette.record_mode,
