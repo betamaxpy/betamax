@@ -30,14 +30,6 @@ def from_list(value):
     return value
 
 
-def is_chunked_encoding_header(name, value):
-    if name.lower() != 'transfer-encoding':
-        return False
-    if value == 'chunked':
-        return True
-    return False
-
-
 def add_body(r, preserve_exact_body_bytes, body_dict):
     """Simple function which takes a response or request and coerces the body.
 
@@ -124,12 +116,8 @@ def deserialize_response(serialized):
     for header_name, header_list in serialized['headers'].items():
         if isinstance(header_list, list):
             for header_value in header_list:
-                if is_chunked_encoding_header(header_name, header_value):
-                    continue
                 header_dict.add(header_name, header_value)
         else:
-            if is_chunked_encoding_header(header_name, header_list):
-                continue
             header_dict.add(header_name, header_list)
     r.headers = CaseInsensitiveDict(header_dict)
 
@@ -160,6 +148,7 @@ def add_urllib3_response(serialized, response, headers):
         original_response=MockHTTPResponse(headers)
     )
     response.raw = h
+    response.chunked = False
 
 
 def timestamp():
