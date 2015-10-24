@@ -237,7 +237,7 @@ class TestCassette(unittest.TestCase):
                     'string': decode('foo'),
                     'encoding': 'utf-8',
                 },
-                'headers': {'content-type': [decode('foo')]},
+                'headers': {'Content-Type': [decode('foo')]},
                 'status': {'code': 200, 'message': 'OK'},
                 'url': 'http://example.com',
             },
