@@ -1,6 +1,14 @@
 History
 =======
 
+0.5.1 - 2015-10-24
+------------------
+
+- Fix bugs with requests 2.8.x integration
+
+- Fix bugs with older versions of requests that were missing an HTTPHeaderDict
+  implementation
+
 0.5.0 - 2015-07-15
 ------------------
 
