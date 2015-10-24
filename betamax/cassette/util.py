@@ -155,6 +155,7 @@ def add_urllib3_response(serialized, response, headers):
     # This isn't pretty, but it is much better than munging a response.
     h.chunked = False
     response.raw = h
+    response.chunked = False
 
 
 def timestamp():
