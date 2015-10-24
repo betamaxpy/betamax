@@ -147,6 +147,13 @@ def add_urllib3_response(serialized, response, headers):
         preload_content=False,
         original_response=MockHTTPResponse(headers)
     )
+    # NOTE(sigmavirus24):
+    # urllib3 updated it's chunked encoding handling which breaks on recorded
+    # responses. Since a recorded response cannot be streamed appropriately
+    # for this handling to work, we can preserve the integrity of the data in
+    # the response by forcing the chunked attribute to always be False.
+    # This isn't pretty, but it is much better than munging a response.
+    h.chunked = False
     response.raw = h
 
 
