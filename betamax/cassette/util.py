@@ -2,10 +2,14 @@ from .mock_response import MockHTTPResponse
 from datetime import datetime
 from requests.models import PreparedRequest, Response
 from requests.packages.urllib3 import HTTPResponse
-from requests.packages.urllib3._collections import HTTPHeaderDict
 from requests.structures import CaseInsensitiveDict
 from requests.status_codes import _codes
 from requests.cookies import RequestsCookieJar
+
+try:
+    from requests.packages.urllib3._collections import HTTPHeaderDict
+except ImportError:
+    from .headers import HTTPHeaderDict
 
 import base64
 import io
@@ -95,7 +99,7 @@ def deserialize_prepared_request(serialized):
 def serialize_response(response, preserve_exact_body_bytes):
     body = {'encoding': response.encoding}
     add_body(response, preserve_exact_body_bytes, body)
-    header_map = response.raw.headers
+    header_map = HTTPHeaderDict(response.raw.headers)
     headers = {}
     for header_name in header_map.keys():
         headers[header_name] = header_map.getlist(header_name)
