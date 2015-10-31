@@ -123,7 +123,8 @@ class BetamaxAdapter(BaseAdapter):
                         verify=True, cert=None, proxies=None):
         """Send request and record response.
 
-        The response will be serialized and saved to a cassette which can be replayed in the future.
+        The response will be serialized and saved to a
+        cassette which can be replayed in the future.
 
         :param request request: request
         :param bool stream: (optional) defer download until content is accessed
