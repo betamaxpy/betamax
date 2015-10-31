@@ -21,7 +21,6 @@ class BetamaxAdapter(BaseAdapter):
     """
 
     def __init__(self, **kwargs):
-        """__init__ for BetamaxAdapater."""
         super(BetamaxAdapter, self).__init__()
         self.cassette = None
         self.cassette_name = None
@@ -40,17 +39,19 @@ class BetamaxAdapter(BaseAdapter):
         return False
 
     def close(self):
-        """Close http connection for adapter."""
+        """Propagate close to underlying adapter."""
         self.http_adapter.close()
 
     def eject_cassette(self):
-        """Eject cassette."""
+        """Eject currently loaded cassette."""
         if self.cassette:
             self.cassette.eject()
         self.cassette = None  # Allow self.cassette to be garbage-collected
 
     def load_cassette(self, cassette_name, serialize, options):
         """Load cassette.
+
+        Loads a previously serialized http response as a cassette
 
         :param str cassette_name: (required), name of cassette
         :param str serialize: (required), type of serialization i.e 'json'
@@ -120,7 +121,9 @@ class BetamaxAdapter(BaseAdapter):
 
     def send_and_record(self, request, stream=False, timeout=None,
                         verify=True, cert=None, proxies=None):
-        """Send request and records response.
+        """Send request and record response.
+
+        The response will be serialized and saved to a cassette which can be replayed in the future.
 
         :param request request: request
         :param bool stream: (optional) defer download until content is accessed
@@ -143,8 +146,10 @@ class BetamaxAdapter(BaseAdapter):
     def find_adapter(self, url):
         """Find adapter.
 
+        Searches for an existing adapter where the url and prefix match.
+
         :param url str: (required) url of the adapter
-        :returns:  betamax adapter
+        :returns: betamax adapter
         """
         for (prefix, adapter) in self.old_adapters.items():
 
@@ -166,7 +171,7 @@ The settings on the cassette are:
 
 
 def unhandled_request_message(request, cassette):
-    """Exception for unhandled requests."""
+    """Generate exception for unhandled requests."""
     return UNHANDLED_REQUEST_EXCEPTION.format(
         url=request.url, cassette_file_path=cassette.cassette_name,
         cassette_record_mode=cassette.record_mode,
