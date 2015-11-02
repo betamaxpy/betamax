@@ -1,5 +1,6 @@
 """
-betamax
+betamax.
+
 =======
 
 See http://betamax.rtfd.org/ for documentation.
