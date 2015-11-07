@@ -3,7 +3,7 @@ import re
 import sys
 from setuptools import setup, find_packages
 
-packages = find_packages(exclude=['tests'])
+packages = find_packages(exclude=['tests', 'tests.integration'])
 requires = ['requests >= 2.0']
 
 __version__ = ''
