@@ -114,6 +114,4 @@ If you're not already using a version control system (e.g., git, svn) then it
 is recommended you make a backup of your cassettes first in the event something
 goes wrong.
 
-.. _TravisCI: https://travis-ci.org/
 .. [#] http://pytest.org/latest/plugins.html
-.. _py.test: http://pytest.org/latest/
