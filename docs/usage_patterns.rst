@@ -6,9 +6,9 @@ Below are suggested patterns for using Betamax efficiently.
 Configuring Betamax in py.test's conftest.py
 --------------------------------------------
 
-Betamax and github3.py (the project which instigated the creation of Betamax) 
-both utilize py.test_ and its feature of configuring how the tests run with 
-``conftest.py`` [#]_. One pattern that I have found useful is to include this 
+Betamax and github3.py (the project which instigated the creation of Betamax)
+both utilize py.test_ and its feature of configuring how the tests run with
+``conftest.py`` [#]_. One pattern that I have found useful is to include this
 in your ``conftest.py`` file:
 
 .. code-block:: python
@@ -18,7 +18,7 @@ in your ``conftest.py`` file:
     with betamax.Betamax.configure() as config:
         config.cassette_library_dir = 'tests/cassettes/'
 
-This configures your cassette directory for all of your tests. If you do not 
+This configures your cassette directory for all of your tests. If you do not
 check your cassettes into your version control system, then you can also add:
 
 .. code-block:: python
@@ -31,7 +31,7 @@ check your cassettes into your version control system, then you can also add:
 An Example from github3.py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can configure other aspects of Betamax via the ``conftest.py`` file. For 
+You can configure other aspects of Betamax via the ``conftest.py`` file. For
 example, in github3.py, I do the following:
 
 .. code-block:: python
@@ -48,9 +48,9 @@ example, in github3.py, I do the following:
             os.environ.get('GH_AUTH', 'x' * 20)
         )
 
-In essence, if the tests are being run on TravisCI_, then we want to make sure 
-to not try to record new cassettes or interactions. We also, want to make sure 
-we're authenticated when possible but that we do not leave our placeholder in 
+In essence, if the tests are being run on TravisCI_, then we want to make sure
+to not try to record new cassettes or interactions. We also, want to make sure
+we're authenticated when possible but that we do not leave our placeholder in
 the cassettes when they're replayed.
 
 Using Human Readble JSON Cassettes
