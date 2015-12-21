@@ -168,6 +168,17 @@ variables, e.g.,
 This means that you can run these tests on a service like Travis-CI without
 providing credentials.
 
+Setting default serializer
+``````````````````````````
+
+If you want to use a specific serializer for every cassette, you can set
+``serialize_with`` as a default cassette option. For example, if you wanted to
+use the ``prettyjson`` serializer for every cassette you would do:
+
+.. code-block:: python
+
+    config.default_cassette_options['serialize_with'] = 'prettyjson'
+
 Per-Use Configuration
 ---------------------
 
