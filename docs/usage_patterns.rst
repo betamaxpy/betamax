@@ -48,10 +48,10 @@ example, in github3.py, I do the following:
             os.environ.get('GH_AUTH', 'x' * 20)
         )
 
-In essence, if the tests are being run on TravisCI_, then we want to make sure
-to not try to record new cassettes or interactions. We also, want to make sure
-we're authenticated when possible but that we do not leave our placeholder in
-the cassettes when they're replayed.
+In essence, if the tests are being run on `Travis CI`_, then we want to make
+sure to not try to record new cassettes or interactions. We also, want to
+ensure we're authenticated when possible but that we do not leave our
+placeholder in the cassettes when they're replayed.
 
 Using Human Readble JSON Cassettes
 ----------------------------------
@@ -115,3 +115,6 @@ is recommended you make a backup of your cassettes first in the event something
 goes wrong.
 
 .. [#] http://pytest.org/latest/plugins.html
+
+.. _py.test: http://pytest.org/latest/
+.. _Travis CI: https://travis-ci.org/
