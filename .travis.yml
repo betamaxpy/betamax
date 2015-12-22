@@ -40,5 +40,6 @@ matrix:
     - env: TOXENV=py27-flake8
     - env: TOXENV=py34-flake8
     - env: TOXENV=docstrings
+    - env: TOXENV=readme
   allow_failures:
   - env: TOXENV=docstrings
