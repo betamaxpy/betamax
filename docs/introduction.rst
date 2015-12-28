@@ -47,7 +47,7 @@ that it creates. There's two ways to do this:
 
        session = requests.Session()
        recorder = betamax.Betamax(session, cassette_library_dir='cassettes')
-       with recorder.use_cassete('introduction'):
+       with recorder.use_cassette('introduction'):
            # ...
 
 2. You can do it once, globally, for your test suite.
