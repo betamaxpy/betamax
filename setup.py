@@ -34,7 +34,7 @@ setup(
     description="A VCR imitation for python-requests",
     long_description="\n\n".join([data_for("README.rst"),
                                   data_for("HISTORY.rst")]),
-    license=data_for('LICENSE'),
+    license="Apache 2.0",
     author="Ian Cordasco",
     author_email="graffatcolmingov@gmail.com",
     url="https://github.com/sigmavirus24/betamax",
@@ -56,6 +56,8 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: CPython',
     ]
 )
