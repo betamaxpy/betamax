@@ -15,7 +15,7 @@ from requests.structures import CaseInsensitiveDict
 try:
     from requests.packages.urllib3._collections import HTTPHeaderDict
 except ImportError:
-    from betamax.cassette.headers import HTTPHeaderDict
+    from betamax.headers import HTTPHeaderDict
 
 
 def decode(s):
