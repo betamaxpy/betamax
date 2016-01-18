@@ -5,8 +5,9 @@ from datetime import datetime
 
 from betamax import __version__
 from betamax import cassette
+from betamax import mock_response
 from betamax import serializers
-from betamax.cassette import util
+from betamax import util
 from requests.models import Response, Request
 from requests.packages import urllib3
 from requests.structures import CaseInsensitiveDict
@@ -177,7 +178,8 @@ class TestSerialization(unittest.TestCase):
         }, r, HTTPHeaderDict())
         assert isinstance(r.raw, urllib3.response.HTTPResponse)
         assert r.content == b'foo'
-        assert isinstance(r.raw._original_response, cassette.MockHTTPResponse)
+        assert isinstance(r.raw._original_response,
+                          mock_response.MockHTTPResponse)
 
 
 class TestCassette(unittest.TestCase):
@@ -413,7 +415,7 @@ class TestInteraction(unittest.TestCase):
 
 class TestMockHTTPResponse(unittest.TestCase):
     def setUp(self):
-        self.resp = cassette.MockHTTPResponse(HTTPHeaderDict({
+        self.resp = mock_response.MockHTTPResponse(HTTPHeaderDict({
             decode('Header'): decode('value')
         }))
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from .base import BaseMatcher
-from ..cassette.util import deserialize_prepared_request
+from betamax.util import deserialize_prepared_request
 
 
 class BodyMatcher(BaseMatcher):

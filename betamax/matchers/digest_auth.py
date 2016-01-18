@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from .base import BaseMatcher
-from betamax.cassette.util import from_list
+from betamax.util import from_list
 
 
 class DigestAuthMatcher(BaseMatcher):

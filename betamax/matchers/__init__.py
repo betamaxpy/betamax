@@ -12,7 +12,7 @@ matcher_registry = {}
 
 __all__ = ('BaseMatcher', 'BodyMatcher', 'DigestAuthMatcher',
            'HeadersMatcher', 'HostMatcher', 'MethodMatcher', 'PathMatcher',
-           'QueryMatcher', 'URIMatcher')
+           'QueryMatcher', 'URIMatcher', 'matcher_registry')
 
 
 _matchers = [BodyMatcher, DigestAuthMatcher, HeadersMatcher, HostMatcher,

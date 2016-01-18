@@ -4,7 +4,7 @@ import sys
 
 class MockHTTPResponse(object):
     def __init__(self, headers):
-        from .util import coerce_content
+        from betamax.util import coerce_content
 
         h = ["%s: %s" % (k, v) for k in headers for v in headers.getlist(k)]
         h = map(coerce_content, h)

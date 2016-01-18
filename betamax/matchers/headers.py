@@ -10,6 +10,6 @@ class HeadersMatcher(BaseMatcher):
         return dict(request.headers) == self.flatten_headers(recorded_request)
 
     def flatten_headers(self, request):
-        from betamax.cassette.util import from_list
+        from betamax.util import from_list
         headers = request['headers'].items()
         return dict((k, from_list(v)) for (k, v) in headers)
