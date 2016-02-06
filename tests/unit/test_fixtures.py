@@ -29,7 +29,7 @@ class TestPyTestFixture(unittest.TestCase):
         request.cls = request.module = None
         request.function.__name__ = 'test'
 
-        pytest_fixture.betamax_session(request)
+        pytest_fixture.betamax_recorder(request)
         assert request.addfinalizer.called is True
         request.addfinalizer.assert_called_once_with(self.mocked_betamax.stop)
 
@@ -39,7 +39,7 @@ class TestPyTestFixture(unittest.TestCase):
         request.cls = request.module = None
         request.function.__name__ = 'test'
 
-        pytest_fixture.betamax_session(request)
+        pytest_fixture.betamax_recorder(request)
         self.mocked_betamax.start.assert_called_once_with()
 
 

@@ -12,8 +12,10 @@ PyTest Integration
 
 .. versionadded:: 0.5.0
 
-When you install Betamax, it now installs a `py.test`_ fixture by default. To
-use it in your tests you need only follow the `instructions`_ on pytest's
+.. versionchanged:: 0.6.0
+
+When you install Betamax, it now installs two `py.test`_ fixtures by default.
+To use it in your tests you need only follow the `instructions`_ on pytest's
 documentation. To use the ``betamax_session`` fixture for an entire class of
 tests you would do:
 
@@ -48,6 +50,24 @@ this fixture at the module level, you need only do
     class TestMyOtherHttpClient:
         def test_post(self, betamax_session):
             betamax_session.post('https://httpbin.org/post')
+
+If you need to customize the recorder object, however, you can instead use the
+``betamax_recorder`` fixture:
+
+.. code-block:: python
+
+    # tests/test_http_integration.py
+    import pytest
+
+    pytest.mark.usefixtures('betamax_recorder')
+
+
+    class TestMyHttpClient:
+        def test_post(self, betamax_recorder):
+            betamax_recorder.current_cassette.match_options.add('json-body')
+            session = betamax_recorder.session
+
+            session.post('https://httpbin.org/post', json={'foo': 'bar'})
 
 
 Unittest Integration

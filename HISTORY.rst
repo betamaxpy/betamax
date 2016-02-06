@@ -1,6 +1,13 @@
 History
 =======
 
+0.6.0 - 2016-xx-yy
+------------------
+
+- Add ``betamax_recorder`` pytest fixture
+
+- Remove CI support for Pythons 2.6 and 3.2
+
 0.5.1 - 2015-10-24
 ------------------
 
