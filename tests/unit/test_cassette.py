@@ -252,7 +252,6 @@ class TestCassette(unittest.TestCase):
         self.date = datetime(2013, 8, 31)
         self.cassette.save_interaction(self.response, self.response.request)
         self.interaction = self.cassette.interactions[0]
-        self.interaction.recorded_at = self.date
 
     def tearDown(self):
         try:
@@ -332,6 +331,11 @@ class TestInteraction(unittest.TestCase):
     def test_as_response(self):
         r = self.interaction.as_response()
         assert isinstance(r, Response)
+
+    def test_as_response_returns_new_instance(self):
+        r1 = self.interaction.as_response()
+        r2 = self.interaction.as_response()
+        assert r1 is not r2
 
     def test_deserialized_response(self):
         def check_uri(attr):
