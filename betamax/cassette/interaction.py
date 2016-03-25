@@ -22,24 +22,25 @@ class Interaction(object):
     """
 
     def __init__(self, interaction, response=None):
-        self.recorded_at = None
         self.json = interaction
         self.orig_response = response
-        self.deserialize()
+        self.recorded_response = self.deserialize()
 
     def as_response(self):
         """Return the Interaction as a Response object."""
+        self.recorded_response = self.deserialize()
         return self.recorded_response
+
+    @property
+    def recorded_at(self):
+        return datetime.strptime(self.json['recorded_at'], '%Y-%m-%dT%H:%M:%S')
 
     def deserialize(self):
         """Turn a serialized interaction into a Response."""
         r = util.deserialize_response(self.json['response'])
         r.request = util.deserialize_prepared_request(self.json['request'])
         extract_cookies_to_jar(r.cookies, r.request, r.raw)
-        self.recorded_at = datetime.strptime(
-            self.json['recorded_at'], '%Y-%m-%dT%H:%M:%S'
-        )
-        self.recorded_response = r
+        return r
 
     def match(self, matchers):
         """Return whether this interaction is a match."""
