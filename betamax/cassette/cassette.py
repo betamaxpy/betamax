@@ -40,12 +40,13 @@ class Cassette(object):
         self.cassette_path = self.serializer.cassette_path
 
         # Determine which placeholders to use
-        self.placeholders = kwargs.get('placeholders')
-        if isinstance(self.placeholders, list):
-            self.placeholders = dict((ph['placeholder'], ph['replace'])
-                                     for ph in self.placeholders)
-        if not self.placeholders:
-            self.placeholders = defaults['placeholders']
+        self.placeholders = defaults['placeholders'].copy()
+        if kwargs.get('placeholders'):
+            if isinstance(kwargs['placeholders'], list):
+                for ph in kwargs['placeholders']:
+                    self.placeholders[ph['placeholder']] = ph['replace']
+            else:
+                self.placeholders.update(kwargs['placeholders'])
 
         # Determine whether to preserve exact body bytes
         self.preserve_exact_body_bytes = _option_from(
