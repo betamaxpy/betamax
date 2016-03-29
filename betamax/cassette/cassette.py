@@ -18,7 +18,7 @@ class Cassette(object):
         'record_mode': 'once',
         'match_requests_on': ['method', 'uri'],
         're_record_interval': None,
-        'placeholders': [],
+        'placeholders': {},
         'preserve_exact_body_bytes': False,
         'allow_playback_repeats': False,
     }
@@ -45,6 +45,9 @@ class Cassette(object):
 
         # Determine which placeholders to use
         self.placeholders = kwargs.get('placeholders')
+        if isinstance(self.placeholders, list):
+            self.placeholders = dict((ph['placeholder'], ph['replace'])
+                                     for ph in self.placeholders)
         if not self.placeholders:
             self.placeholders = defaults['placeholders']
 
@@ -171,11 +174,11 @@ class Cassette(object):
 
         for i in self.interactions:
             dispatch_hooks('before_playback', i, self)
-            i.replace_all(self.placeholders, ('placeholder', 'replace'))
+            i.replace_all(self.placeholders, False)
 
     def sanitize_interactions(self):
         for i in self.interactions:
-            i.replace_all(self.placeholders)
+            i.replace_all(self.placeholders, True)
 
     def save_interaction(self, response, request):
         serialized_data = self.serialize_interaction(response, request)

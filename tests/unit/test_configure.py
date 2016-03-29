@@ -39,9 +39,12 @@ class TestConfiguration(unittest.TestCase):
 
         c.define_cassette_placeholder('<TEST>', 'test')
         assert opts != Cassette.default_cassette_options
-        placeholders = Cassette.default_cassette_options['placeholders']
-        assert placeholders[0]['placeholder'] == '<TEST>'
-        assert placeholders[0]['replace'] == 'test'
+        assert Cassette.default_cassette_options['placeholders'] == {
+            '<TEST>': 'test'
+        }
+        # placeholders = Cassette.default_cassette_options['placeholders']
+        # assert placeholders[0]['placeholder'] == '<TEST>'
+        # assert placeholders[0]['replace'] == 'test'
 
     def test_registers_pre_record_hooks(self):
         c = Configuration()

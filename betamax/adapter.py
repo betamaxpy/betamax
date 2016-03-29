@@ -62,7 +62,7 @@ class BetamaxAdapter(BaseAdapter):
         self.cassette_name = cassette_name
         self.serialize = serialize
         self.options.update(options.items())
-        placeholders = self.options.get('placeholders', [])
+        placeholders = self.options.get('placeholders', {})
         cassette_options = {}
 
         default_options = cassette.Cassette.default_cassette_options
