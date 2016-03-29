@@ -3,7 +3,7 @@ from . import matchers, serializers
 from .adapter import BetamaxAdapter
 from .cassette import Cassette
 from .configure import Configuration
-from .options import Options
+from .options import Options, convert_placeholders_list
 
 
 class Betamax(object):
@@ -55,6 +55,14 @@ class Betamax(object):
         self.betamax_adapter = BetamaxAdapter(old_adapters=self.http_adapters)
         # We need a configuration instance to make life easier
         self.config = Configuration()
+        try:
+            placeholders = default_cassette_options['placeholders']
+        except KeyError:
+            pass
+        else:
+            if isinstance(placeholders, list):
+                placeholders = convert_placeholders_list(placeholders)
+                default_cassette_options['placeholders'] = placeholders
         # Merge the new cassette options with the default ones
         self.config.default_cassette_options.update(
             default_cassette_options or {}
