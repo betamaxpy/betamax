@@ -150,7 +150,6 @@ class Cassette(object):
 
         for i in self.interactions:
             i.replace_all(self.placeholders, ('placeholder', 'replace'))
-            i.deserialize()  # this needs to happen *after* replace_all
 
     def sanitize_interactions(self):
         for i in self.interactions:
