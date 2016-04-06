@@ -26,6 +26,7 @@ class Interaction(object):
         self.orig_response = response
         self.used = False
         self.recorded_response = self.deserialize()
+        self.used = False
 
     def as_response(self):
         """Return the Interaction as a Response object."""
