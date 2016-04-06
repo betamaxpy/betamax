@@ -109,6 +109,10 @@ class Cassette(object):
         :param request: ``requests.PreparedRequest``
         :returns: :class:`Interaction <Interaction>`
         """
+        # if we are recording, do not filter by match
+        if self.is_recording():
+            return None
+
         opts = self.match_options
         # Curry those matchers
         curried_matchers = [
@@ -118,12 +122,15 @@ class Cassette(object):
 
         for i in self.interactions:
             # If the interaction matches everything
-            if i.match(curried_matchers):
+            if i.match(curried_matchers) and not i.used:
                 if self.record_mode == 'all':
                     # If we're recording everything and there's a matching
                     # interaction we want to overwrite it, so we remove it.
                     self.interactions.remove(i)
                     break
+
+                # set interaction as used before returning
+                i.used = True
                 return i
 
         # No matches. So sad.
