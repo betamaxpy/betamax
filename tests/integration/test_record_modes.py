@@ -104,3 +104,15 @@ class TestRecordAll(IntegrationHelper):
 
         with Betamax(s).use_cassette('test_record_all') as betamax:
             assert len(betamax.current_cassette.interactions) == 5
+
+    def test_replaces_old_interactions(self):
+        s = self.session
+        opts = {'record': 'all'}
+        with Betamax(s).use_cassette('test_record_all', **opts) as betamax:
+            cassette = betamax.current_cassette
+            self.cassette_path = cassette.cassette_path
+            assert cassette.interactions != []
+            assert len(cassette.interactions) == 3
+            assert cassette.is_empty() is False
+            s.get('http://httpbin.org/get')
+            assert len(cassette.interactions) == 3

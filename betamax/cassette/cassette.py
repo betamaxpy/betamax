@@ -110,7 +110,7 @@ class Cassette(object):
         :returns: :class:`Interaction <Interaction>`
         """
         # if we are recording, do not filter by match
-        if self.is_recording():
+        if self.is_recording() and self.record_mode != 'all':
             return None
 
         opts = self.match_options
