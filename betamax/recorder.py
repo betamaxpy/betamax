@@ -79,7 +79,7 @@ class Betamax(object):
 
     @staticmethod
     def configure():
-        """Helps configure the library as a whole.
+        """Help to configure the library as a whole.
 
         .. code::
 
@@ -93,7 +93,7 @@ class Betamax(object):
 
     @property
     def current_cassette(self):
-        """Returns the cassette that is currently in use.
+        """Return the cassette that is currently in use.
 
         :returns: :class:`Cassette <betamax.cassette.Cassette>`
         """

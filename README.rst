@@ -10,7 +10,7 @@ does not have to."
 Example Use
 -----------
 
-::
+.. code-block:: python
 
     from betamax import Betamax
     from requests import Session
@@ -62,8 +62,8 @@ are stored in files called cassettes. (An example cassette can be seen in
 the `examples section of the documentation`_.) The directory you store your
 cassettes in is called your library, or your `cassette library`_.
 
-VCR Cassette Compatiblity
--------------------------
+VCR Cassette Compatibility
+--------------------------
 
 Betamax can use any VCR-recorded cassette as of this point in time. The only
 caveat is that python-requests returns a URL on each response. VCR does not

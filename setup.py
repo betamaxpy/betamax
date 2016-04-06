@@ -3,7 +3,7 @@ import re
 import sys
 from setuptools import setup, find_packages
 
-packages = find_packages(exclude=['tests'])
+packages = find_packages(exclude=['tests', 'tests.integration'])
 requires = ['requests >= 2.0']
 
 __version__ = ''
@@ -34,7 +34,7 @@ setup(
     description="A VCR imitation for python-requests",
     long_description="\n\n".join([data_for("README.rst"),
                                   data_for("HISTORY.rst")]),
-    license=data_for('LICENSE'),
+    license="Apache 2.0",
     author="Ian Cordasco",
     author_email="graffatcolmingov@gmail.com",
     url="https://github.com/sigmavirus24/betamax",
@@ -42,17 +42,20 @@ setup(
     package_data={'': ['LICENSE', 'AUTHORS.rst']},
     include_package_data=True,
     install_requires=requires,
+    entry_points={
+        'pytest11': ['pytest-betamax = betamax.fixtures.pytest']
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved',
         'Intended Audience :: Developers',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: CPython',
     ]
 )

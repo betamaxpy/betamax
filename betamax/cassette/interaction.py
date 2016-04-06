@@ -1,6 +1,7 @@
-from .util import (deserialize_response, deserialize_prepared_request,
-                   from_list)
+from requests.cookies import extract_cookies_to_jar
 from datetime import datetime
+
+from betamax import util
 
 
 class Interaction(object):
@@ -24,16 +25,18 @@ class Interaction(object):
         self.recorded_at = None
         self.json = interaction
         self.orig_response = response
+        self.used = False
         self.deserialize()
 
     def as_response(self):
-        """Returns the Interaction as a Response object."""
+        """Return the Interaction as a Response object."""
         return self.recorded_response
 
     def deserialize(self):
-        """Turns a serialized interaction into a Response."""
-        r = deserialize_response(self.json['response'])
-        r.request = deserialize_prepared_request(self.json['request'])
+        """Turn a serialized interaction into a Response."""
+        r = util.deserialize_response(self.json['response'])
+        r.request = util.deserialize_prepared_request(self.json['request'])
+        extract_cookies_to_jar(r.cookies, r.request, r.raw)
         self.recorded_at = datetime.strptime(
             self.json['recorded_at'], '%Y-%m-%dT%H:%M:%S'
         )
@@ -60,7 +63,7 @@ class Interaction(object):
         for obj in ('request', 'response'):
             headers = self.json[obj]['headers']
             for k, v in list(headers.items()):
-                v = from_list(v)
+                v = util.from_list(v)
                 headers[k] = v.replace(text_to_replace, placeholder)
 
     def replace_in_body(self, text_to_replace, placeholder):

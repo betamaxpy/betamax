@@ -12,3 +12,9 @@ Design Advice
 -------------
 
 - Cory Benfield
+
+Contributors
+------------
+
+- Marc Abramowitz (@msabramo)
+- Bryce Boe <bbzbryce@gmail.com> (@bboe)

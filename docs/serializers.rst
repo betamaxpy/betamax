@@ -31,9 +31,8 @@ implement three methods:
 
 Here's the default (JSON) serializer as an example:
 
-.. literalinclude:: ../betamax/serializers.py
+.. literalinclude:: ../betamax/serializers/json_serializer.py
     :language: python
-    :lines: 148-166
 
 
 This is incredibly simple. We take advantage of the :mod:`os.path` to properly 

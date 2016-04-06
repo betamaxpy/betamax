@@ -6,8 +6,14 @@ from requests.structures import CaseInsensitiveDict
 from requests.status_codes import _codes
 from requests.cookies import RequestsCookieJar
 
+try:
+    from requests.packages.urllib3._collections import HTTPHeaderDict
+except ImportError:
+    from .headers import HTTPHeaderDict
+
 import base64
 import io
+import sys
 
 
 def coerce_content(content, encoding=None):
@@ -51,6 +57,9 @@ def add_body(r, preserve_exact_body_bytes, body_dict):
 
     if (preserve_exact_body_bytes or
             'gzip' in r.headers.get('Content-Encoding', '')):
+        if sys.version_info >= (3, 0) and hasattr(body, 'encode'):
+            body = body.encode(body_dict['encoding'] or 'utf-8')
+
         body_dict['base64_string'] = base64.b64encode(body).decode()
     else:
         body_dict['string'] = coerce_content(body, body_dict['encoding'])
@@ -90,10 +99,14 @@ def deserialize_prepared_request(serialized):
 def serialize_response(response, preserve_exact_body_bytes):
     body = {'encoding': response.encoding}
     add_body(response, preserve_exact_body_bytes, body)
+    header_map = HTTPHeaderDict(response.raw.headers)
+    headers = {}
+    for header_name in header_map.keys():
+        headers[header_name] = header_map.getlist(header_name)
 
     return {
         'body': body,
-        'headers': dict((k, [v]) for k, v in response.headers.items()),
+        'headers': headers,
         'status': {'code': response.status_code, 'message': response.reason},
         'url': response.url,
     }
@@ -102,8 +115,16 @@ def serialize_response(response, preserve_exact_body_bytes):
 def deserialize_response(serialized):
     r = Response()
     r.encoding = serialized['body']['encoding']
-    h = [(k, from_list(v)) for k, v in serialized['headers'].items()]
-    r.headers = CaseInsensitiveDict(h)
+    header_dict = HTTPHeaderDict()
+
+    for header_name, header_list in serialized['headers'].items():
+        if isinstance(header_list, list):
+            for header_value in header_list:
+                header_dict.add(header_name, header_value)
+        else:
+            header_dict.add(header_name, header_list)
+    r.headers = CaseInsensitiveDict(header_dict)
+
     r.url = serialized.get('url', '')
     if 'status' in serialized:
         r.status_code = serialized['status']['code']
@@ -111,11 +132,11 @@ def deserialize_response(serialized):
     else:
         r.status_code = serialized['status_code']
         r.reason = _codes[r.status_code][0].upper()
-    add_urllib3_response(serialized, r)
+    add_urllib3_response(serialized, r, header_dict)
     return r
 
 
-def add_urllib3_response(serialized, response):
+def add_urllib3_response(serialized, response, headers):
     if 'base64_string' in serialized['body']:
         body = io.BytesIO(
             base64.b64decode(serialized['body']['base64_string'].encode())
@@ -126,10 +147,17 @@ def add_urllib3_response(serialized, response):
     h = HTTPResponse(
         body,
         status=response.status_code,
-        headers=response.headers,
+        headers=headers,
         preload_content=False,
-        original_response=MockHTTPResponse(response.headers)
+        original_response=MockHTTPResponse(headers)
     )
+    # NOTE(sigmavirus24):
+    # urllib3 updated it's chunked encoding handling which breaks on recorded
+    # responses. Since a recorded response cannot be streamed appropriately
+    # for this handling to work, we can preserve the integrity of the data in
+    # the response by forcing the chunked attribute to always be False.
+    # This isn't pretty, but it is much better than munging a response.
+    h.chunked = False
     response.raw = h
 
 

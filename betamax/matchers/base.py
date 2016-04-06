@@ -7,7 +7,9 @@ class BaseMatcher(object):
     Base class that ensures sub-classes that implement custom matchers can be
     registered and have the only method that is required.
 
-    Usage::
+    Usage:
+
+    .. code-block:: python
 
         from betamax import Betamax, BaseMatcher
 
@@ -49,7 +51,7 @@ class BaseMatcher(object):
         return None
 
     def match(self, request, recorded_request):
-        """This is a method that must be implemented by the user.
+        """A method that must be implemented by the user.
 
         :param PreparedRequest request: A requests PreparedRequest object
         :param dict recorded_request: A dictionary containing the serialized

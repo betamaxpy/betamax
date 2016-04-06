@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from .interaction import Interaction
-from .util import (_option_from, serialize_prepared_request,
-                   serialize_response, timestamp)
-from betamax.matchers import matcher_registry
-from betamax.serializers import serializer_registry, SerializerProxy
 from datetime import datetime
 from functools import partial
 
 import os.path
+
+from .. import matchers
+from .. import serializers
+from betamax.util import (_option_from, serialize_prepared_request,
+                          serialize_response, timestamp)
 
 
 class Cassette(object):
@@ -32,7 +33,7 @@ class Cassette(object):
         self.record_mode = _option_from('record_mode', kwargs, defaults)
 
         # Retrieve the serializer for this cassette
-        self.serializer = SerializerProxy.find(
+        self.serializer = serializers.SerializerProxy.find(
             serialization_format, kwargs.get('cassette_library_dir'),
             cassette_name
             )
@@ -66,7 +67,9 @@ class Cassette(object):
         if record_mode in ['once', 'all', 'new_episodes']:
             recording = True
 
-        serializer = serializer_registry.get(serialize_with)
+        serializer = serializers.serializer_registry.get(
+            serialize_with
+        )
         if not serializer:
             raise ValueError(
                 'Serializer {0} is not registered with Betamax'.format(
@@ -106,28 +109,39 @@ class Cassette(object):
         :param request: ``requests.PreparedRequest``
         :returns: :class:`Interaction <Interaction>`
         """
+        # if we are recording, do not filter by match
+        if self.is_recording() and self.record_mode != 'all':
+            return None
+
         opts = self.match_options
         # Curry those matchers
-        matchers = [partial(matcher_registry[o].match, request) for o in opts]
+        curried_matchers = [
+            partial(matchers.matcher_registry[o].match, request)
+            for o in opts
+        ]
 
         for i in self.interactions:
-            if i.match(matchers):  # If the interaction matches everything
+            # If the interaction matches everything
+            if i.match(curried_matchers) and not i.used:
                 if self.record_mode == 'all':
                     # If we're recording everything and there's a matching
                     # interaction we want to overwrite it, so we remove it.
                     self.interactions.remove(i)
                     break
+
+                # set interaction as used before returning
+                i.used = True
                 return i
 
         # No matches. So sad.
         return None
 
     def is_empty(self):
-        """Determines if the cassette when loaded was empty."""
+        """Determine if the cassette was empty when loaded."""
         return not self.serialized
 
     def is_recording(self):
-        """Returns if the cassette is recording."""
+        """Return whether the cassette is recording."""
         values = {
             'none': False,
             'once': self.is_empty(),

@@ -6,12 +6,20 @@ API
 .. autoclass:: Betamax
     :members:
 
+.. autofunction:: betamax.decorator.use_cassette
+
 .. autoclass:: betamax.configure.Configuration
     :members:
 
+.. automodule:: betamax.fixtures.pytest
+
+.. automodule:: betamax.fixtures.unittest
 
 Examples
 --------
+
+Basic Usage
+^^^^^^^^^^^
 
 Let `example.json` be a file in a directory called `cassettes` with the 
 content:
@@ -38,7 +46,10 @@ content:
               "encoding": "utf-8"
             },
             "headers": {},
-            "status_code": 200,
+            "status": {
+              "code": 200,
+              "message": "OK"
+            },
             "url": "https://httpbin.org/get"
           }
         }
@@ -76,6 +87,25 @@ On the other hand, this will raise an exception:
                    data={"key": "value"})
 
 
+Finally, we can also use a decorator in order to simplify things:
+
+.. code-block:: python
+
+    import unittest
+
+    from betamax.decorator import use_cassette
+
+    class TestExample(unittest.TestCase):
+        @use_cassette('example', cassette_library_dir='cassettes')
+        def test_example(self, session):
+            session.get('https://httpbin.org/get')
+
+
+    # Or if you're using something like py.test
+    @use_cassette('example', cassette_library_dir='cassettes')
+    def test_example_pytest(session):
+        session.get('https://httpbin.org/get')
+
 .. _opinions:
 
 Opinions at Work
@@ -111,7 +141,10 @@ like this:
             "headers": {
               "Content-Encoding": ["gzip"]
             },
-            "status_code": 200,
+            "status": {
+              "code": 200,
+              "message": "OK"
+            },
             "url": "https://httpbin.org/get"
           }
         }
@@ -140,7 +173,8 @@ The first, is on a per-cassette basis, like so:
     with Betamax.configure() as config:
         c.cassette_library_dir = '.'
 
-    with Betamax(session).use_cassette('some_cassette', preserve_exact_body_bytes=True):
+    with Betamax(session).use_cassette('some_cassette',
+                                       preserve_exact_body_bytes=True):
         r = session.get('http://example.com')
 
 

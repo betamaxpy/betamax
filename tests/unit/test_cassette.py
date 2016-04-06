@@ -5,11 +5,17 @@ from datetime import datetime
 
 from betamax import __version__
 from betamax import cassette
+from betamax import mock_response
 from betamax import serializers
-from betamax.cassette import util
+from betamax import util
 from requests.models import Response, Request
 from requests.packages import urllib3
 from requests.structures import CaseInsensitiveDict
+
+try:
+    from requests.packages.urllib3._collections import HTTPHeaderDict
+except ImportError:
+    from betamax.headers import HTTPHeaderDict
 
 
 def decode(s):
@@ -63,7 +69,7 @@ class TestSerialization(unittest.TestCase):
                 'string': decode('foo'),
                 'encoding': 'utf-8'
             }
-        }, r)
+        }, r, HTTPHeaderDict())
         serialized = util.serialize_response(r, False)
         assert serialized is not None
         assert serialized != {}
@@ -169,10 +175,11 @@ class TestSerialization(unittest.TestCase):
                 'string': decode('foo'),
                 'encoding': 'utf-8'
             }
-        }, r)
+        }, r, HTTPHeaderDict())
         assert isinstance(r.raw, urllib3.response.HTTPResponse)
         assert r.content == b'foo'
-        assert isinstance(r.raw._original_response, cassette.MockHTTPResponse)
+        assert isinstance(r.raw._original_response,
+                          mock_response.MockHTTPResponse)
 
 
 class TestCassette(unittest.TestCase):
@@ -202,7 +209,7 @@ class TestCassette(unittest.TestCase):
                 'string': decode('foo'),
                 'encoding': 'utf-8'
             }
-        }, r)
+        }, r, HTTPHeaderDict({'Content-Type': decode('foo')}))
         self.response = r
 
         # Create an associated request
@@ -268,6 +275,7 @@ class TestCassette(unittest.TestCase):
 
     def test_find_match(self):
         self.cassette.match_options = set(['uri', 'method'])
+        self.cassette.record_mode = 'none'
         i = self.cassette.find_match(self.response.request)
         assert i is not None
         assert self.interaction is i
@@ -338,6 +346,13 @@ class TestInteraction(unittest.TestCase):
         headers = dict((k, v[0]) for k, v in self.response['headers'].items())
         assert headers == r.headers
 
+        tested_cookie = False
+        for cookie in r.cookies:
+            cookie_str = "{0}={1}".format(cookie.name, cookie.value)
+            assert cookie_str == r.headers['Set-Cookie']
+            tested_cookie = True
+        assert tested_cookie
+
         assert self.response['body']['string'] == decode(r.content)
         actual_req = r.request
         expected_req = self.request
@@ -401,9 +416,9 @@ class TestInteraction(unittest.TestCase):
 
 class TestMockHTTPResponse(unittest.TestCase):
     def setUp(self):
-        self.resp = cassette.MockHTTPResponse({
+        self.resp = mock_response.MockHTTPResponse(HTTPHeaderDict({
             decode('Header'): decode('value')
-        })
+        }))
 
     def test_isclosed(self):
         assert self.resp.isclosed() is False

@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "examples/more_complicated_cassettes_2.py", line 30, in <module>
+    main()
+  File "examples/more_complicated_cassettes_2.py", line 26, in main
+    json={'some-other-attribute': 'some-other-value'})
+  File ".../lib/python2.7/site-packages/requests/sessions.py", line 508, in post
+    return self.request('POST', url, data=data, json=json, **kwargs)
+  File ".../lib/python2.7/site-packages/requests/sessions.py", line 465, in request
+    resp = self.send(prep, **send_kwargs)
+  File ".../lib/python2.7/site-packages/requests/sessions.py", line 573, in send
+    r = adapter.send(request, **kwargs)
+  File ".../lib/python2.7/site-packages/betamax/adapter.py", line 91, in send
+    self.cassette))
+betamax.exceptions.BetamaxError: A request was made that could not be handled.
+
+A request was made to https://httpbin.org/post?id=20 that could not be found in more-complicated-cassettes.
+
+The settings on the cassette are:
+
+    - record_mode: once
+    - match_options ['method', 'uri', 'body'].

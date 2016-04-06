@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .base import BaseSerializer
+from betamax.exceptions import MissingDirectoryError
 
 import os
 
@@ -27,6 +28,12 @@ class SerializerProxy(BaseSerializer):
         self.cassette_path = cassette_path
 
     def _ensure_path_exists(self):
+        directory, _ = os.path.split(self.cassette_path)
+        if not (directory == '' or os.path.isdir(directory)):
+            raise MissingDirectoryError(
+                'Configured cassette directory \'{0}\' does not exist - try '
+                'creating it'.format(directory)
+                )
         if not os.path.exists(self.cassette_path):
             open(self.cassette_path, 'w+').close()
 

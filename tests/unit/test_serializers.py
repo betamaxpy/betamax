@@ -1,3 +1,4 @@
+import os
 import pytest
 import unittest
 
@@ -10,13 +11,13 @@ class TestJSONSerializer(unittest.TestCase):
         self.cassette_name = 'cassette_name'
 
     def test_generate_cassette_name(self):
-        assert ('fake_dir/cassette_name.json' ==
+        assert (os.path.join('fake_dir', 'cassette_name.json') ==
                 JSONSerializer.generate_cassette_name(self.cassette_dir,
                                                       self.cassette_name))
 
     def test_generate_cassette_name_with_instance(self):
         serializer = JSONSerializer()
-        assert ('fake_dir/cassette_name.json' ==
+        assert (os.path.join('fake_dir', 'cassette_name.json') ==
                 serializer.generate_cassette_name(self.cassette_dir,
                                                   self.cassette_name))
 

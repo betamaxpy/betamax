@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from .base import BaseMatcher
-from ..cassette.util import deserialize_prepared_request
+from betamax.util import deserialize_prepared_request
 
 
 class BodyMatcher(BaseMatcher):
@@ -9,4 +9,13 @@ class BodyMatcher(BaseMatcher):
 
     def match(self, request, recorded_request):
         recorded_request = deserialize_prepared_request(recorded_request)
-        return recorded_request.body == (request.body or '')
+
+        if request.body:
+            if isinstance(recorded_request.body, type(request.body)):
+                request_body = request.body
+            else:
+                request_body = request.body.encode('utf-8')
+        else:
+            request_body = b''
+
+        return recorded_request.body == request_body

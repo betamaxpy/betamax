@@ -4,6 +4,19 @@ Contents of Betamax's Documentation
 ===================================
 
 .. toctree::
+   :caption: Narrative Documentation
+   :maxdepth: 3
+
+   introduction
+   long_term_usage
+   configuring
+   record_modes
+   third_party_packages
+   usage_patterns
+   integrations
+
+.. toctree::
+   :caption: API Documentation
    :maxdepth: 2
 
    api
@@ -11,9 +24,6 @@ Contents of Betamax's Documentation
    implementation_details
    matchers
    serializers
-   usage_patterns
-
-
 
 Indices and tables
 ------------------

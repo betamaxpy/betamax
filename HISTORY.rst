@@ -1,6 +1,52 @@
 History
 =======
 
+0.6.0 - 2016-xx-yy
+------------------
+
+- Add ``betamax_recorder`` pytest fixture
+
+- Remove CI support for Pythons 2.6 and 3.2
+
+0.5.1 - 2015-10-24
+------------------
+
+- Fix bugs with requests 2.8.x integration
+
+- Fix bugs with older versions of requests that were missing an HTTPHeaderDict
+  implementation
+
+0.5.0 - 2015-07-15
+------------------
+
+- Add unittest integration in ``betamax.fixtures.unittest``
+
+- Add pytest integration in ``betamax.fixtures.pytest``
+
+- Add a decorator as a short cut for ``use_cassette``
+
+- Fix bug where body bytes were not always encoded on Python 3.2+
+
+  Fixed by @bboe
+
+0.4.2 - 2015-04-18
+------------------
+
+- Fix issue #58 reported by @bboe
+
+  Multiple cookies were not being properly stored or replayed after being
+  recorded.
+
+- @leighlondon converted ``__all__`` to a tuple
+
+0.4.1 - 2014-09-24
+------------------
+
+- Fix issue #39 reported by @buttscicles
+
+  This bug did not properly parse the Set-Cookie header with multiple cookies
+  when replaying a recorded response.
+
 0.4.0 - 2014-07-29
 ------------------
 
