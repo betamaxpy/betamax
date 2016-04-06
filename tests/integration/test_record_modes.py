@@ -96,6 +96,7 @@ class TestRecordAll(IntegrationHelper):
         with Betamax(self.session).use_cassette('test_record_all'):
             self.session.get('http://httpbin.org/get')
             self.session.get('http://httpbin.org/redirect/2')
+            self.session.get('http://httpbin.org/get')
 
     def test_records_new_interactions(self):
         s = self.session
@@ -104,13 +105,13 @@ class TestRecordAll(IntegrationHelper):
             cassette = betamax.current_cassette
             self.cassette_path = cassette.cassette_path
             assert cassette.interactions != []
-            assert len(cassette.interactions) == 4
+            assert len(cassette.interactions) == 5
             assert cassette.is_empty() is False
             s.post('http://httpbin.org/post', data={'foo': 'bar'})
-            assert len(cassette.interactions) == 5
+            assert len(cassette.interactions) == 6
 
         with Betamax(s).use_cassette('test_record_all') as betamax:
-            assert len(betamax.current_cassette.interactions) == 5
+            assert len(betamax.current_cassette.interactions) == 6
 
     def test_replaces_old_interactions(self):
         s = self.session
@@ -119,7 +120,7 @@ class TestRecordAll(IntegrationHelper):
             cassette = betamax.current_cassette
             self.cassette_path = cassette.cassette_path
             assert cassette.interactions != []
-            assert len(cassette.interactions) == 3
+            assert len(cassette.interactions) == 5
             assert cassette.is_empty() is False
             s.get('http://httpbin.org/get')
-            assert len(cassette.interactions) == 3
+            assert len(cassette.interactions) == 5
