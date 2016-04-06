@@ -26,7 +26,14 @@ class TestRecordOnce(IntegrationHelper):
             r1 = s.get('http://httpbin.org/get')
             assert len(betamax.current_cassette.interactions) == 2
             assert r1.status_code == 200
-            assert r0.headers == r1.headers
+            r0_headers = r0.headers.copy()
+            r0_headers.pop('Date')
+            r1_headers = r1.headers.copy()
+            r1_headers.pop('Date')
+            # NOTE(sigmavirus24): This fails if the second request is
+            # technically a second later. Ignoring the Date headers allows
+            # this test to succeed.
+            assert r0_headers == r1_headers
             assert r0.content == r1.content
 
 
