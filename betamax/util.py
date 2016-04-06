@@ -171,8 +171,11 @@ def timestamp():
         return stamp[:i]
 
 
+_SENTINEL = object()
+
+
 def _option_from(option, kwargs, defaults):
-    value = kwargs.get(option)
-    if value is None:
+    value = kwargs.get(option, _SENTINEL)
+    if value is _SENTINEL:
         value = defaults.get(option)
     return value

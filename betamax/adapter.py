@@ -12,6 +12,8 @@ from .exceptions import BetamaxError
 from datetime import datetime, timedelta
 from requests.adapters import BaseAdapter, HTTPAdapter
 
+_SENTINEL = object()
+
 
 class BetamaxAdapter(BaseAdapter):
     """This object is an implementation detail of the library.
@@ -61,6 +63,7 @@ class BetamaxAdapter(BaseAdapter):
         self.serialize = serialize
         self.options.update(options.items())
         placeholders = self.options.get('placeholders', [])
+        cassette_options = {}
 
         default_options = Cassette.default_cassette_options
 
@@ -68,19 +71,29 @@ class BetamaxAdapter(BaseAdapter):
             'match_requests_on', default_options['match_requests_on']
             )
 
-        preserve_exact_body_bytes = self.options.get(
+        cassette_options['preserve_exact_body_bytes'] = self.options.get(
             'preserve_exact_body_bytes',
             )
 
+        cassette_options['allow_playback_repeats'] = self.options.get(
+            'allow_playback_repeats'
+            )
+
+        cassette_options['record_mode'] = self.options.get('record')
+
+        for option, value in list(cassette_options.items()):
+            if value is None:
+                cassette_options.pop(option)
+
         self.cassette = Cassette(
             cassette_name, serialize, placeholders=placeholders,
-            record_mode=self.options.get('record'),
-            preserve_exact_body_bytes=preserve_exact_body_bytes,
-            cassette_library_dir=self.options.get('cassette_library_dir')
+            cassette_library_dir=self.options.get('cassette_library_dir'),
+            **cassette_options
             )
 
         if 'record' in self.options:
             self.cassette.record_mode = self.options['record']
+
         self.cassette.match_options = match_requests_on
 
         re_record_interval = timedelta.max

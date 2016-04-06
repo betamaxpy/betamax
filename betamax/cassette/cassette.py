@@ -18,7 +18,8 @@ class Cassette(object):
         'match_requests_on': ['method', 'uri'],
         're_record_interval': None,
         'placeholders': [],
-        'preserve_exact_body_bytes': False
+        'preserve_exact_body_bytes': False,
+        'allow_playback_repeats': False,
     }
 
     def __init__(self, cassette_name, serialization_format, **kwargs):
@@ -47,6 +48,10 @@ class Cassette(object):
         # Determine whether to preserve exact body bytes
         self.preserve_exact_body_bytes = _option_from(
             'preserve_exact_body_bytes', kwargs, defaults
+            )
+
+        self.allow_playback_repeats = _option_from(
+            'allow_playback_repeats', kwargs, defaults
             )
 
         # Initialize the interactions
@@ -130,7 +135,8 @@ class Cassette(object):
                     break
 
                 # set interaction as used before returning
-                i.used = True
+                if not self.allow_playback_repeats:
+                    i.used = True
                 return i
 
         # No matches. So sad.
