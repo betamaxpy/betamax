@@ -25,6 +25,7 @@ class Interaction(object):
         self.recorded_at = None
         self.json = interaction
         self.orig_response = response
+        self.used = False
         self.deserialize()
 
     def as_response(self):

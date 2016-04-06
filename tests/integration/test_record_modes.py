@@ -24,7 +24,7 @@ class TestRecordOnce(IntegrationHelper):
             assert betamax.current_cassette.interactions != []
             assert len(betamax.current_cassette.interactions) == 1
             r1 = s.get('http://httpbin.org/get')
-            assert len(betamax.current_cassette.interactions) == 1
+            assert len(betamax.current_cassette.interactions) == 2
             assert r1.status_code == 200
             assert r0.headers == r1.headers
             assert r0.content == r1.content
@@ -61,14 +61,14 @@ class TestRecordNewEpisodes(IntegrationHelper):
             cassette = betamax.current_cassette
             self.cassette_path = cassette.cassette_path
             assert cassette.interactions != []
-            assert len(cassette.interactions) == 3
+            assert len(cassette.interactions) == 4
             assert cassette.is_empty() is False
             s.get('https://httpbin.org/get')
-            assert len(cassette.interactions) == 4
+            assert len(cassette.interactions) == 5
 
         with Betamax(s).use_cassette('test_record_new') as betamax:
             cassette = betamax.current_cassette
-            assert len(cassette.interactions) == 4
+            assert len(cassette.interactions) == 5
             r = s.get('https://httpbin.org/get')
             assert r.status_code == 200
 
@@ -97,22 +97,10 @@ class TestRecordAll(IntegrationHelper):
             cassette = betamax.current_cassette
             self.cassette_path = cassette.cassette_path
             assert cassette.interactions != []
-            assert len(cassette.interactions) == 3
+            assert len(cassette.interactions) == 4
             assert cassette.is_empty() is False
             s.post('http://httpbin.org/post', data={'foo': 'bar'})
-            assert len(cassette.interactions) == 4
+            assert len(cassette.interactions) == 5
 
         with Betamax(s).use_cassette('test_record_all') as betamax:
-            assert len(betamax.current_cassette.interactions) == 4
-
-    def test_replaces_old_interactions(self):
-        s = self.session
-        opts = {'record': 'all'}
-        with Betamax(s).use_cassette('test_record_all', **opts) as betamax:
-            cassette = betamax.current_cassette
-            self.cassette_path = cassette.cassette_path
-            assert cassette.interactions != []
-            assert len(cassette.interactions) == 3
-            assert cassette.is_empty() is False
-            s.get('http://httpbin.org/get')
-            assert len(cassette.interactions) == 3
+            assert len(betamax.current_cassette.interactions) == 5

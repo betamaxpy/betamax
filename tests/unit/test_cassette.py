@@ -275,6 +275,7 @@ class TestCassette(unittest.TestCase):
 
     def test_find_match(self):
         self.cassette.match_options = set(['uri', 'method'])
+        self.cassette.record_mode = 'none'
         i = self.cassette.find_match(self.response.request)
         assert i is not None
         assert self.interaction is i
