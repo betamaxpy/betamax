@@ -1,6 +1,10 @@
 from .cassette import Cassette
 
 
+def convert_placeholders_list(placeholders):
+    return dict((ph['placeholder'], ph['replace']) for ph in placeholders)
+
+
 def validate_record(record):
     return record in ['all', 'new_episodes', 'none', 'once']
 
@@ -17,10 +21,8 @@ def validate_serializer(serializer):
 
 
 def validate_placeholders(placeholders):
-    keys = ['placeholder', 'replace']
-    return all(
-        sorted(list(p.keys())) == keys for p in placeholders
-    )
+    """Validate placeholders is a dict-like structure"""
+    return hasattr(placeholders, 'items')
 
 
 def translate_cassette_options():
@@ -46,11 +48,14 @@ class Options(object):
         'serialize': None,  # TODO: Remove this
         'serialize_with': 'json',
         'preserve_exact_body_bytes': False,
-        'placeholders': [],
+        'placeholders': {},
     }
 
     def __init__(self, data=None):
         self.data = data or {}
+        if isinstance(data.get('placeholders'), list):
+            data['placeholders'] = \
+                    convert_placeholders_list(data['placeholders'])
         self.validate()
         self.defaults = Options.defaults.copy()
         self.defaults.update(translate_cassette_options())

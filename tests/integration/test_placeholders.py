@@ -20,12 +20,7 @@ class TestPlaceholders(IntegrationHelper):
 
     def test_placeholders_work(self):
         placeholders = Cassette.default_cassette_options['placeholders']
-        placeholder = {
-            'placeholder': '<AUTHORIZATION>',
-            'replace': b64_foobar
-        }
-        assert placeholders != []
-        assert placeholder in placeholders
+        assert placeholders == {'<AUTHORIZATION>': b64_foobar}
 
         s = self.session
         cassette = None

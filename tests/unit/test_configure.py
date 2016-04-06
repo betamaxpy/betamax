@@ -34,9 +34,8 @@ class TestConfiguration(unittest.TestCase):
     def test_allows_registration_of_placeholders(self):
         opts = copy.deepcopy(Cassette.default_cassette_options)
         c = Configuration()
+        c.default_cassette_options['placeholders'] = {}
 
         c.define_cassette_placeholder('<TEST>', 'test')
         assert opts != Cassette.default_cassette_options
-        placeholders = Cassette.default_cassette_options['placeholders']
-        assert placeholders[0]['placeholder'] == '<TEST>'
-        assert placeholders[0]['replace'] == 'test'
+        assert Cassette.default_cassette_options['placeholders'] == {'<TEST>': 'test'}

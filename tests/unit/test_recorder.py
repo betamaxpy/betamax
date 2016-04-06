@@ -18,6 +18,12 @@ class TestBetamax(unittest.TestCase):
             assert not isinstance(v, BetamaxAdapter)
             assert isinstance(v, HTTPAdapter)
 
+    def test_initialization_converts_placeholders(self):
+        placeholders = [{'placeholder': '<FOO>', 'replace': 'replace-with'}]
+        default_cassette_options = {'placeholders': placeholders}
+        self.vcr = Betamax(self.session, default_cassette_options=default_cassette_options)
+        assert self.vcr.config.default_cassette_options['placeholders'] == {'<FOO>': 'replace-with'}
+
     def test_entering_context_alters_adapters(self):
         with self.vcr:
             for v in self.session.adapters.values():
@@ -59,6 +65,11 @@ class TestBetamax(unittest.TestCase):
         assert self.session is self.vcr.session
 
     def test_use_cassette_passes_along_placeholders(self):
-        placeholders = [{'placeholder': '<FOO>', 'replace': 'replace-with'}]
+        placeholders = {'<FOO>': 'replace-with'}
         self.vcr.use_cassette('test', placeholders=placeholders)
         assert self.vcr.current_cassette.placeholders == placeholders
+
+    def test_use_cassette_converts_lists(self):
+        placeholders = [{'placeholder': '<FOO>', 'replace': 'replace-with'}]
+        self.vcr.use_cassette('test', placeholders=placeholders)
+        assert self.vcr.current_cassette.placeholders == {'<FOO>': 'replace-with'}

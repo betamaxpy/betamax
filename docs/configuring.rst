@@ -244,14 +244,10 @@ example above and convert it.
     session = requests.Session()
 
     recorder = betamax.Betamax(session, default_cassette_options={
-        'placeholders': [
-            {
-                'placeholder': '<GITHUB-AUTH>',
-                'replace': base64.b64encode(
-                    '{0}:{1}'.format(username, password).encode('utf-8')
-                )
-            }
-        ]
+        'placeholders': {'<GITHUB-AUTH>': base64.b64encode(
+                '{0}:{1}'.format(username, password).encode('utf-8')
+            )
+        }
     })
 
 Note that what we passed as our first argument is assigned to the
