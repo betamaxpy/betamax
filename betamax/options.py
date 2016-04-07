@@ -28,6 +28,10 @@ def translate_cassette_options():
         yield (k, v) if k != 'record_mode' else ('record', v)
 
 
+def isboolean(value):
+    return value in [True, False]
+
+
 class Options(object):
     valid_options = {
         'match_requests_on': validate_matchers,
@@ -35,8 +39,9 @@ class Options(object):
         'record': validate_record,
         'serialize': validate_serializer,  # TODO: Remove this
         'serialize_with': validate_serializer,
-        'preserve_exact_body_bytes': lambda x: x in [True, False],
+        'preserve_exact_body_bytes': isboolean,
         'placeholders': validate_placeholders,
+        'allow_playback_repeats': isboolean,
     }
 
     defaults = {
@@ -47,6 +52,7 @@ class Options(object):
         'serialize_with': 'json',
         'preserve_exact_body_bytes': False,
         'placeholders': [],
+        'allow_playback_repeats': False,
     }
 
     def __init__(self, data=None):
