@@ -1,10 +1,19 @@
 History
 =======
 
-0.6.0 - 2016-xx-yy
+0.6.0 - 2016-04-12
 ------------------
 
 - Add ``betamax_recorder`` pytest fixture
+
+- Change default behaviour to allow duplicate interactions to be recorded in
+  single cassette
+
+- Add ``allow_playback_repeats`` to allow an interaction to be used more than
+  once from a single cassette
+
+- Always return a new ``Response`` object from an Interaction to allow for a
+  streaming response to be usable multiple times
 
 - Remove CI support for Pythons 2.6 and 3.2
 
