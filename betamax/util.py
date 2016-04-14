@@ -147,6 +147,7 @@ def add_urllib3_response(serialized, response, headers):
     h = HTTPResponse(
         body,
         status=response.status_code,
+        reason=response.reason,
         headers=headers,
         preload_content=False,
         original_response=MockHTTPResponse(headers)
