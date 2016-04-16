@@ -198,3 +198,13 @@ class Cassette(object):
             'recorded_with': 'betamax/{0}'.format(__version__)
         }
         self.serializer.serialize(cassette_data)
+
+
+def dispatch_hooks(hook_name, *args):
+    """Dispatch registered hooks."""
+    # Cassette.hooks is a dictionary that defaults to an empty list,
+    # we neither need to check for the presence of hook_name in it, nor
+    # need to worry about whether the return value will be iterable
+    hooks = Cassette.hooks[hook_name]
+    for hook in hooks:
+        hook(*args)

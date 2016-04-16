@@ -7,7 +7,7 @@ adapter for betamax
 """
 import os
 
-from .cassette import Cassette
+from . import cassette
 from .exceptions import BetamaxError
 from datetime import datetime, timedelta
 from requests.adapters import BaseAdapter, HTTPAdapter
@@ -65,7 +65,7 @@ class BetamaxAdapter(BaseAdapter):
         placeholders = self.options.get('placeholders', [])
         cassette_options = {}
 
-        default_options = Cassette.default_cassette_options
+        default_options = cassette.Cassette.default_cassette_options
 
         match_requests_on = self.options.get(
             'match_requests_on', default_options['match_requests_on']
@@ -85,7 +85,7 @@ class BetamaxAdapter(BaseAdapter):
             if value is None:
                 cassette_options.pop(option)
 
-        self.cassette = Cassette(
+        self.cassette = cassette.Cassette(
             cassette_name, serialize, placeholders=placeholders,
             cassette_library_dir=self.options.get('cassette_library_dir'),
             **cassette_options
@@ -128,6 +128,7 @@ class BetamaxAdapter(BaseAdapter):
             raise BetamaxError(unhandled_request_message(request,
                                                          self.cassette))
 
+        cassette.dispatch_hooks('before_playback', interaction, cassette)
         resp = interaction.as_response()
         resp.connection = self
         return resp
@@ -154,6 +155,7 @@ class BetamaxAdapter(BaseAdapter):
             request, stream=True, timeout=timeout, verify=verify,
             cert=cert, proxies=proxies
             )
+        cassette.dispatch_hooks('before_record', response, self.cassette)
         self.cassette.save_interaction(response, request)
         return self.cassette.interactions[-1]
 
