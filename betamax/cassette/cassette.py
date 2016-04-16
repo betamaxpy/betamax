@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from .interaction import Interaction
+import collections
 from datetime import datetime
 from functools import partial
-
 import os.path
+
+from .interaction import Interaction
 
 from .. import matchers
 from .. import serializers
@@ -21,6 +22,8 @@ class Cassette(object):
         'preserve_exact_body_bytes': False,
         'allow_playback_repeats': False,
     }
+
+    hooks = collections.defaultdict(list)
 
     def __init__(self, cassette_name, serialization_format, **kwargs):
         #: Short name of the cassette
