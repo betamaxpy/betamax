@@ -128,7 +128,7 @@ class BetamaxAdapter(BaseAdapter):
             raise BetamaxError(unhandled_request_message(request,
                                                          self.cassette))
 
-        cassette.dispatch_hooks('before_playback', interaction, cassette)
+        cassette.dispatch_hooks('before_playback', interaction, self.cassette)
         resp = interaction.as_response()
         resp.connection = self
         return resp
@@ -146,9 +146,8 @@ class BetamaxAdapter(BaseAdapter):
         :param bool verify: (optional) verify SSL certificate
         :param str cert: (optional) path to SSL client
         :param proxies dict: (optional) mapping protocol to URL of the proxy
-        :return: Iteraction
-        :rtype: class:`betamax.cassette.iteraction`
-
+        :return: Interaction
+        :rtype: class:`betamax.cassette.Interaction`
         """
         adapter = self.find_adapter(request.url)
         response = adapter.send(

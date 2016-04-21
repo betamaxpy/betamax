@@ -1,17 +1,20 @@
-import os
-import sys
 import unittest
 
-# sys.path.insert(0, os.path.abspath('.'))
-# sys.stderr.write('%s' % str(sys.path))
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 from betamax.adapter import BetamaxAdapter
 from requests.adapters import HTTPAdapter
+from requests.models import PreparedRequest
 
 
 class TestBetamaxAdapter(unittest.TestCase):
     def setUp(self):
-        self.adapter = BetamaxAdapter()
+        http_adapter = mock.Mock()
+        self.adapters_dict = {'http://': http_adapter}
+        self.adapter = BetamaxAdapter(old_adapters=self.adapters_dict)
 
     def tearDown(self):
         self.adapter.eject_cassette()
@@ -34,7 +37,39 @@ class TestBetamaxAdapter(unittest.TestCase):
         assert self.adapter.cassette is not None
         assert self.adapter.cassette_name == filename
 
+    def test_prerecord_hook(self):
+        cassette = mock.Mock()
+        cassette.interactions = ['fake']
+        self.adapter.cassette = cassette
+        request = PreparedRequest()
+        request.url = 'http://example.com'
+        response = object()
+        adapter = self.adapters_dict['http://']
+        adapter.send.return_value = response
 
-if __name__ == '__main__':
-    sys.path.insert(0, os.path.abspath('../..'))
-    unittest.main()
+        with mock.patch('betamax.cassette.dispatch_hooks') as dispatch_hooks:
+            self.adapter.send_and_record(request)
+
+        adapter.send.assert_called_once_with(
+            request, stream=True, timeout=None, verify=True, cert=None,
+            proxies=None,
+        )
+
+        dispatch_hooks.assert_called_once_with(
+            'before_record', response, cassette,
+        )
+
+    def test_preplayback_hook(self):
+        interaction = mock.Mock()
+        cassette = mock.Mock()
+        cassette.find_match.return_value = interaction
+        self.adapter.cassette = cassette
+        request = PreparedRequest()
+        request.url = 'http://example.com'
+
+        with mock.patch('betamax.cassette.dispatch_hooks') as dispatch_hooks:
+            self.adapter.send(request)
+
+        dispatch_hooks.assert_called_once_with(
+            'before_playback', interaction, cassette
+        )
