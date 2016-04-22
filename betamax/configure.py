@@ -36,7 +36,9 @@ class Configuration(object):
     def before_playback(self, tag=None, callback=None):
         """Register a function to call before playing back an interaction.
 
-        Example usage::
+        Example usage:
+
+        .. code-block:: python
 
             def before_playback(interaction, cassette):
                 pass
@@ -57,7 +59,9 @@ class Configuration(object):
     def before_record(self, tag=None, callback=None):
         """Register a function to call before recording an interaction.
 
-        Example usage::
+        Example usage:
+
+        .. code-block:: python
 
             def before_record(interaction, cassette):
                 pass

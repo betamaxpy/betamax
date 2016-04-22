@@ -112,23 +112,23 @@ class BetamaxAdapter(BaseAdapter):
         :returns: A Response object
         """
         interaction = None
+        current_cassette = self.cassette
 
-        if not self.cassette:
+        if not current_cassette:
             raise BetamaxError('No cassette was specified or found.')
 
-        if self.cassette.interactions:
-            interaction = self.cassette.find_match(request)
+        if current_cassette.interactions:
+            interaction = current_cassette.find_match(request)
 
-        if not interaction and self.cassette.is_recording():
+        if not interaction and current_cassette.is_recording():
             interaction = self.send_and_record(
                 request, stream, timeout, verify, cert, proxies
                 )
 
         if not interaction:
             raise BetamaxError(unhandled_request_message(request,
-                                                         self.cassette))
+                                                         current_cassette))
 
-        cassette.dispatch_hooks('before_playback', interaction, self.cassette)
         resp = interaction.as_response()
         resp.connection = self
         return resp
@@ -154,9 +154,7 @@ class BetamaxAdapter(BaseAdapter):
             request, stream=True, timeout=timeout, verify=verify,
             cert=cert, proxies=proxies
             )
-        cassette.dispatch_hooks('before_record', response, self.cassette)
-        self.cassette.save_interaction(response, request)
-        return self.cassette.interactions[-1]
+        return self.cassette.save_interaction(response, request)
 
     def find_adapter(self, url):
         """Find adapter.

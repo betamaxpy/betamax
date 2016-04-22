@@ -115,7 +115,7 @@ class Cassette(object):
         ``use_cassette`` and passes in the request currently in progress.
 
         :param request: ``requests.PreparedRequest``
-        :returns: :class:`Interaction <Interaction>`
+        :returns: :class:`~betamax.cassette.Interaction`
         """
         # if we are recording, do not filter by match
         if self.is_recording() and self.record_mode != 'all':
@@ -128,19 +128,24 @@ class Cassette(object):
             for o in opts
         ]
 
-        for i in self.interactions:
-            # If the interaction matches everything
-            if i.match(curried_matchers) and not i.used:
-                if self.record_mode == 'all':
-                    # If we're recording everything and there's a matching
-                    # interaction we want to overwrite it, so we remove it.
-                    self.interactions.remove(i)
-                    break
+        for interaction in self.interactions:
+            if not interaction.match(curried_matchers):
+                continue
 
-                # set interaction as used before returning
-                if not self.allow_playback_repeats:
-                    i.used = True
-                return i
+            if interaction.used or interaction.ignored:
+                continue
+
+            # If the interaction matches everything
+            if self.record_mode == 'all':
+                # If we're recording everything and there's a matching
+                # interaction we want to overwrite it, so we remove it.
+                self.interactions.remove(interaction)
+                break
+
+            # set interaction as used before returning
+            if not self.allow_playback_repeats:
+                interaction.used = True
+            return interaction
 
         # No matches. So sad.
         return None
@@ -165,6 +170,7 @@ class Cassette(object):
         self.interactions = [Interaction(i) for i in interactions]
 
         for i in self.interactions:
+            dispatch_hooks('before_playback', i, self)
             i.replace_all(self.placeholders, ('placeholder', 'replace'))
 
     def sanitize_interactions(self):
@@ -172,8 +178,12 @@ class Cassette(object):
             i.replace_all(self.placeholders)
 
     def save_interaction(self, response, request):
-        interaction = self.serialize_interaction(response, request)
-        self.interactions.append(Interaction(interaction, response))
+        serialized_data = self.serialize_interaction(response, request)
+        interaction = Interaction(serialized_data, response)
+        dispatch_hooks('before_record', interaction, self)
+        if not interaction.ignored:  # If a hook caused this to be ignored
+            self.interactions.append(interaction)
+        return interaction
 
     def serialize_interaction(self, response, request):
         return {
@@ -194,7 +204,7 @@ class Cassette(object):
         self.sanitize_interactions()
 
         cassette_data = {
-            'http_interactions': [i.json for i in self.interactions],
+            'http_interactions': [i.data for i in self.interactions],
             'recorded_with': 'betamax/{0}'.format(__version__)
         }
         self.serializer.serialize(cassette_data)
