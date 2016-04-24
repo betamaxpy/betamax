@@ -22,11 +22,19 @@ class Interaction(object):
     """
 
     def __init__(self, interaction, response=None):
-        self.json = interaction
+        self.data = interaction
         self.orig_response = response
-        self.used = False
         self.recorded_response = self.deserialize()
         self.used = False
+        self.ignored = False
+
+    def ignore(self):
+        """Ignore this interaction.
+
+        This is only to be used from a before_record or a before_playback
+        callback.
+        """
+        self.ignored = True
 
     def as_response(self):
         """Return the Interaction as a Response object."""
@@ -35,18 +43,18 @@ class Interaction(object):
 
     @property
     def recorded_at(self):
-        return datetime.strptime(self.json['recorded_at'], '%Y-%m-%dT%H:%M:%S')
+        return datetime.strptime(self.data['recorded_at'], '%Y-%m-%dT%H:%M:%S')
 
     def deserialize(self):
         """Turn a serialized interaction into a Response."""
-        r = util.deserialize_response(self.json['response'])
-        r.request = util.deserialize_prepared_request(self.json['request'])
+        r = util.deserialize_response(self.data['response'])
+        r.request = util.deserialize_prepared_request(self.data['request'])
         extract_cookies_to_jar(r.cookies, r.request, r.raw)
         return r
 
     def match(self, matchers):
         """Return whether this interaction is a match."""
-        request = self.json['request']
+        request = self.data['request']
         return all(m(request) for m in matchers)
 
     def replace(self, text_to_replace, placeholder):
@@ -63,14 +71,14 @@ class Interaction(object):
 
     def replace_in_headers(self, text_to_replace, placeholder):
         for obj in ('request', 'response'):
-            headers = self.json[obj]['headers']
+            headers = self.data[obj]['headers']
             for k, v in list(headers.items()):
                 v = util.from_list(v)
                 headers[k] = v.replace(text_to_replace, placeholder)
 
     def replace_in_body(self, text_to_replace, placeholder):
         for obj in ('request', 'response'):
-            body = self.json[obj]['body']
+            body = self.data[obj]['body']
             old_style = hasattr(body, 'replace')
             if not old_style:
                 body = body.get('string', '')
@@ -78,14 +86,14 @@ class Interaction(object):
             if text_to_replace in body:
                 body = body.replace(text_to_replace, placeholder)
             if old_style:
-                self.json[obj]['body'] = body
+                self.data[obj]['body'] = body
             else:
-                self.json[obj]['body']['string'] = body
+                self.data[obj]['body']['string'] = body
 
     def replace_in_uri(self, text_to_replace, placeholder):
         for (obj, key) in (('request', 'uri'), ('response', 'url')):
-            uri = self.json[obj][key]
+            uri = self.data[obj][key]
             if text_to_replace in uri:
-                self.json[obj][key] = uri.replace(
+                self.data[obj][key] = uri.replace(
                     text_to_replace, placeholder
                 )

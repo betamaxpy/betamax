@@ -39,5 +39,5 @@ class TestPlaceholders(IntegrationHelper):
         #cassette.sanitize_interactions()
         self.cassette_path = cassette.cassette_path
         i = cassette.interactions[0]
-        auth = i.json['request']['headers']['Authorization']
+        auth = i.data['request']['headers']['Authorization']
         assert '<AUTHORIZATION>' in auth

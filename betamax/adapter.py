@@ -7,7 +7,7 @@ adapter for betamax
 """
 import os
 
-from .cassette import Cassette
+from . import cassette
 from .exceptions import BetamaxError
 from datetime import datetime, timedelta
 from requests.adapters import BaseAdapter, HTTPAdapter
@@ -65,7 +65,7 @@ class BetamaxAdapter(BaseAdapter):
         placeholders = self.options.get('placeholders', [])
         cassette_options = {}
 
-        default_options = Cassette.default_cassette_options
+        default_options = cassette.Cassette.default_cassette_options
 
         match_requests_on = self.options.get(
             'match_requests_on', default_options['match_requests_on']
@@ -85,7 +85,7 @@ class BetamaxAdapter(BaseAdapter):
             if value is None:
                 cassette_options.pop(option)
 
-        self.cassette = Cassette(
+        self.cassette = cassette.Cassette(
             cassette_name, serialize, placeholders=placeholders,
             cassette_library_dir=self.options.get('cassette_library_dir'),
             **cassette_options
@@ -112,21 +112,22 @@ class BetamaxAdapter(BaseAdapter):
         :returns: A Response object
         """
         interaction = None
+        current_cassette = self.cassette
 
-        if not self.cassette:
+        if not current_cassette:
             raise BetamaxError('No cassette was specified or found.')
 
-        if self.cassette.interactions:
-            interaction = self.cassette.find_match(request)
+        if current_cassette.interactions:
+            interaction = current_cassette.find_match(request)
 
-        if not interaction and self.cassette.is_recording():
+        if not interaction and current_cassette.is_recording():
             interaction = self.send_and_record(
                 request, stream, timeout, verify, cert, proxies
                 )
 
         if not interaction:
             raise BetamaxError(unhandled_request_message(request,
-                                                         self.cassette))
+                                                         current_cassette))
 
         resp = interaction.as_response()
         resp.connection = self
@@ -145,17 +146,15 @@ class BetamaxAdapter(BaseAdapter):
         :param bool verify: (optional) verify SSL certificate
         :param str cert: (optional) path to SSL client
         :param proxies dict: (optional) mapping protocol to URL of the proxy
-        :return: Iteraction
-        :rtype: class:`betamax.cassette.iteraction`
-
+        :return: Interaction
+        :rtype: class:`betamax.cassette.Interaction`
         """
         adapter = self.find_adapter(request.url)
         response = adapter.send(
             request, stream=True, timeout=timeout, verify=verify,
             cert=cert, proxies=proxies
             )
-        self.cassette.save_interaction(response, request)
-        return self.cassette.interactions[-1]
+        return self.cassette.save_interaction(response, request)
 
     def find_adapter(self, url):
         """Find adapter.

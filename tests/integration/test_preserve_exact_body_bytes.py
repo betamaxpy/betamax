@@ -18,7 +18,7 @@ class TestPreserveExactBodyBytes(IntegrationHelper):
                                   data={'a': 1})
             assert 'headers' in r.json()
 
-            interaction = b.current_cassette.interactions[0].json
+            interaction = b.current_cassette.interactions[0].data
             assert 'base64_string' in interaction['request']['body']
             assert 'base64_string' in interaction['response']['body']
 
@@ -42,5 +42,5 @@ class TestPreserveExactBodyBytesForAllCassettes(IntegrationHelper):
             r = self.session.get('https://httpbin.org/get')
             assert 'headers' in r.json()
 
-            interaction = b.current_cassette.interactions[0].json
+            interaction = b.current_cassette.interactions[0].data
             assert 'base64_string' in interaction['response']['body']

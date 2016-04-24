@@ -262,7 +262,7 @@ class TestCassette(unittest.TestCase):
             os.unlink(TestCassette.cassette_name)
 
     def test_serialize_interaction(self):
-        serialized = self.interaction.json
+        serialized = self.interaction.data
         assert serialized['request'] == self.json['request']
         assert serialized['response'] == self.json['response']
         assert serialized.get('recorded_at') is not None
@@ -283,7 +283,7 @@ class TestCassette(unittest.TestCase):
         serializer = self.test_serializer
         self.cassette.eject()
         assert serializer.serialize_calls == [
-            {'http_interactions': [self.cassette.interactions[0].json],
+            {'http_interactions': [self.cassette.interactions[0].data],
              'recorded_with': 'betamax/{0}'.format(__version__)}
             ]
 
@@ -381,40 +381,40 @@ class TestInteraction(unittest.TestCase):
         self.interaction.replace('foo', '<FOO>')
         self.interaction.replace('http://example.com', '<EXAMPLE_URI>')
 
-        header = self.interaction.json['request']['headers']['Authorization']
+        header = self.interaction.data['request']['headers']['Authorization']
         assert header == '<AUTH_TOKEN>'
-        header = self.interaction.json['response']['headers']['Set-Cookie']
+        header = self.interaction.data['response']['headers']['Set-Cookie']
         assert header == 'cookie_name=<COOKIE_VALUE>'
-        body = self.interaction.json['request']['body']['string']
+        body = self.interaction.data['request']['body']['string']
         assert body == 'key=value&key2=<SECRET_VALUE>'
-        body = self.interaction.json['response']['body']
+        body = self.interaction.data['response']['body']
         assert body == {'encoding': 'utf-8', 'string': '<FOO>'}
-        uri = self.interaction.json['request']['uri']
+        uri = self.interaction.data['request']['uri']
         assert uri == '<EXAMPLE_URI>/'
-        uri = self.interaction.json['response']['url']
+        uri = self.interaction.data['response']['url']
         assert uri == '<EXAMPLE_URI>'
 
     def test_replace_in_headers(self):
         self.interaction.replace_in_headers('123456789abcdef', '<AUTH_TOKEN>')
         self.interaction.replace_in_headers('cookie_value', '<COOKIE_VALUE>')
-        header = self.interaction.json['request']['headers']['Authorization']
+        header = self.interaction.data['request']['headers']['Authorization']
         assert header == '<AUTH_TOKEN>'
-        header = self.interaction.json['response']['headers']['Set-Cookie']
+        header = self.interaction.data['response']['headers']['Set-Cookie']
         assert header == 'cookie_name=<COOKIE_VALUE>'
 
     def test_replace_in_body(self):
         self.interaction.replace_in_body('secret_value', '<SECRET_VALUE>')
         self.interaction.replace_in_body('foo', '<FOO>')
-        body = self.interaction.json['request']['body']['string']
+        body = self.interaction.data['request']['body']['string']
         assert body == 'key=value&key2=<SECRET_VALUE>'
-        body = self.interaction.json['response']['body']
+        body = self.interaction.data['response']['body']
         assert body == {'encoding': 'utf-8', 'string': '<FOO>'}
 
     def test_replace_in_uri(self):
         self.interaction.replace_in_uri('http://example.com', '<EXAMPLE_URI>')
-        uri = self.interaction.json['request']['uri']
+        uri = self.interaction.data['request']['uri']
         assert uri == '<EXAMPLE_URI>/'
-        uri = self.interaction.json['response']['url']
+        uri = self.interaction.data['response']['url']
         assert uri == '<EXAMPLE_URI>'
 
 

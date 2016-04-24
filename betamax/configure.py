@@ -33,6 +33,52 @@ class Configuration(object):
         else:
             super(Configuration, self).__setattr__(prop, value)
 
+    def before_playback(self, tag=None, callback=None):
+        """Register a function to call before playing back an interaction.
+
+        Example usage:
+
+        .. code-block:: python
+
+            def before_playback(interaction, cassette):
+                pass
+
+            with Betamax.configure() as config:
+                config.before_playback(callback=before_playback)
+
+        :param str tag:
+            Limits the interactions passed to the function based on the
+            interaction's tag (currently unsupported).
+        :param callable callback:
+            The function which either accepts just an interaction or an
+            interaction and a cassette and mutates the interaction before
+            returning.
+        """
+        Cassette.hooks['before_playback'].append(callback)
+
+    def before_record(self, tag=None, callback=None):
+        """Register a function to call before recording an interaction.
+
+        Example usage:
+
+        .. code-block:: python
+
+            def before_record(interaction, cassette):
+                pass
+
+            with Betamax.configure() as config:
+                config.before_record(callback=before_record)
+
+        :param str tag:
+            Limits the interactions passed to the function based on the
+            interaction's tag (currently unsupported).
+        :param callable callback:
+            The function which either accepts just an interaction or an
+            interaction and a cassette and mutates the interaction before
+            returning.
+        """
+        Cassette.hooks['before_record'].append(callback)
+
     @property
     def cassette_library_dir(self):
         """Retrieve and set the directory to store the cassettes in."""

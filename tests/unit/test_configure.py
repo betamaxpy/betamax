@@ -1,3 +1,4 @@
+import collections
 import copy
 import unittest
 
@@ -14,6 +15,7 @@ class TestConfiguration(unittest.TestCase):
 
     def tearDown(self):
         Cassette.default_cassette_options = self.cassette_options
+        Cassette.hooks = collections.defaultdict(list)
         Configuration.CASSETTE_LIBRARY_DIR = self.cassette_dir
 
     def test_acts_as_pass_through(self):
@@ -40,3 +42,19 @@ class TestConfiguration(unittest.TestCase):
         placeholders = Cassette.default_cassette_options['placeholders']
         assert placeholders[0]['placeholder'] == '<TEST>'
         assert placeholders[0]['replace'] == 'test'
+
+    def test_registers_pre_record_hooks(self):
+        c = Configuration()
+        assert Cassette.hooks['before_record'] == []
+        c.before_record(callback=lambda: None)
+        assert Cassette.hooks['before_record'] != []
+        assert len(Cassette.hooks['before_record']) == 1
+        assert callable(Cassette.hooks['before_record'][0])
+
+    def test_registers_pre_playback_hooks(self):
+        c = Configuration()
+        assert Cassette.hooks['before_playback'] == []
+        c.before_playback(callback=lambda: None)
+        assert Cassette.hooks['before_playback'] != []
+        assert len(Cassette.hooks['before_playback']) == 1
+        assert callable(Cassette.hooks['before_playback'][0])

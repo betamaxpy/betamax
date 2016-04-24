@@ -38,6 +38,6 @@ class TestBackwardsCompatibleSerialization(IntegrationHelper):
     def tests_deserializes_old_cassette_headers(self):
         with betamax.Betamax(self.session).use_cassette('GitHub_emojis') as b:
             self.session.get('https://api.github.com/emojis')
-            interaction = b.current_cassette.interactions[0].json
+            interaction = b.current_cassette.interactions[0].data
             header = interaction['request']['headers']['Accept']
             assert not isinstance(header, list)

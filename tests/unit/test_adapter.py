@@ -1,9 +1,9 @@
-import os
-import sys
 import unittest
 
-# sys.path.insert(0, os.path.abspath('.'))
-# sys.stderr.write('%s' % str(sys.path))
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 from betamax.adapter import BetamaxAdapter
 from requests.adapters import HTTPAdapter
@@ -11,7 +11,9 @@ from requests.adapters import HTTPAdapter
 
 class TestBetamaxAdapter(unittest.TestCase):
     def setUp(self):
-        self.adapter = BetamaxAdapter()
+        http_adapter = mock.Mock()
+        self.adapters_dict = {'http://': http_adapter}
+        self.adapter = BetamaxAdapter(old_adapters=self.adapters_dict)
 
     def tearDown(self):
         self.adapter.eject_cassette()
@@ -33,8 +35,3 @@ class TestBetamaxAdapter(unittest.TestCase):
         })
         assert self.adapter.cassette is not None
         assert self.adapter.cassette_name == filename
-
-
-if __name__ == '__main__':
-    sys.path.insert(0, os.path.abspath('../..'))
-    unittest.main()
