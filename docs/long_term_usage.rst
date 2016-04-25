@@ -88,19 +88,61 @@ example, we'll use ``new_episodes`` so our code now looks like:
 Known Issues
 ------------
 
-gethostbyname slowing things down on OS X
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tests Periodically Slow Down
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Symptoms:** Tests periodically slow down
-**Issue:** When using requests under OS X, profiler shows a call to socket.gethostbyname, that is not present when running from Linux. That is due to an internal call to::
+**Description:**
 
-    return proxy_bypass_macosx_sysconf(host)
+Requests checks if it should use or bypass proxies using the standard library
+function ``proxy_bypass``. This has been known to cause slow downs when using
+Requests and can cause your recorded requests to slow down as well.
 
-That call is executed prior to betamax taking control over the requests/response flow.
+Betamax presently has no way to prevent this from being called as it operates
+at a lower level in Requests than is necessary.
 
-**Workaround:** Mock gethostbyname method from socket library, to force a localhost setting:
+**Workarounds:**
 
-.. code-block:: python
+- Mock gethostbyname method from socket library, to force a localhost setting,
+  e.g.,
 
-    import socket
-    socket.gethostbyname = lambda x: '127.0.0.1'
+  .. code-block:: python
+
+      import socket
+      socket.gethostbyname = lambda x: '127.0.0.1'
+
+- Set ``trust_env`` to ``False`` on the session used with Betamax. This will
+  prevent Requests from checking for proxies and whether it needs bypass them.
+
+**Related bugs:**
+
+- https://github.com/sigmavirus24/betamax/issues/96
+
+- https://github.com/kennethreitz/requests/issues/2988
+
+..
+    Template for known issues
+
+    Descriptive Title
+    ~~~~~~~~~~~~~~~~~
+
+    **Description:**
+
+    <Description of issue>
+
+    **Workaround(s):**
+
+    - List
+
+    - of
+
+    - workarounds
+
+    **Related bug(s):**
+
+    - List
+
+    - of
+
+    - bug
+
+    - links
