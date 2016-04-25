@@ -84,3 +84,65 @@ example, we'll use ``new_episodes`` so our code now looks like:
                                serialize_with='prettyjson',
                                match_requests_on=matchers,
                                record='new_episodes'):
+
+Known Issues
+------------
+
+Tests Periodically Slow Down
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Description:**
+
+Requests checks if it should use or bypass proxies using the standard library
+function ``proxy_bypass``. This has been known to cause slow downs when using
+Requests and can cause your recorded requests to slow down as well.
+
+Betamax presently has no way to prevent this from being called as it operates
+at a lower level in Requests than is necessary.
+
+**Workarounds:**
+
+- Mock gethostbyname method from socket library, to force a localhost setting,
+  e.g.,
+
+  .. code-block:: python
+
+      import socket
+      socket.gethostbyname = lambda x: '127.0.0.1'
+
+- Set ``trust_env`` to ``False`` on the session used with Betamax. This will
+  prevent Requests from checking for proxies and whether it needs bypass them.
+
+**Related bugs:**
+
+- https://github.com/sigmavirus24/betamax/issues/96
+
+- https://github.com/kennethreitz/requests/issues/2988
+
+..
+    Template for known issues
+
+    Descriptive Title
+    ~~~~~~~~~~~~~~~~~
+
+    **Description:**
+
+    <Description of issue>
+
+    **Workaround(s):**
+
+    - List
+
+    - of
+
+    - workarounds
+
+    **Related bug(s):**
+
+    - List
+
+    - of
+
+    - bug
+
+    - links
