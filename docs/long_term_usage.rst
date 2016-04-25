@@ -84,3 +84,23 @@ example, we'll use ``new_episodes`` so our code now looks like:
                                serialize_with='prettyjson',
                                match_requests_on=matchers,
                                record='new_episodes'):
+
+Known Issues
+------------
+
+gethostbyname slowing things down on OS X
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Symptoms:** Tests periodically slow down
+**Issue:** When using requests under OS X, profiler shows a call to socket.gethostbyname, that is not present when running from Linux. That is due to an internal call to::
+
+    return proxy_bypass_macosx_sysconf(host)
+
+That call is executed prior to betamax taking control over the requests/response flow.
+
+**Workaround:** Mock gethostbyname method from socket library, to force a localhost setting:
+
+.. code-block:: python
+
+    import socket
+    socket.gethostbyname = lambda x: '127.0.0.1'
