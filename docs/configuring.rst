@@ -168,6 +168,80 @@ variables, e.g.,
 This means that you can run these tests on a service like Travis-CI without
 providing credentials.
 
+In the event that you can not anticipate what you will need to filter out,
+version 0.7.0 of Betamax adds ``before_record`` and ``before_playback`` hooks.
+These two hooks both will pass the
+:class:`~betamax.cassette.interaction.Interaction` and
+:class:`~betamax.cassette.cassette.Cassette` to the function provided. An
+example callback would look like:
+
+.. code-block:: python
+
+    def hook(interaction, cassette):
+        pass
+
+You would then register this callback:
+
+.. code-block:: python
+
+    # Either
+    config.before_record(callback=hook)
+    # Or
+    config.before_playback(callback=hook)
+
+You can register callables for both hooks. If you wish to ignore an
+interaction and prevent it from being recorded or replayed, you can call the
+:meth:`~betamax.cassette.interaction.Interaction.ignore`. You also have full
+access to all of the methods and attributes on an instance of an Interaction.
+This will allow you to inspect the response produced by the interaction and
+then modify it. Let's say, for example, that you are talking to an API that
+grants authorization tokens on a specific request. In this example, you might
+authenticate initially using a username and password and then use a token
+after authenticating. You want, however, for the token to be kept secret. In
+that case you might configure Betamax to replace the username and password,
+e.g.,
+
+.. code-block:: python
+
+    config.define_cassette_placeholder('<USERNAME>', username)
+    config.define_cassette_placeholder('<PASSWORD>', password)
+
+And you would also write a function that, prior to recording, finds the token,
+saves it, and obscures it from the recorded version of the cassette:
+
+.. code-block:: python
+
+    from betamax.cassette import cassette
+
+
+    def sanitize_token(interaction, current_cassette):
+        # Exit early if the request did not return 200 OK because that's the
+        # only time we want to look for Authorization-Token headers
+        if interaction.data['response']['status']['code'] != 200:
+            return
+
+        headers = interaction.data['response']['headers']
+        token = headers.get('Authorization-Token')
+        # If there was no token header in the response, exit
+        if token is None:
+            return
+
+        # Otherwise, create a new placeholder so that when cassette is saved,
+        # Betamax will replace the token with our placeholder.
+        current_cassette.placeholders.append(
+            cassette.Placeholder(placeholder='<AUTH_TOKEN>', replace=token)
+        )
+
+This will dynamically create a placeholder for that cassette only. Once we
+have our hook, we need merely register it like so:
+
+.. code-block:: python
+
+    config.before_record(callback=sanitize_token)
+
+And we no longer need to worry about leaking sensitive data.
+
+
 Setting default serializer
 ``````````````````````````
 
