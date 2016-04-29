@@ -1,6 +1,16 @@
 History
 =======
 
+0.7.0 - 2016-04-29
+------------------
+
+- Add ``before_record`` and ``before_playback`` hooks
+
+- Allow per-cassette placeholders to be merged and override global
+  placeholders
+
+- Fix bug where the ``QueryMatcher`` failed matching on high Unicode points
+
 0.6.0 - 2016-04-12
 ------------------
 
