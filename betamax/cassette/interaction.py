@@ -65,11 +65,8 @@ class Interaction(object):
 
     def replace_all(self, replacements, serializing):
         """Easy way to accept all placeholders registered."""
-        for placeholder, text_to_replace in replacements.items():
-            if serializing:
-                self.replace(text_to_replace, placeholder)
-            else:
-                self.replace(placeholder, text_to_replace)
+        for placeholder in replacements:
+            self.replace(*placeholder.unpack(serializing))
 
     def replace_in_headers(self, text_to_replace, placeholder):
         for obj in ('request', 'response'):

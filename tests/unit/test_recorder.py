@@ -2,7 +2,7 @@ import unittest
 
 from betamax import matchers, serializers
 from betamax.adapter import BetamaxAdapter
-from betamax.cassette import Cassette
+from betamax.cassette import cassette
 from betamax.recorder import Betamax
 from requests import Session
 from requests.adapters import HTTPAdapter
@@ -21,8 +21,12 @@ class TestBetamax(unittest.TestCase):
     def test_initialization_converts_placeholders(self):
         placeholders = [{'placeholder': '<FOO>', 'replace': 'replace-with'}]
         default_cassette_options = {'placeholders': placeholders}
-        self.vcr = Betamax(self.session, default_cassette_options=default_cassette_options)
-        assert self.vcr.config.default_cassette_options['placeholders'] == {'<FOO>': 'replace-with'}
+        self.vcr = Betamax(self.session,
+                           default_cassette_options=default_cassette_options)
+        assert self.vcr.config.default_cassette_options['placeholders'] == [{
+            'placeholder': '<FOO>',
+            'replace': 'replace-with',
+        }]
 
     def test_entering_context_alters_adapters(self):
         with self.vcr:
@@ -38,7 +42,7 @@ class TestBetamax(unittest.TestCase):
     def test_current_cassette(self):
         assert self.vcr.current_cassette is None
         self.vcr.use_cassette('test')
-        assert isinstance(self.vcr.current_cassette, Cassette)
+        assert isinstance(self.vcr.current_cassette, cassette.Cassette)
 
     def test_use_cassette_returns_cassette_object(self):
         assert self.vcr.use_cassette('test') is self.vcr
@@ -65,11 +69,8 @@ class TestBetamax(unittest.TestCase):
         assert self.session is self.vcr.session
 
     def test_use_cassette_passes_along_placeholders(self):
-        placeholders = {'<FOO>': 'replace-with'}
-        self.vcr.use_cassette('test', placeholders=placeholders)
-        assert self.vcr.current_cassette.placeholders == placeholders
-
-    def test_use_cassette_converts_lists(self):
         placeholders = [{'placeholder': '<FOO>', 'replace': 'replace-with'}]
         self.vcr.use_cassette('test', placeholders=placeholders)
-        assert self.vcr.current_cassette.placeholders == {'<FOO>': 'replace-with'}
+        assert self.vcr.current_cassette.placeholders == [
+            cassette.Placeholder.from_dict(p) for p in placeholders
+        ]

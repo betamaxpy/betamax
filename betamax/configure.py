@@ -118,4 +118,7 @@ class Configuration(object):
         :param str replace: (required), text to be replaced or replacing the
             placeholder
         """
-        self.default_cassette_options['placeholders'][placeholder] = replace
+        self.default_cassette_options['placeholders'].append({
+            'placeholder': placeholder,
+            'replace': replace,
+        })

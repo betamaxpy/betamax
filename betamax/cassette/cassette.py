@@ -18,7 +18,7 @@ class Cassette(object):
         'record_mode': 'once',
         'match_requests_on': ['method', 'uri'],
         're_record_interval': None,
-        'placeholders': {},
+        'placeholders': [],
         'preserve_exact_body_bytes': False,
         'allow_playback_repeats': False,
     }
@@ -44,13 +44,10 @@ class Cassette(object):
         self.cassette_path = self.serializer.cassette_path
 
         # Determine which placeholders to use
-        self.placeholders = defaults['placeholders'].copy()
-        if kwargs.get('placeholders'):
-            if isinstance(kwargs['placeholders'], list):
-                for ph in kwargs['placeholders']:
-                    self.placeholders[ph['placeholder']] = ph['replace']
-            else:
-                self.placeholders.update(kwargs['placeholders'])
+        default_placeholders = defaults['placeholders'][:]
+        cassette_placeholders = kwargs.get('placeholders', [])
+        self.placeholders = merge_placeholder_lists(default_placeholders,
+                                                    cassette_placeholders)
 
         # Determine whether to preserve exact body bytes
         self.preserve_exact_body_bytes = _option_from(
@@ -212,6 +209,30 @@ class Cassette(object):
             'recorded_with': 'betamax/{0}'.format(__version__)
         }
         self.serializer.serialize(cassette_data)
+
+
+class Placeholder(collections.namedtuple('Placeholder',
+                                         'placeholder replace')):
+    """Encapsulate some logic about Placeholders."""
+
+    @classmethod
+    def from_dict(cls, dictionary):
+        return cls(**dictionary)
+
+    def unpack(self, serializing):
+        if serializing:
+            return self.replace, self.placeholder
+        else:
+            return self.placeholder, self.replace
+
+
+def merge_placeholder_lists(defaults, overrides):
+    overrides = [Placeholder.from_dict(override) for override in overrides]
+    overrides_dict = dict((p.placeholder, p) for p in overrides)
+    placeholders = [overrides_dict.pop(p.placeholder, p)
+                    for p in map(Placeholder.from_dict, defaults)]
+    return placeholders + [p for p in overrides
+                           if p.placeholder in overrides_dict]
 
 
 def dispatch_hooks(hook_name, *args):
