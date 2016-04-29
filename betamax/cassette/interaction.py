@@ -63,11 +63,10 @@ class Interaction(object):
         self.replace_in_body(text_to_replace, placeholder)
         self.replace_in_uri(text_to_replace, placeholder)
 
-    def replace_all(self, replacements, key_order=('replace', 'placeholder')):
+    def replace_all(self, replacements, serializing):
         """Easy way to accept all placeholders registered."""
-        (replace_key, placeholder_key) = key_order
-        for r in replacements:
-            self.replace(r[replace_key], r[placeholder_key])
+        for placeholder in replacements:
+            self.replace(*placeholder.unpack(serializing))
 
     def replace_in_headers(self, text_to_replace, placeholder):
         for obj in ('request', 'response'):

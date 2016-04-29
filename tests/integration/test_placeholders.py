@@ -20,23 +20,21 @@ class TestPlaceholders(IntegrationHelper):
 
     def test_placeholders_work(self):
         placeholders = Cassette.default_cassette_options['placeholders']
-        placeholder = {
+        assert placeholders == [{
             'placeholder': '<AUTHORIZATION>',
-            'replace': b64_foobar
-        }
-        assert placeholders != []
-        assert placeholder in placeholders
+            'replace': b64_foobar,
+        }]
 
         s = self.session
         cassette = None
         with Betamax(s).use_cassette('test_placeholders') as recorder:
             r = s.get('http://httpbin.org/get', auth=('foo', 'bar'))
             cassette = recorder.current_cassette
+            self.cassette_path = cassette.cassette_path
             assert r.status_code == 200
             auth = r.json()['headers']['Authorization']
             assert b64_foobar in auth
 
-        #cassette.sanitize_interactions()
         self.cassette_path = cassette.cassette_path
         i = cassette.interactions[0]
         auth = i.data['request']['headers']['Authorization']

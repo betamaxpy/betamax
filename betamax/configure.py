@@ -120,5 +120,5 @@ class Configuration(object):
         """
         self.default_cassette_options['placeholders'].append({
             'placeholder': placeholder,
-            'replace': replace
+            'replace': replace,
         })

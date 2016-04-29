@@ -4,8 +4,9 @@ import unittest
 from datetime import datetime
 
 from betamax import __version__
-from betamax import cassette
+from betamax.cassette import cassette
 from betamax import mock_response
+from betamax import recorder
 from betamax import serializers
 from betamax import util
 from requests.models import Response, Request
@@ -180,6 +181,36 @@ class TestSerialization(unittest.TestCase):
         assert r.content == b'foo'
         assert isinstance(r.raw._original_response,
                           mock_response.MockHTTPResponse)
+
+
+def test_cassette_initialization():
+    serializers.serializer_registry['test'] = Serializer()
+    cassette.Cassette.default_cassette_options['placeholders'] = []
+
+    with recorder.Betamax.configure() as config:
+        config.define_cassette_placeholder('<TO-OVERRIDE>', 'default')
+        config.define_cassette_placeholder('<KEEP-DEFAULT>', 'config')
+        placeholders = [{
+            'placeholder': '<TO-OVERRIDE>',
+            'replace': 'override',
+        }, {
+            'placeholder': '<ONLY-OVERRIDE>',
+            'replace': 'cassette',
+        }]
+        instance = cassette.Cassette(
+            'test_cassette',
+            'test',
+            placeholders=placeholders
+        )
+
+        expected = [
+            cassette.Placeholder('<TO-OVERRIDE>', 'override'),
+            cassette.Placeholder('<KEEP-DEFAULT>', 'config'),
+            cassette.Placeholder('<ONLY-OVERRIDE>', 'cassette'),
+        ]
+        assert instance.placeholders == expected
+
+    cassette.Cassette.default_cassette_options['placeholders'] = []
 
 
 class TestCassette(unittest.TestCase):
