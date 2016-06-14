@@ -94,7 +94,9 @@ class BetamaxAdapter(BaseAdapter):
         if 'record' in self.options:
             self.cassette.record_mode = self.options['record']
 
-        self.cassette.match_options = match_requests_on
+        # NOTE(sigmavirus24): Cassette.match_options is a set, might as well
+        # use that instead of overriding it.
+        self.cassette.match_options.update(match_requests_on)
 
         re_record_interval = timedelta.max
         if self.options.get('re_record_interval'):
