@@ -1,6 +1,12 @@
 History
 =======
 
+0.7.1 - 2016-06-14
+------------------
+
+- Fix issue #108 by effectively copying the items in the match_requests_on
+  list into the match_options set on a Cassette instance
+
 0.7.0 - 2016-04-29
 ------------------
 
