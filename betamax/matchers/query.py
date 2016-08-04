@@ -18,7 +18,10 @@ class QueryMatcher(BaseMatcher):
 
     def to_dict(self, query):
         """Turn the query string into a dictionary."""
-        return parse_qs(query or '', keep_blank_values=True)  # Protect against None
+        return parse_qs(
+            query or '',  # Protect against None
+            keep_blank_values=True,
+        )
 
     def match(self, request, recorded_request):
         request_query_dict = self.to_dict(urlparse(request.url).query)
