@@ -1,6 +1,13 @@
 History
 =======
 
+0.7.2 - 2016-08-04
+------------------
+
+- Fix bug with query string matcher where query-strings without values (e.g.,
+  ``?foo&bar`` as opposed to ``?foo=1&bar=2``) were treated as if there were
+  no query string.
+
 0.7.1 - 2016-06-14
 ------------------
 
