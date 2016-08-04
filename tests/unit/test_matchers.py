@@ -140,6 +140,9 @@ class TestMatchers(unittest.TestCase):
         )
         # Regression test (no query issue)
         assert match(self.p, {'uri': 'http://example.com'}) is False
+        # Regression test (query with no value)
+        self.p.url = 'https://example.com/?foo'
+        assert match(self.p, {'uri': 'https://httpbin.org/?foo'}) is True
 
     def test_uri_matcher(self):
         match = matchers.matcher_registry['uri'].match
