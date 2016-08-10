@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from .base import BaseMatcher
-from betamax.util import deserialize_prepared_request
+
+from betamax import util
 
 
 class BodyMatcher(BaseMatcher):
@@ -8,14 +9,14 @@ class BodyMatcher(BaseMatcher):
     name = 'body'
 
     def match(self, request, recorded_request):
-        recorded_request = deserialize_prepared_request(recorded_request)
+        recorded_request = util.deserialize_prepared_request(recorded_request)
 
+        request_body = b''
         if request.body:
-            if isinstance(recorded_request.body, type(request.body)):
-                request_body = request.body
-            else:
-                request_body = request.body.encode('utf-8')
-        else:
-            request_body = b''
+            request_body = util.coerce_content(request.body)
 
-        return recorded_request.body == request_body
+        recorded_body = b''
+        if recorded_request.body:
+            recorded_body = util.coerce_content(recorded_request.body)
+
+        return recorded_body == request_body
