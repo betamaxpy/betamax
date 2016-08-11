@@ -20,9 +20,10 @@ def validate_serializer(serializer):
 def validate_placeholders(placeholders):
     """Validate placeholders is a dict-like structure"""
     keys = ['placeholder', 'replace']
-    return all(
-        sorted(list(p.keys())) == keys for p in placeholders
-    )
+    try:
+        return all(sorted(list(p.keys())) == keys for p in placeholders)
+    except TypeError:
+        return False
 
 
 def translate_cassette_options():
