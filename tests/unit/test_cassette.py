@@ -310,6 +310,12 @@ class TestCassette(unittest.TestCase):
         assert i is not None
         assert self.interaction is i
 
+    def test_find_match__missing_matcher(self):
+        self.cassette.match_options = set(['uri', 'method', 'invalid'])
+        self.cassette.record_mode = 'none'
+        self.assertRaises(KeyError, self.cassette.find_match,
+                          self.response.request)
+
     def test_eject(self):
         serializer = self.test_serializer
         self.cassette.eject()
