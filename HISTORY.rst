@@ -1,6 +1,12 @@
 History
 =======
 
+Unreleased
+----------
+
+- Add ``ValidationError`` and a set of subclasses for each possible validation
+  error.
+
 0.7.2 - 2016-08-04
 ------------------
 
