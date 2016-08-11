@@ -1,4 +1,5 @@
 from .cassette import Cassette
+from .exceptions import InvalidOption
 
 
 def validate_record(record):
@@ -84,7 +85,7 @@ class Options(object):
     def validate(self):
         for key, value in list(self.data.items()):
             if key not in Options.valid_options:
-                del self[key]
+                raise InvalidOption('{0} is not a valid option'.format(key))
             else:
                 is_valid = Options.valid_options[key]
                 if not is_valid(value):

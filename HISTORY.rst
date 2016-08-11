@@ -6,6 +6,8 @@ Unreleased
 
 - Add ``ValidationError`` and a set of subclasses for each possible validation
   error.
+- Raise ``InvalidOption`` on unknown cassette options rather than silently
+  ignoring extra options.
 
 0.7.2 - 2016-08-04
 ------------------

@@ -1,5 +1,6 @@
 import unittest
 from itertools import permutations
+from betamax import exceptions
 from betamax.options import Options, validate_record, validate_matchers
 
 
@@ -31,15 +32,10 @@ class TestOptions(unittest.TestCase):
         for key in self.data:
             assert key in self.options
 
-    def test_invalid_data_is_removed(self):
+    def test_raise_on_unknown_option(self):
         data = self.data.copy()
         data['fake'] = 'value'
-        options = Options(data)
-
-        for key in self.data:
-            assert key in options
-
-        assert 'fake' not in options
+        self.assertRaises(exceptions.InvalidOption, Options, data)
 
     def test_values_are_validated(self):
         assert self.options['re_record_interval'] == 10000
