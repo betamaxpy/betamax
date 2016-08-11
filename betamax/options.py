@@ -1,5 +1,5 @@
 from .cassette import Cassette
-from .exceptions import InvalidOption
+from .exceptions import InvalidOption, validation_error_map
 
 
 def validate_record(record):
@@ -89,4 +89,5 @@ class Options(object):
             else:
                 is_valid = Options.valid_options[key]
                 if not is_valid(value):
-                    del self[key]
+                    raise validation_error_map[key]('{0!r} is not valid'
+                                                    .format(value))

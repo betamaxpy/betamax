@@ -8,6 +8,8 @@ Unreleased
   error.
 - Raise ``InvalidOption`` on unknown cassette options rather than silently
   ignoring extra options.
+- Raise a subclass of ``ValidationError`` when a particular cassette option is
+  invalid, rather than silently ignoring the validation failure.
 
 0.7.2 - 2016-08-04
 ------------------
