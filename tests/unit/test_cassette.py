@@ -3,6 +3,8 @@ import os
 import unittest
 from datetime import datetime
 
+import pytest
+
 from betamax import __version__
 from betamax.cassette import cassette
 from betamax import mock_response
@@ -309,6 +311,12 @@ class TestCassette(unittest.TestCase):
         i = self.cassette.find_match(self.response.request)
         assert i is not None
         assert self.interaction is i
+
+    def test_find_match__missing_matcher(self):
+        self.cassette.match_options = set(['uri', 'method', 'invalid'])
+        self.cassette.record_mode = 'none'
+        with pytest.raises(KeyError):
+            self.cassette.find_match(self.response.request)
 
     def test_eject(self):
         serializer = self.test_serializer

@@ -1,4 +1,5 @@
 from .cassette import Cassette
+from .exceptions import InvalidOption, validation_error_map
 
 
 def validate_record(record):
@@ -19,9 +20,10 @@ def validate_serializer(serializer):
 def validate_placeholders(placeholders):
     """Validate placeholders is a dict-like structure"""
     keys = ['placeholder', 'replace']
-    return all(
-        sorted(list(p.keys())) == keys for p in placeholders
-    )
+    try:
+        return all(sorted(list(p.keys())) == keys for p in placeholders)
+    except TypeError:
+        return False
 
 
 def translate_cassette_options():
@@ -84,8 +86,9 @@ class Options(object):
     def validate(self):
         for key, value in list(self.data.items()):
             if key not in Options.valid_options:
-                del self[key]
+                raise InvalidOption('{0} is not a valid option'.format(key))
             else:
                 is_valid = Options.valid_options[key]
                 if not is_valid(value):
-                    del self[key]
+                    raise validation_error_map[key]('{0!r} is not valid'
+                                                    .format(value))
