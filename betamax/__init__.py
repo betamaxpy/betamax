@@ -22,5 +22,5 @@ __author__ = 'Ian Cordasco'
 __copyright__ = 'Copyright 2013-2014 Ian Cordasco'
 __license__ = 'Apache 2.0'
 __title__ = 'betamax'
-__version__ = '0.7.2'
+__version__ = '0.8.0'
 __version_info__ = tuple(int(i) for i in __version__.split('.'))

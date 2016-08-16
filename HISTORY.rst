@@ -1,9 +1,14 @@
 History
 =======
 
-Unreleased
-----------
+0.8.0 - 2016-08-16
+------------------
 
+- Add ``betamax_parametrized_recorder`` and ``betamax_parametrized_session``
+  to our list of pytest fixtures so that users will have parametrized cassette
+  names when writing parametrized tests with our fixtures. (I wonder if I can
+  mention parametrization a bunch more times so I can say parametrize a lot in
+  this bullet note.)
 - Add ``ValidationError`` and a set of subclasses for each possible validation
   error.
 - Raise ``InvalidOption`` on unknown cassette options rather than silently
