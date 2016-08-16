@@ -157,8 +157,9 @@ Forcing bytes to be preserved
 -----------------------------
 
 You may want to force betamax to preserve the exact bytes in the body of a 
-response (or request) instead of relying on the `opinions held by the library 
-<opinions>`_. In this case you have two ways of telling betamax to do this.
+response (or request) instead of relying on the :ref:`opinions held by the
+library <opinions>`. In this case you have two ways of telling betamax to do
+this.
 
 The first, is on a per-cassette basis, like so:
 
