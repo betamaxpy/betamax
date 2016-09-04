@@ -4,4 +4,5 @@ betamax_matchers
 betamax_serializers
 requests
 mock
+unittest2
 .
