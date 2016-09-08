@@ -48,7 +48,10 @@ extra functionality, you can do something like this:
 # NOTE(sigmavirus24): absolute_import is required to make import unittest work
 from __future__ import absolute_import
 
-import unittest
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 import requests
 
