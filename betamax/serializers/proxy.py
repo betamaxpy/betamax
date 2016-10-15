@@ -64,14 +64,15 @@ class SerializerProxy(BaseSerializer):
 
         self._ensure_path_exists()
 
-        with open(self.cassette_path, 'w') as fd:
+        write_mode = getattr(self.proxied_serializer, 'write_mode', 'w')
+        with open(self.cassette_path, write_mode) as fd:
             fd.write(self.proxied_serializer.serialize(cassette_data))
 
     def deserialize(self):
         self._ensure_path_exists()
 
-        data = {}
-        with open(self.cassette_path) as fd:
+        read_mode = getattr(self.proxied_serializer, 'read_mode', 'r')
+        with open(self.cassette_path, read_mode) as fd:
             data = self.proxied_serializer.deserialize(fd.read())
 
         return data

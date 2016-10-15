@@ -37,6 +37,8 @@ class BaseSerializer(object):
     """
 
     name = None
+    read_mode = 'r'
+    write_mode = 'w'
 
     @staticmethod
     def generate_cassette_name(cassette_library_dir, cassette_name):
