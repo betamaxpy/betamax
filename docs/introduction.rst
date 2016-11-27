@@ -100,7 +100,7 @@ Before we run this example, we have to install a new package:
 
 If we now run our new example, we'll see a new file appear in our
 :file:`examples/cassettes/` directory named
-:file:`more-complciated-cassettes.json`. This cassette will be much larger as
+:file:`more-complicated-cassettes.json`. This cassette will be much larger as
 a result of making 3 requests and receiving 3 responses. You'll also notice
 that we imported :mod:`betamax_serializers.pretty_json` and called
 :meth:`~betamax.Betamax.register_serializer` with
