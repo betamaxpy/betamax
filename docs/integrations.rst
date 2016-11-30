@@ -85,7 +85,7 @@ the following:
     from betamax.fixtures import unittest
 
 
-    class IntegrationTestCase(unitest.BetamaxTestCase):
+    class IntegrationTestCase(unittest.BetamaxTestCase):
         # Add your the rest of the helper methods you want for your
         # integration tests
 
@@ -122,7 +122,7 @@ session class, your code might look like:
     from myapi import session
 
 
-    class IntegrationTestCase(unitest.BetamaxTestCase):
+    class IntegrationTestCase(unittest.BetamaxTestCase):
         # Add your the rest of the helper methods you want for your
         # integration tests
         SESSION_CLASS = session.MyApiSession

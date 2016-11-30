@@ -72,7 +72,7 @@ relative to that directory.
 Setting Default Cassette Options
 ````````````````````````````````
 
-Cassettes have default options used by Betmax if none are set. For example,
+Cassettes have default options used by Betamax if none are set. For example,
 
 - The default record mode is ``once``.
 
@@ -115,7 +115,7 @@ You would test this something like:
 
     import os
 
-    import betmax
+    import betamax
     import requests
 
     from my_module import me
