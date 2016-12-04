@@ -86,7 +86,7 @@ the following:
 
 
     class IntegrationTestCase(unittest.BetamaxTestCase):
-        # Add your the rest of the helper methods you want for your
+        # Add the rest of the helper methods you want for your
         # integration tests
 
 
@@ -123,7 +123,7 @@ session class, your code might look like:
 
 
     class IntegrationTestCase(unittest.BetamaxTestCase):
-        # Add your the rest of the helper methods you want for your
+        # Add the rest of the helper methods you want for your
         # integration tests
         SESSION_CLASS = session.MyApiSession
 
