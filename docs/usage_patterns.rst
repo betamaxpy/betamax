@@ -53,8 +53,8 @@ sure to not try to record new cassettes or interactions. We also, want to
 ensure we're authenticated when possible but that we do not leave our
 placeholder in the cassettes when they're replayed.
 
-Using Human Readble JSON Cassettes
-----------------------------------
+Using Human Readable JSON Cassettes
+-----------------------------------
 
 Using the ``PrettyJSONSerializer`` provided by the ``betamax_serializers``
 package provides human readable JSON cassettes. Cassettes output in this way
