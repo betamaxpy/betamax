@@ -51,7 +51,7 @@ class TestPyTestParametrizedFixtures:
         assert resp.ok
 
 
-@pytest.mark.parametrize('problematic_arg', ['aaa\\bbb', 'ccc:ddd', 'eee*fff'])
+@pytest.mark.parametrize('problematic_arg', [r'aaa\bbb', 'ccc:ddd', 'eee*fff'])
 def test_pytest_parametrize_with_filesystem_problematic_chars(
         betamax_parametrized_session, problematic_arg):
     """
