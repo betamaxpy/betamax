@@ -3,7 +3,7 @@ from .exceptions import InvalidOption, validation_error_map
 
 
 def validate_record(record):
-    return record in ['all', 'new_episodes', 'none', 'once']
+    return record in ['all', 'new_episodes', 'none', 'once', 'never']
 
 
 def validate_matchers(matchers):

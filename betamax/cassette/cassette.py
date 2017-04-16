@@ -158,6 +158,7 @@ class Cassette(object):
     def is_recording(self):
         """Return whether the cassette is recording."""
         values = {
+            'never': False,
             'none': False,
             'once': self.is_empty(),
         }
