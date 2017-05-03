@@ -26,7 +26,7 @@ class BaseSerializer(object):
             def serialize(self, cassette_data):
                 # Take a dictionary and convert it to whatever
 
-            def deserialize(self):
+            def deserialize(self, cassette_data):
                 # Uses a cassette file to return a dictionary with the
                 # cassette information
 
