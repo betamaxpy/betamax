@@ -33,3 +33,6 @@ class TestExceptions(unittest.TestCase):
     def test_invalid_option_is_validation_error(self):
         assert isinstance(exceptions.InvalidOption('msg'),
                           exceptions.ValidationError)
+
+    def test_betamaxerror_repr(self):
+        assert repr(exceptions.BetamaxError('test')) == "BetamaxError('test',)"
