@@ -29,6 +29,10 @@ matrix:
       env: TOXENV=py34 REQUESTS_VERSION="===2.2.1"
     - python: 3.5
       env: TOXENV=py35 REQUESTS_VERSION="===2.2.1"
+    - python: 3.6
+      env: TOXENV=py36 REQUESTS_VERSION="===2.2.1"
+    - python: pypy
+      env: TOXENV=pypy REQUESTS_VERSION="===2.2.1"
     - env: TOXENV=py27-flake8
     - env: TOXENV=py34-flake8
     - env: TOXENV=docstrings

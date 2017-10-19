@@ -29,12 +29,16 @@ class TestRecordOnce(IntegrationHelper):
             r0_headers = r0.headers.copy()
             r0_headers.pop('Date')
             r0_headers.pop('Age', None)
+            r0_headers.pop('X-Processed-Time', None)
             r1_headers = r1.headers.copy()
             r1_headers.pop('Date')
             r1_headers.pop('Age', None)
+            r1_headers.pop('X-Processed-Time', None)
             # NOTE(sigmavirus24): This fails if the second request is
             # technically a second later. Ignoring the Date headers allows
             # this test to succeed.
+            # NOTE(hroncok): httpbin.org added X-Processed-Time header that
+            # can possibly differ (and often does)
             assert r0_headers == r1_headers
             assert r0.content == r1.content
 
