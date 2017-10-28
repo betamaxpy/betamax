@@ -1,6 +1,14 @@
 History
 =======
 
+Unreleased
+----------
+
+- Previous attempts to sanitize cassette names were incomplete.
+  Sanitization has become more thorough which could have some affects on
+  existing cassette files. **This may cause new cassettes to be generated.**
+
+
 0.8.0 - 2016-08-16
 ------------------
 
