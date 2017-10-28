@@ -17,8 +17,10 @@ from .. import recorder as betamax
 
 
 def _sanitize(name):
-    """Replace whitespace and / with -"""
-    return re.sub('[\s/]+', '-', name)
+    """
+    Replace certain characters (which might be problematic when contained in
+    strings which will be used as file names) by '-'s. """
+    return re.sub(r'[\s/<>:\\"|?*]', '-', name)
 
 
 def _casette_name(request, parametrized):

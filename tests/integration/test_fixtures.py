@@ -36,7 +36,7 @@ class TestPyTestParametrizedFixtures:
             cassette_name = ('tests.integration.test_fixtures.'  # Module name
                              'TestPyTestParametrizedFixtures.'  # Class name
                              'test_pytest_fixture'  # Test function name
-                             '[https:-httpbin.org-get]'  # Parameter
+                             '[https---httpbin.org-get]'  # Parameter
                              '.json')
             file_name = os.path.join(test_dir, 'tests', 'cassettes',
                                      cassette_name)
@@ -49,3 +49,12 @@ class TestPyTestParametrizedFixtures:
         """Exercise the fixture itself."""
         resp = betamax_parametrized_session.get(url)
         assert resp.ok
+
+
+@pytest.mark.parametrize('problematic_arg', [r'aaa\bbb', 'ccc:ddd', 'eee*fff'])
+def test_pytest_parametrize_with_filesystem_problematic_chars(
+        betamax_parametrized_session, problematic_arg):
+    """
+    Exercice parametrized args containing characters which might cause
+    problems when getting translated into file names. """
+    assert True
