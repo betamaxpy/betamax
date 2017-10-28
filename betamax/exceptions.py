@@ -3,7 +3,7 @@ class BetamaxError(Exception):
         super(BetamaxError, self).__init__(message)
 
     def __repr__(self):
-        return 'BetamaxError("%s")' % self.message
+        return 'BetamaxError("%s")' % (self,)
 
 
 class MissingDirectoryError(BetamaxError):
