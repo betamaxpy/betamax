@@ -354,7 +354,8 @@ class TestInteraction(unittest.TestCase):
             },
             'headers': {
                 'Content-Type': [decode('foo')],
-                'Set-Cookie': ['cookie_name=cookie_value']
+                'Set-Cookie': ['cookie_name=cookie_value',
+                               'sessionid=deadbeef']
             },
             'status_code': 200,
             'url': 'http://example.com',
@@ -386,13 +387,14 @@ class TestInteraction(unittest.TestCase):
         for attr in ['status_code', 'url']:
             assert self.response[attr] == decode(getattr(r, attr))
 
-        headers = dict((k, v[0]) for k, v in self.response['headers'].items())
+        headers = dict((k, ', '.join(v))
+                       for k, v in self.response['headers'].items())
         assert headers == r.headers
 
         tested_cookie = False
         for cookie in r.cookies:
             cookie_str = "{0}={1}".format(cookie.name, cookie.value)
-            assert cookie_str == r.headers['Set-Cookie']
+            assert cookie_str in r.headers['Set-Cookie']
             tested_cookie = True
         assert tested_cookie
 
@@ -420,10 +422,12 @@ class TestInteraction(unittest.TestCase):
         self.interaction.replace('foo', '<FOO>')
         self.interaction.replace('http://example.com', '<EXAMPLE_URI>')
 
-        header = self.interaction.data['request']['headers']['Authorization']
+        header = (
+            self.interaction.data['request']['headers']['Authorization'][0])
         assert header == '<AUTH_TOKEN>'
         header = self.interaction.data['response']['headers']['Set-Cookie']
-        assert header == 'cookie_name=<COOKIE_VALUE>'
+        assert header[0] == 'cookie_name=<COOKIE_VALUE>'
+        assert header[1] == 'sessionid=deadbeef'
         body = self.interaction.data['request']['body']['string']
         assert body == 'key=value&key2=<SECRET_VALUE>'
         body = self.interaction.data['response']['body']
@@ -436,9 +440,10 @@ class TestInteraction(unittest.TestCase):
     def test_replace_in_headers(self):
         self.interaction.replace_in_headers('123456789abcdef', '<AUTH_TOKEN>')
         self.interaction.replace_in_headers('cookie_value', '<COOKIE_VALUE>')
-        header = self.interaction.data['request']['headers']['Authorization']
+        header = (
+            self.interaction.data['request']['headers']['Authorization'][0])
         assert header == '<AUTH_TOKEN>'
-        header = self.interaction.data['response']['headers']['Set-Cookie']
+        header = self.interaction.data['response']['headers']['Set-Cookie'][0]
         assert header == 'cookie_name=<COOKIE_VALUE>'
 
     def test_replace_in_body(self):

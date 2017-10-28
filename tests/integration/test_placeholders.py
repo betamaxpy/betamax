@@ -38,4 +38,4 @@ class TestPlaceholders(IntegrationHelper):
         self.cassette_path = cassette.cassette_path
         i = cassette.interactions[0]
         auth = i.data['request']['headers']['Authorization']
-        assert '<AUTHORIZATION>' in auth
+        assert '<AUTHORIZATION>' in auth[0]
