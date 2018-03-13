@@ -35,7 +35,7 @@ setup(
     long_description="\n\n".join([data_for("README.rst"),
                                   data_for("HISTORY.rst")]),
     license="Apache 2.0",
-    author="Ian Cordasco",
+    author="Ian Stapleton Cordasco",
     author_email="graffatcolmingov@gmail.com",
     url="https://github.com/sigmavirus24/betamax",
     packages=packages,

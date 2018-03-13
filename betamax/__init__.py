@@ -5,7 +5,7 @@ betamax.
 
 See https://betamax.readthedocs.io/ for documentation.
 
-:copyright: (c) 2013-2016 by Ian Cordasco
+:copyright: (c) 2013-2018 by Ian Stapleton Cordasco
 :license: Apache 2.0, see LICENSE for more details
 
 """
@@ -18,8 +18,8 @@ from .serializers import BaseSerializer
 
 __all__ = ('BetamaxError', 'Betamax', 'BaseMatcher', 'BaseSerializer',
            'use_cassette')
-__author__ = 'Ian Cordasco'
-__copyright__ = 'Copyright 2013-2014 Ian Cordasco'
+__author__ = 'Ian Stapleton Cordasco'
+__copyright__ = 'Copyright 2013-2018 Ian Stapleton Cordasco'
 __license__ = 'Apache 2.0'
 __title__ = 'betamax'
 __version__ = '0.8.0'
