@@ -85,6 +85,12 @@ specified cassette directory. It should look something like:
 Now, each subsequent time that we run that script, we will use the recorded
 interaction instead of talking to the internet over and over again.
 
+.. note::
+
+    There is no need to write any other code to replay your cassettes. Each
+    time you run that session with the cassette in place, Betamax does all the
+    heavy lifting for you.
+
 Recording More Complex Cassettes
 --------------------------------
 
