@@ -26,7 +26,7 @@ to log all HTTP requests.
 
 Given our file, ``examples/record_modes/all/example.py``,
 
-.. literalinclude:: ../examples/record_modes/all/example.py
+.. literalinclude:: ../../examples/record_modes/all/example.py
     :language: python
 
 Every time we run it, our cassette 
@@ -49,12 +49,12 @@ Given our file, ``examples/record_modes/new_episodes/example_original.py``,
 with which we have already recorded 
 ``examples/record_modes/new_episodes/new-episodes-example.json``
 
-.. literalinclude:: ../examples/record_modes/new_episodes/example_original.py
+.. literalinclude:: ../../examples/record_modes/new_episodes/example_original.py
     :language: python
 
 If we then run ``examples/record_modes/new_episodes/example_updated.py``
 
-.. literalinclude:: ../examples/record_modes/new_episodes/example_updated.py
+.. literalinclude:: ../../examples/record_modes/new_episodes/example_updated.py
     :language: python
 
 The new request at the end of the file will be added to the cassette without 
@@ -75,17 +75,17 @@ Given our file, ``examples/record_modes/none/example_original.py``, with a
 cassette that already has interactions recorded in 
 ``examples/record_modes/none/none-example.json``
 
-.. literalinclude:: ../examples/record_modes/none/example_original.py
+.. literalinclude:: ../../examples/record_modes/none/example_original.py
     :language: python
 
 If we then run ``examples/record_modes/none/example_updated.py``
 
-.. literalinclude:: ../examples/record_modes/none/example_updated.py
+.. literalinclude:: ../../examples/record_modes/none/example_updated.py
     :language: python
 
 We'll see an exception indicating that new interactions were prevented:
 
-.. literalinclude:: ../examples/record_modes/none/example_updated.traceback
+.. literalinclude:: ../../examples/record_modes/none/example_updated.traceback
     :language: pytb
 
 Once
@@ -105,7 +105,7 @@ or whatever).
 
 If we have a file, ``examples/record_modes/once/example_original.py``,
 
-.. literalinclude:: ../examples/record_modes/once/example_original.py
+.. literalinclude:: ../../examples/record_modes/once/example_original.py
     :language: python
 
 And we run it, we'll see a cassette named 
@@ -113,13 +113,13 @@ And we run it, we'll see a cassette named
 
 If we then run ``examples/record_modes/once/example_updated.py``,
 
-.. literalinclude:: ../examples/record_modes/once/example_updated.py
+.. literalinclude:: ../../examples/record_modes/once/example_updated.py
     :language: python
 
 We'll see an exception similar to the one we see when using the ``'none'`` 
 record mode.
 
-.. literalinclude:: ../examples/record_modes/once/example_updated.traceback
+.. literalinclude:: ../../examples/record_modes/once/example_updated.traceback
     :language: pytb
 
 

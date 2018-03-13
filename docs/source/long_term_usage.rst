@@ -11,7 +11,7 @@ Adding New Requests to a Cassette
 Let's reuse an example. Specifically let's reuse our
 :file:`examples/more_complicated_cassettes.py` example.
 
-.. literalinclude:: ../examples/more_complicated_cassettes.py
+.. literalinclude:: ../../examples/more_complicated_cassettes.py
     :language: python
 
 Let's add a new ``POST`` request in there:
@@ -30,12 +30,12 @@ the URI and the Method. So Betamax will find a matching request/response pair
 for ``("POST", "https://httpbin.org/post?id=20")`` and reuse it. So now we
 need to update how we use Betamax so it will match using the ``body`` as well:
 
-.. literalinclude:: ../examples/more_complicated_cassettes_2.py
+.. literalinclude:: ../../examples/more_complicated_cassettes_2.py
     :language: python
 
 Now when we run that we should see something like this:
 
-.. literalinclude:: ../examples/more_complicated_cassettes_2.traceback
+.. literalinclude:: ../../examples/more_complicated_cassettes_2.traceback
     :language: pytb
 
 This is what we do expect to see. So, how do we fix it?

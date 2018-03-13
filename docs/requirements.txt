@@ -1,0 +1,6 @@
+sphinx>=1.3.0
+pytest
+betamax_matchers
+betamax_serializers
+requests
+readme

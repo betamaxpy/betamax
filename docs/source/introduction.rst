@@ -73,13 +73,13 @@ Recording Your First Cassette
 Let's make a file named ``our_first_recorded_session.py``. Let's add the
 following to our file:
 
-.. literalinclude:: ../examples/our_first_recorded_session.py
+.. literalinclude:: ../../examples/our_first_recorded_session.py
     :language: python
 
 If we then run our script, we'll see that a new file is created in our
 specified cassette directory. It should look something like:
 
-.. literalinclude:: ../examples/cassettes/our-first-recorded-session.json
+.. literalinclude:: ../../examples/cassettes/our-first-recorded-session.json
     :language: javascript
 
 Now, each subsequent time that we run that script, we will use the recorded
@@ -92,7 +92,7 @@ Most times we cannot isolate our tests to a single request at a time, so we'll
 have cassettes that make multiple requests. Betamax can handle these with
 ease, let's take a look at an example.
 
-.. literalinclude:: ../examples/more_complicated_cassettes.py
+.. literalinclude:: ../../examples/more_complicated_cassettes.py
     :language: python
 
 Before we run this example, we have to install a new package:
@@ -112,7 +112,7 @@ provided by the ``betamax-serializers`` package on PyPI that can serialize and
 deserialize cassette data into JSON while allowing it to be easily human
 readable and pretty. Let's see the results:
 
-.. literalinclude:: ../examples/cassettes/more-complicated-cassettes.json
+.. literalinclude:: ../../examples/cassettes/more-complicated-cassettes.json
     :language: javascript
 
 This makes the cassette easy to read and helps us recognize that requests and

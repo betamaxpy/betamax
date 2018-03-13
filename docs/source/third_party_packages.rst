@@ -152,7 +152,7 @@ for you.
 
 This will give us a pretty-printed cassette like:
 
-.. literalinclude:: ../examples/cassettes/more-complicated-cassettes.json
+.. literalinclude:: ../../examples/cassettes/more-complicated-cassettes.json
     :language: js
 
 .. links

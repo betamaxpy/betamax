@@ -14,14 +14,10 @@
 import os
 import sys
 
-# This environment variable makes decorators not decorate functions, so their
-# signatures in the generated documentation are still correct
-os.environ['GENERATING_DOCUMENTATION'] = "betamax"
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../../src'))
 import betamax
 
 # -- General configuration ---------------------------------------------------
@@ -47,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Betamax'
-copyright = u'2013-2015 - Ian Cordasco'
+copyright = u'2013-2018 - Ian Stapleton Cordasco'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -70,7 +66,7 @@ release = version
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['build']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents #default_role = None
@@ -188,7 +184,7 @@ htmlhelp_basename = 'betamax.doc'
 # [howto/manual]).
 latex_documents = [
     ('index', 'betamax.tex', u'Betamax Documentation',
-     u'Ian Cordasco', 'manual'),
+     u'Ian Stapleton Cordasco', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -221,7 +217,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'betamax', u'Betamax Documentation',
-     [u'Ian Cordasco'], 1)
+     [u'Ian Stapleton Cordasco'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -242,7 +238,7 @@ texinfo_appendices = []
 
 # Intersphinx configuration
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.4',
+    'python': ('https://docs.python.org/3.6',
                (None, 'python-inv.txt')),
     'requests': ('http://docs.python-requests.org/en/latest',
                  (None, 'requests-inv.txt')),
