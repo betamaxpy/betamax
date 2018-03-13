@@ -35,4 +35,9 @@ class TestExceptions(unittest.TestCase):
                           exceptions.ValidationError)
 
     def test_betamaxerror_repr(self):
-        assert repr(exceptions.BetamaxError('test')) == "BetamaxError('test',)"
+        """Ensure errors don't raise exceptions in their __repr__.
+
+        This should protect against regression. If this test starts failing,
+        heavily modify it to not be flakey.
+        """
+        assert "BetamaxError" in repr(exceptions.BetamaxError('test'))
