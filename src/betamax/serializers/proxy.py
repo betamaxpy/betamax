@@ -37,6 +37,14 @@ class SerializerProxy(BaseSerializer):
         if not os.path.exists(self.cassette_path):
             open(self.cassette_path, 'w+').close()
 
+    def corrected_file_mode(self, base_mode):
+        storing_binary_data = getattr(self.proxied_serializer,
+                                      'stored_as_binary',
+                                      False)
+        if storing_binary_data:
+            return '{}b'.format(base_mode)
+        return base_mode
+
     @classmethod
     def find(cls, serialize_with, cassette_library_dir, cassette_name):
         from . import serializer_registry
@@ -63,15 +71,18 @@ class SerializerProxy(BaseSerializer):
             return
 
         self._ensure_path_exists()
+        mode = self.corrected_file_mode('w')
 
-        with open(self.cassette_path, 'w') as fd:
+        with open(self.cassette_path, mode) as fd:
             fd.write(self.proxied_serializer.serialize(cassette_data))
 
     def deserialize(self):
         self._ensure_path_exists()
 
         data = {}
-        with open(self.cassette_path) as fd:
+        mode = self.corrected_file_mode('r')
+
+        with open(self.cassette_path, mode) as fd:
             data = self.proxied_serializer.deserialize(fd.read())
 
         return data
