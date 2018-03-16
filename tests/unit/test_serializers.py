@@ -2,7 +2,6 @@
 import os
 import unittest
 
-import mock
 import pytest
 
 from betamax.serializers import base
@@ -81,7 +80,7 @@ class TestBaseSerializer(unittest.TestCase):
 
 
 class TestBinarySerializers(unittest.TestCase):
-    """Verify the behaviour of stored_as_binary."""
+    """Verify the behaviour of stored_as_binary=True."""
 
     @pytest.fixture(autouse=True)
     def _setup(self):
@@ -95,16 +94,34 @@ class TestBinarySerializers(unittest.TestCase):
 
     def test_serialize(self):
         """Verify we use the right mode with open()."""
-        mopen = mock.mock_open()
-        with mock.patch('betamax.serializers.proxy.open', mopen):
-            self.proxy.serialize({'cassette': 'data'})
-
-        assert mock.call(self.cassette_path, 'wb') in mopen.mock_calls
+        mode = self.proxy.corrected_file_mode('w')
+        assert mode == 'wb'
 
     def test_deserialize(self):
         """Verify we use the right mode with open()."""
-        mopen = mock.mock_open()
-        with mock.patch('betamax.serializers.proxy.open', mopen):
-            self.proxy.deserialize()
+        mode = self.proxy.corrected_file_mode('r')
+        assert mode == 'rb'
 
-        assert mock.call(self.cassette_path, 'rb') in mopen.mock_calls
+
+class TestTextSerializer(unittest.TestCase):
+    """Verify the default behaviour of stored_as_binary."""
+
+    @pytest.fixture(autouse=True)
+    def _setup(self):
+        serializer = Serializer()
+        self.cassette_path = 'test_cassette.test'
+        self.proxy = proxy.SerializerProxy(
+            serializer,
+            self.cassette_path,
+            allow_serialization=True,
+        )
+
+    def test_serialize(self):
+        """Verify we use the right mode with open()."""
+        mode = self.proxy.corrected_file_mode('w')
+        assert mode == 'w'
+
+    def test_deserialize(self):
+        """Verify we use the right mode with open()."""
+        mode = self.proxy.corrected_file_mode('r')
+        assert mode == 'r'
