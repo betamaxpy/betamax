@@ -7,6 +7,7 @@ import os
 class JSONSerializer(BaseSerializer):
     # Serializes and deserializes a cassette to JSON
     name = 'json'
+    stored_as_binary = False
 
     @staticmethod
     def generate_cassette_name(cassette_library_dir, cassette_name):

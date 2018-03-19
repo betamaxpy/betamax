@@ -4,7 +4,6 @@ NOT_IMPLEMENTED_ERROR_MSG = ('This method must be implemented by classes'
 
 
 class BaseSerializer(object):
-
     """
     Base Serializer class that provides an interface for other serializers.
 
@@ -37,6 +36,7 @@ class BaseSerializer(object):
     """
 
     name = None
+    stored_as_binary = False
 
     @staticmethod
     def generate_cassette_name(cassette_library_dir, cassette_name):

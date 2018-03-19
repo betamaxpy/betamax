@@ -25,6 +25,13 @@ implement three methods:
 - :py:meth:`betamax.BaseSerializer.deserialize` is a method that takes a 
   string and returns the data serialized in it as a dictionary.
 
+.. versionadded:: 0.9.0
+
+    Allow Serializers to indicate their format is a binary format via
+    ``stored_as_binary``.
+
+Additionally, if your Serializer is utilizing a binary format, you will want
+to set the ``stored_as_binary`` attribute to ``True`` on your class.
 
 .. autoclass:: betamax.BaseSerializer
     :members:
