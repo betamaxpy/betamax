@@ -312,6 +312,28 @@ class TestCassette(unittest.TestCase):
         assert i is not None
         assert self.interaction is i
 
+    def test_find_match_new_episodes_with_existing_unused_interactions(self):
+        """See bug 153 in GitHub for details.
+
+        https://github.com/betamaxpy/betamax/issues/153
+        """
+        self.cassette.match_options = set(['method', 'uri'])
+        self.cassette.record_mode = 'new_episodes'
+        i = self.cassette.find_match(self.response.request)
+        assert i is not None
+        assert self.interaction is i
+
+    def test_find_match_new_episodes_with_no_unused_interactions(self):
+        """See bug 153 in GitHub for details.
+
+        https://github.com/betamaxpy/betamax/issues/153
+        """
+        self.cassette.match_options = set(['method', 'uri'])
+        self.cassette.record_mode = 'new_episodes'
+        self.interaction.used = True
+        i = self.cassette.find_match(self.response.request)
+        assert i is None
+
     def test_find_match__missing_matcher(self):
         self.cassette.match_options = set(['uri', 'method', 'invalid'])
         self.cassette.record_mode = 'none'

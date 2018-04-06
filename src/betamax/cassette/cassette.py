@@ -119,8 +119,11 @@ class Cassette(object):
         :returns: :class:`~betamax.cassette.Interaction`
         """
         # if we are recording, do not filter by match
-        if self.is_recording() and self.record_mode != 'all':
-            return None
+        if self.is_recording():
+            if ((self.record_mode == 'new_episodes' and
+                 all(i.used is True for i in self.interactions)) or
+                    self.record_mode in ('once', 'none')):
+                return None
 
         opts = self.match_options
         # Curry those matchers
