@@ -72,15 +72,8 @@ playback a response will unfortunately not have a URL attribute on responses
 that are returned. This is a minor annoyance but not something that can be
 fixed.
 
-Contributing
-------------
-
-You can check out the project board on waffle.io_ to see what the status of
-each issue is.
-
 .. _VCR: https://github.com/vcr/vcr
 .. _Travis CI: https://travis-ci.org/sigmavirus24/betamax
-.. _waffle.io: https://waffle.io/sigmavirus24/betamax
 .. _examples section of the documentation:
     http://betamax.readthedocs.org/en/latest/api.html#examples
 .. _cassette library:
