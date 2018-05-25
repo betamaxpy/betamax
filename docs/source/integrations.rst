@@ -109,6 +109,15 @@ need to override the
 :meth:`~betamax.fixtures.BetamaxTestCase.generate_cassette_name` method in
 your subclass.
 
+The default path to save cassette is `./vcr/cassettes`.
+To override the path uses the follow code at the top of file.
+
+.. code-block:: python
+
+    with betamax.Betamax.configure() as config:
+        config.cassette_library_dir = 'your/path/here'
+
+
 If you are subclassing :class:`requests.Session` in your application, then it
 follows that you will want to use that in your tests. To facilitate this, you
 can set the ``SESSION_CLASS`` attribute. To give a fuller example, let's say
