@@ -71,6 +71,9 @@ class BetamaxTestCase(unittest.TestCase):
     #: Class that is a subclass of :class:`requests.Session`
     SESSION_CLASS = requests.Session
 
+    #: Custom path to save cassette.
+    CASSETTE_LIBRARY_DIR = None
+
     def generate_cassette_name(self):
         """Generates a cassette name for the current test.
 
@@ -103,7 +106,10 @@ class BetamaxTestCase(unittest.TestCase):
         cassette_name = self.generate_cassette_name()
 
         self.session = self.SESSION_CLASS()
-        self.recorder = recorder.Betamax(session=self.session)
+        self.recorder = recorder.Betamax(
+            session=self.session,
+            cassette_library_dir=self.CASSETTE_LIBRARY_DIR)
+
         self.recorder.use_cassette(cassette_name)
         self.recorder.start()
 
