@@ -1,6 +1,20 @@
 History
 =======
 
+0.8.2 - 2018-10-21
+------------------
+
+- Add support for binary serializer storage;
+  useful with custom serializers (such as pickle based),
+  however all builtin betamax serializers remain text based.
+- Fix bug with ``new_episodes`` always trying to record.
+- Imporved documentation.
+- This release drops support for Python 3.3;
+  if you are still using Python 3.3
+  update your Python or don't update to betamax 0.8.2.
+- This release is the first release that declares support for Python 3.7,
+  however previous versions most likely worked with 3.7 as well.
+
 0.8.1 - 2018-03-13
 ------------------
 
