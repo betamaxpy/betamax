@@ -83,14 +83,18 @@ class Interaction(object):
             body = self.data[obj]['body']
             old_style = hasattr(body, 'replace')
             if not old_style:
-                body = body.get('string', '')
+                key = 'string'
+                if not body.setdefault(key, '')\
+                        and body.get('base64_string', ''):
+                    key = 'base64_string'
+                body = body[key]
 
             if text_to_replace in body:
                 body = body.replace(text_to_replace, placeholder)
             if old_style:
                 self.data[obj]['body'] = body
             else:
-                self.data[obj]['body']['string'] = body
+                self.data[obj]['body'][key] = body
 
     def replace_in_uri(self, text_to_replace, placeholder):
         for (obj, key) in (('request', 'uri'), ('response', 'url')):
