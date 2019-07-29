@@ -69,6 +69,8 @@ class Interaction(object):
             self.replace(*placeholder.unpack(serializing))
 
     def replace_in_headers(self, text_to_replace, placeholder):
+        if text_to_replace == '':
+            return
         for obj in ('request', 'response'):
             headers = self.data[obj]['headers']
             for k, v in list(headers.items()):
@@ -79,6 +81,8 @@ class Interaction(object):
                     headers[k] = v.replace(text_to_replace, placeholder)
 
     def replace_in_body(self, text_to_replace, placeholder):
+        if text_to_replace == '':
+            return
         for obj in ('request', 'response'):
             body = self.data[obj]['body']
             old_style = hasattr(body, 'replace')
@@ -93,6 +97,8 @@ class Interaction(object):
                 self.data[obj]['body']['string'] = body
 
     def replace_in_uri(self, text_to_replace, placeholder):
+        if text_to_replace == '':
+            return
         for (obj, key) in (('request', 'uri'), ('response', 'url')):
             uri = self.data[obj][key]
             if text_to_replace in uri:

@@ -443,6 +443,7 @@ class TestInteraction(unittest.TestCase):
         self.interaction.replace('secret_value', '<SECRET_VALUE>')
         self.interaction.replace('foo', '<FOO>')
         self.interaction.replace('http://example.com', '<EXAMPLE_URI>')
+        self.interaction.replace('', '<IF_FAIL_THIS_INSERTS_BEFORE_AND_AFTER_EACH_CHARACTER')
 
         header = (
             self.interaction.data['request']['headers']['Authorization'][0])
