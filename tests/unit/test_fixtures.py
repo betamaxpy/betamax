@@ -27,9 +27,9 @@ class TestPyTestFixture(unittest.TestCase):
         # Mock a pytest request object
         request = mock.MagicMock()
         request.cls = request.module = None
-        request.function.__name__ = 'test'
+        request.node.name = request.function.__name__ = 'test'
 
-        pytest_fixture.betamax_recorder(request)
+        pytest_fixture._betamax_recorder(request)
         assert request.addfinalizer.called is True
         request.addfinalizer.assert_called_once_with(self.mocked_betamax.stop)
 
@@ -37,9 +37,9 @@ class TestPyTestFixture(unittest.TestCase):
         # Mock a pytest request object
         request = mock.MagicMock()
         request.cls = request.module = None
-        request.function.__name__ = 'test'
+        request.node.name = request.function.__name__ = 'test'
 
-        pytest_fixture.betamax_recorder(request)
+        pytest_fixture._betamax_recorder(request)
         self.mocked_betamax.start.assert_called_once_with()
 
 
