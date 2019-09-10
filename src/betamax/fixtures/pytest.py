@@ -23,7 +23,7 @@ def _sanitize(name):
     return re.sub(r'[\s/<>:\\"|?*]', '-', name)
 
 
-def _casette_name(request, parametrized):
+def _cassette_name(request, parametrized):
     """Determine a cassette name from request.
 
     :param request:
@@ -59,7 +59,7 @@ def _casette_name(request, parametrized):
 
 
 def _betamax_recorder(request, parametrized=True):
-    cassette_name = _casette_name(request, parametrized=parametrized)
+    cassette_name = _cassette_name(request, parametrized=parametrized)
     session = requests.Session()
     recorder = betamax.Betamax(session)
     recorder.use_cassette(cassette_name)
