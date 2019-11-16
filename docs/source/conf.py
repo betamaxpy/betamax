@@ -240,6 +240,6 @@ texinfo_appendices = []
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.6',
                (None, 'python-inv.txt')),
-    'requests': ('http://docs.python-requests.org/en/latest',
+    'requests': ('https://requests.readthedocs.io/en/latest',
                  (None, 'requests-inv.txt')),
 }
