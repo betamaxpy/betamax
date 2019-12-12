@@ -118,7 +118,7 @@ class Betamax(object):
         name = serializer_class.name
         serializers.serializer_registry[name] = serializer_class()
 
-    # ❙▸
+    # ▶
     def start(self):
         """Start recording or replaying interactions."""
         for k in self.http_adapters:
