@@ -241,6 +241,27 @@ have our hook, we need merely register it like so:
 
 And we no longer need to worry about leaking sensitive data.
 
+In addition to the ``before_record`` and ``before_playback`` hooks,
+version 0.9.0 of Betamax adds :meth:`.after_start` and :meth:`.before_stop`
+hooks. These two hooks both will pass the current
+:class:`~betamax.cassette.cassette.Cassette` to the callback function provided.
+Register these hooks like so:
+
+.. code-block:: python
+
+    def hook(cassette):
+        if cassette.is_recording():
+            print("This cassette is recording!")
+
+    # Either
+    config.after_start(callback=hook)
+    # Or
+    config.before_stop(callback=hook)
+
+These hooks are useful for performing configuration actions external to Betamax
+at the time Betamax is invoked, such as setting up correct authentication to
+an API so that the recording will not encounter any errors.
+
 
 Setting default serializer
 ``````````````````````````
