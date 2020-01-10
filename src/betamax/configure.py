@@ -1,8 +1,9 @@
+from collections import defaultdict
+
 from .cassette import Cassette
 
 
 class Configuration(object):
-
     """This object acts as a proxy to configure different parts of Betamax.
 
     You should only ever encounter this object when configuring the library as
@@ -20,6 +21,7 @@ class Configuration(object):
     """
 
     CASSETTE_LIBRARY_DIR = 'vcr/cassettes'
+    recording_hooks = defaultdict(list)
 
     def __enter__(self):
         return self
@@ -32,6 +34,26 @@ class Configuration(object):
             self.default_cassette_options[prop] = True
         else:
             super(Configuration, self).__setattr__(prop, value)
+
+    def after_start(self, callback=None):
+        """Register a function to call after Betamax is started.
+
+        Example usage:
+
+        .. code-block:: python
+
+            def on_betamax_start(cassette):
+                if cassette.is_recording():
+                    print("Setting up authentication...")
+
+            with Betamax.configure() as config:
+                config.cassette_load(callback=on_cassette_load)
+
+        :param callable callback:
+            The function which accepts a cassette and might mutate
+            it before returning.
+        """
+        self.recording_hooks['after_start'].append(callback)
 
     def before_playback(self, tag=None, callback=None):
         """Register a function to call before playing back an interaction.
@@ -78,6 +100,26 @@ class Configuration(object):
             returning.
         """
         Cassette.hooks['before_record'].append(callback)
+
+    def before_stop(self, callback=None):
+        """Register a function to call before Betamax stops.
+
+        Example usage:
+
+        .. code-block:: python
+
+            def on_betamax_stop(cassette):
+                if not cassette.is_recording():
+                    print("Playback completed.")
+
+            with Betamax.configure() as config:
+                config.cassette_eject(callback=on_betamax_stop)
+
+        :param callable callback:
+            The function which accepts a cassette and might mutate
+            it before returning.
+        """
+        self.recording_hooks['before_stop'].append(callback)
 
     @property
     def cassette_library_dir(self):

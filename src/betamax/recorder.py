@@ -123,10 +123,13 @@ class Betamax(object):
         """Start recording or replaying interactions."""
         for k in self.http_adapters:
             self.session.mount(k, self.betamax_adapter)
+        dispatch_hooks('after_start', self.betamax_adapter.cassette)
 
     # ■
     def stop(self):
         """Stop recording or replaying interactions."""
+        dispatch_hooks('before_stop', self.betamax_adapter.cassette)
+
         # No need to keep the cassette in memory any longer.
         self.betamax_adapter.eject_cassette()
         # On exit, we no longer wish to use our adapter and we want the
@@ -166,3 +169,10 @@ class Betamax(object):
             raise ValueError('Cassette must have a valid name and may not be'
                              ' None.')
         return self
+
+
+def dispatch_hooks(hook_name, *args):
+    """Dispatch registered hooks."""
+    hooks = Configuration.recording_hooks[hook_name]
+    for hook in hooks:
+        hook(*args)
