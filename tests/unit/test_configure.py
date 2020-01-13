@@ -4,6 +4,7 @@ import unittest
 
 from betamax.configure import Configuration
 from betamax.cassette import Cassette
+from betamax.recorder import Betamax
 
 
 class TestConfiguration(unittest.TestCase):
@@ -14,6 +15,7 @@ class TestConfiguration(unittest.TestCase):
         self.cassette_dir = Configuration.CASSETTE_LIBRARY_DIR
 
     def tearDown(self):
+        Configuration.recording_hooks = collections.defaultdict(list)
         Cassette.default_cassette_options = self.cassette_options
         Cassette.hooks = collections.defaultdict(list)
         Configuration.CASSETTE_LIBRARY_DIR = self.cassette_dir
@@ -43,6 +45,14 @@ class TestConfiguration(unittest.TestCase):
         assert placeholders[0]['placeholder'] == '<TEST>'
         assert placeholders[0]['replace'] == 'test'
 
+    def test_registers_post_start_hooks(self):
+        c = Configuration()
+        assert Configuration.recording_hooks['after_start'] == []
+        c.after_start(callback=lambda: None)
+        assert Configuration.recording_hooks['after_start'] != []
+        assert len(Configuration.recording_hooks['after_start']) == 1
+        assert callable(Configuration.recording_hooks['after_start'][0])
+
     def test_registers_pre_record_hooks(self):
         c = Configuration()
         assert Cassette.hooks['before_record'] == []
@@ -58,3 +68,11 @@ class TestConfiguration(unittest.TestCase):
         assert Cassette.hooks['before_playback'] != []
         assert len(Cassette.hooks['before_playback']) == 1
         assert callable(Cassette.hooks['before_playback'][0])
+
+    def test_registers_pre_stop_hooks(self):
+        c = Configuration()
+        assert Configuration.recording_hooks['before_stop'] == []
+        c.before_stop(callback=lambda: None)
+        assert Configuration.recording_hooks['before_stop'] != []
+        assert len(Configuration.recording_hooks['before_stop']) == 1
+        assert callable(Configuration.recording_hooks['before_stop'][0])

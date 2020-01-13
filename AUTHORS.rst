@@ -19,3 +19,4 @@ Contributors
 - Marc Abramowitz (@msabramo)
 - Bryce Boe <bbzbryce@gmail.com> (@bboe)
 - Alex Richard-Hoyling <@arhoyling)
+- Joey RH <jarhill0@gmail.com> (@jarhill0)
