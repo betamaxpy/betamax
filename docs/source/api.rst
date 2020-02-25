@@ -179,7 +179,7 @@ The first, is on a per-cassette basis, like so:
         r = session.get('http://example.com')
 
 
-On the other hand, you may want to the preserve exact body bytes for all 
+On the other hand, you may want to preserve exact body bytes for all 
 cassettes. In this case, you can do:
 
 .. code-block:: python
