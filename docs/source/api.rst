@@ -191,8 +191,8 @@ cassettes. In this case, you can do:
     session = Session()
 
     with Betamax.configure() as config:
-        c.cassette_library_dir = '.'
-        c.preserve_exact_body_bytes = True
+        config.cassette_library_dir = '.'
+        config.preserve_exact_body_bytes = True
 
     with Betamax(session).use_cassette('some_cassette'):
         r = session.get('http://example.com')
