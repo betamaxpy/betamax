@@ -19,7 +19,7 @@ implement three methods:
   This will take the directory the user (you) wants to store the cassettes in 
   and the name of the cassette and generate the file name.
 
-- :py:meth:`betamax.BaseSerializer.seralize` is a method that takes the 
+- :py:meth:`betamax.BaseSerializer.serialize` is a method that takes the 
   dictionary and returns the dictionary serialized as a string
 
 - :py:meth:`betamax.BaseSerializer.deserialize` is a method that takes a 
