@@ -18,7 +18,7 @@ class TestJSONSerializer(unittest.TestCase):
         self.cassette_name = 'cassette_name'
 
     def test_generate_cassette_name(self):
-        """Verify the beaviour of generate_cassette_name."""
+        """Verify the behaviour of generate_cassette_name."""
         assert (os.path.join('fake_dir', 'cassette_name.json') ==
                 json_serializer.JSONSerializer.generate_cassette_name(
                     self.cassette_dir,
