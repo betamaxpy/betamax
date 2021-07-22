@@ -10,7 +10,7 @@ Creating Your Own Serializer
 ----------------------------
 
 Betamax handles the structuring of the cassette and writing to a file, your 
-serializer simply takes a `dictionary <cassette-dict>`_ and returns a string.
+serializer simply takes a :ref:`dictionary <cassette-dict>` and returns a string.
 
 Every Serializer has to inherit from :class:`betamax.BaseSerializer` and 
 implement three methods:
