@@ -8,7 +8,7 @@ History
   useful with custom serializers (such as pickle based),
   however all builtin betamax serializers remain text based.
 - Fix bug with ``new_episodes`` always trying to record.
-- Imporved documentation.
+- Improved documentation.
 - This release drops support for Python 3.3;
   if you are still using Python 3.3
   update your Python or don't update to betamax 0.8.2.
