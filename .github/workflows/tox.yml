@@ -1,0 +1,34 @@
+name: tox
+on: [push, pull_request]
+jobs:
+  tox-jobs:
+    strategy:
+      fail-fast: false
+      matrix:
+        job: [py37-flake8, py37-docstrings]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
+      - run: pip install --upgrade pip
+      - run: pip install tox
+      - run: tox -e ${{ matrix.job }}
+
+  tox:
+    strategy:
+      fail-fast: false
+      # max-parallel: 6
+      matrix:
+        os: [ubuntu-latest]  # [macos-latest, ubuntu-latest, windows-latest]
+        python: ['3.7', '3.8', '3.9', '3.10', '3.11', 'pypy3.9']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install --upgrade pip
+      - run: pip install tox
+      - run: tox -e py
