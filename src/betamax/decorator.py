@@ -8,7 +8,7 @@ from . import recorder
 
 def use_cassette(cassette_name, cassette_library_dir=None,
                  default_cassette_options={}, **use_cassette_kwargs):
-    """Provide a Betamax-wrapped Session for convenience.
+    r"""Provide a Betamax-wrapped Session for convenience.
 
     .. versionadded:: 0.5.0
 
