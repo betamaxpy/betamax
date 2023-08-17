@@ -496,3 +496,7 @@ class TestMockHTTPResponse(unittest.TestCase):
 
     def test_is_Message(self):
         assert isinstance(self.resp.msg, email.message.Message)
+
+    def test_close(self):
+        self.resp.close()
+        assert self.resp.isclosed() is True
