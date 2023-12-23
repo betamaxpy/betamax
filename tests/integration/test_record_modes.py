@@ -1,3 +1,5 @@
+import re
+
 from betamax import Betamax, BetamaxError
 
 from tests.integration.helper import IntegrationHelper
@@ -39,8 +41,15 @@ class TestRecordOnce(IntegrationHelper):
             # this test to succeed.
             # NOTE(hroncok): httpbin.org added X-Processed-Time header that
             # can possibly differ (and often does)
+            r0_content = r0.content.decode(encoding='utf-8', errors='strict')
+            r1_content = r1.content.decode(encoding='utf-8', errors='strict')
+            r0_content = re.sub('"X-Amzn-Trace-Id": "[^"]+"', '"X-Amzn-Trace-Id": ""', r0_content)
+            r1_content = re.sub('"X-Amzn-Trace-Id": "[^"]+"', '"X-Amzn-Trace-Id": ""', r1_content)
+            # NOTE(jhatler): httpbin.org added "X-Amzn-Trace-Id" to their
+            # response, which is a unique ID that will differ between requests.
+            # We remove it from the response body before comparing.
             assert r0_headers == r1_headers
-            assert r0.content == r1.content
+            assert r0_content == r1_content
 
 
 class TestRecordNone(IntegrationHelper):
