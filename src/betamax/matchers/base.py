@@ -1,11 +1,12 @@
+# noqa: D100
 # -*- coding: utf-8 -*-
 
 
 class BaseMatcher(object):
+    """Base class for custom matchers.
 
-    """
-    Base class that ensures sub-classes that implement custom matchers can be
-    registered and have the only method that is required.
+    Ensures sub-classes that implement custom matchers can be registered
+    and have the only method that is required.
 
     Usage:
 
@@ -35,13 +36,13 @@ class BaseMatcher(object):
 
     name = None
 
-    def __init__(self):
+    def __init__(self):  # noqa: D107
         if not self.name:
             raise ValueError('Matchers require names')
         self.on_init()
 
     def on_init(self):
-        """Method to implement if you wish something to happen in ``__init__``.
+        """Implement if you wish something to happen in ``__init__``.
 
         The return value is not checked and this is called at the end of
         ``__init__``. It is meant to provide the matcher author a way to
@@ -51,7 +52,7 @@ class BaseMatcher(object):
         return None
 
     def match(self, request, recorded_request):
-        """A method that must be implemented by the user.
+        """Implement to determine if requests match.
 
         :param PreparedRequest request: A requests PreparedRequest object
         :param dict recorded_request: A dictionary containing the serialized

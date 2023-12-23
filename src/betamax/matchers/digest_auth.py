@@ -1,10 +1,10 @@
+# noqa: D100
 # -*- coding: utf-8 -*-
 from .base import BaseMatcher
 from betamax.util import from_list
 
 
 class DigestAuthMatcher(BaseMatcher):
-
     """This matcher is provided to help those who need to use Digest Auth.
 
     .. note::
@@ -25,12 +25,12 @@ class DigestAuthMatcher(BaseMatcher):
 
     name = 'digest-auth'
 
-    def match(self, request, recorded_request):
+    def match(self, request, recorded_request):  # noqa: D102
         request_digest = self.digest_parts(request.headers)
         recorded_digest = self.digest_parts(recorded_request['headers'])
         return request_digest == recorded_digest
 
-    def digest_parts(self, headers):
+    def digest_parts(self, headers):  # noqa: D102
         auth = headers.get('Authorization') or headers.get('authorization')
         if not auth:
             return None

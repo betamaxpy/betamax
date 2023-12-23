@@ -1,3 +1,4 @@
+# noqa: D100
 from requests.cookies import extract_cookies_to_jar
 from datetime import datetime
 
@@ -5,7 +6,6 @@ from betamax import util
 
 
 class Interaction(object):
-
     """The Interaction object represents the entirety of a single interaction.
 
     The interaction includes the date it was recorded, its JSON
@@ -21,7 +21,7 @@ class Interaction(object):
 
     """
 
-    def __init__(self, interaction, response=None):
+    def __init__(self, interaction, response=None):  # noqa: D107
         self.data = interaction
         self.orig_response = response
         self.recorded_response = self.deserialize()
@@ -42,7 +42,7 @@ class Interaction(object):
         return self.recorded_response
 
     @property
-    def recorded_at(self):
+    def recorded_at(self):  # noqa: D102
         return datetime.strptime(self.data['recorded_at'], '%Y-%m-%dT%H:%M:%S')
 
     def deserialize(self):
@@ -68,7 +68,7 @@ class Interaction(object):
         for placeholder in replacements:
             self.replace(*placeholder.unpack(serializing))
 
-    def replace_in_headers(self, text_to_replace, placeholder):
+    def replace_in_headers(self, text_to_replace, placeholder):  # noqa: D102
         if text_to_replace == '':
             return
         for obj in ('request', 'response'):
@@ -80,7 +80,7 @@ class Interaction(object):
                 else:
                     headers[k] = v.replace(text_to_replace, placeholder)
 
-    def replace_in_body(self, text_to_replace, placeholder):
+    def replace_in_body(self, text_to_replace, placeholder):  # noqa: D102
         if text_to_replace == '':
             return
         for obj in ('request', 'response'):
@@ -96,7 +96,7 @@ class Interaction(object):
             else:
                 self.data[obj]['body']['string'] = body
 
-    def replace_in_uri(self, text_to_replace, placeholder):
+    def replace_in_uri(self, text_to_replace, placeholder):  # noqa: D102
         if text_to_replace == '':
             return
         for (obj, key) in (('request', 'uri'), ('response', 'url')):

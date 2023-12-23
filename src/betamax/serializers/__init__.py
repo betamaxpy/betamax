@@ -1,3 +1,4 @@
+# noqa: D104
 # -*- coding: utf-8 -*-
 from .base import BaseSerializer
 from .json_serializer import JSONSerializer

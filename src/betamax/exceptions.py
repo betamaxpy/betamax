@@ -1,45 +1,47 @@
-class BetamaxError(Exception):
-    def __init__(self, message):
+# noqa: D100
+
+class BetamaxError(Exception):  # noqa: D101
+    def __init__(self, message):  # noqa: D107
         super(BetamaxError, self).__init__(message)
 
 
-class MissingDirectoryError(BetamaxError):
+class MissingDirectoryError(BetamaxError):  # noqa: D101
     pass
 
 
-class ValidationError(BetamaxError):
+class ValidationError(BetamaxError):  # noqa: D101
     pass
 
 
-class InvalidOption(ValidationError):
+class InvalidOption(ValidationError):  # noqa: D101
     pass
 
 
-class BodyBytesValidationError(ValidationError):
+class BodyBytesValidationError(ValidationError):  # noqa: D101
     pass
 
 
-class MatchersValidationError(ValidationError):
+class MatchersValidationError(ValidationError):  # noqa: D101
     pass
 
 
-class RecordValidationError(ValidationError):
+class RecordValidationError(ValidationError):  # noqa: D101
     pass
 
 
-class RecordIntervalValidationError(ValidationError):
+class RecordIntervalValidationError(ValidationError):  # noqa: D101
     pass
 
 
-class PlaceholdersValidationError(ValidationError):
+class PlaceholdersValidationError(ValidationError):  # noqa: D101
     pass
 
 
-class PlaybackRepeatsValidationError(ValidationError):
+class PlaybackRepeatsValidationError(ValidationError):  # noqa: D101
     pass
 
 
-class SerializerValidationError(ValidationError):
+class SerializerValidationError(ValidationError):  # noqa: D101
     pass
 
 

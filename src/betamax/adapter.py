@@ -22,7 +22,7 @@ class BetamaxAdapter(BaseAdapter):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107
         super(BetamaxAdapter, self).__init__()
         self.cassette = None
         self.cassette_name = None

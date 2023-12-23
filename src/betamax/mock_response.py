@@ -1,9 +1,10 @@
+# noqa: D100
 from email import parser, message
 import sys
 
 
-class MockHTTPResponse(object):
-    def __init__(self, headers):
+class MockHTTPResponse(object):  # noqa: D101
+    def __init__(self, headers):  # noqa: D107
         from betamax.util import coerce_content
 
         h = ["%s: %s" % (k, v) for k in headers for v in headers.getlist(k)]
@@ -18,10 +19,10 @@ class MockHTTPResponse(object):
         self.msg = p.parsestr(h)
         self.msg.set_payload(h)
 
-    def isclosed(self):
+    def isclosed(self):  # noqa: D102
         return False
 
 
-class EmailMessage(message.Message):
-    def getheaders(self, value, *args):
+class EmailMessage(message.Message):  # noqa: D101
+    def getheaders(self, value, *args):  # noqa: D102
         return self.get_all(value, [])

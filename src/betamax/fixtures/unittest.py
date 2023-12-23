@@ -1,4 +1,4 @@
-"""Minimal :class:`unittest.TestCase` subclass adding Betamax integration.
+r"""Minimal :class:`unittest.TestCase` subclass adding Betamax integration.
 
 .. autoclass:: betamax.fixtures.unittest.BetamaxTestCase
     :members:
@@ -62,7 +62,6 @@ __all__ = ('BetamaxTestCase',)
 
 
 class BetamaxTestCase(unittest.TestCase):
-
     """Betamax integration for unittest.
 
     .. versionadded:: 0.5.0
@@ -75,7 +74,7 @@ class BetamaxTestCase(unittest.TestCase):
     CASSETTE_LIBRARY_DIR = None
 
     def generate_cassette_name(self):
-        """Generates a cassette name for the current test.
+        """Generate a cassette name for the current test.
 
         The default format is "%(classname)s.%(testMethodName)s"
 

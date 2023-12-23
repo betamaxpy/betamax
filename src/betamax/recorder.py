@@ -1,3 +1,4 @@
+# noqa: D100
 # -*- coding: utf-8 -*-
 from . import matchers, serializers
 from .adapter import BetamaxAdapter
@@ -7,7 +8,6 @@ from .options import Options
 
 
 class Betamax(object):
-
     """This object contains the main API of the request-vcr library.
 
     This object is entirely a context manager so all you have to do is:
@@ -45,7 +45,7 @@ class Betamax(object):
 
     """
 
-    def __init__(self, session, cassette_library_dir=None,
+    def __init__(self, session, cassette_library_dir=None,  # noqa: D107
                  default_cassette_options={}):
         #: Store the requests.Session object being wrapped.
         self.session = session
@@ -64,11 +64,11 @@ class Betamax(object):
         if cassette_library_dir:
             self.config.cassette_library_dir = cassette_library_dir
 
-    def __enter__(self):
+    def __enter__(self):  # noqa: D105
         self.start()
         return self
 
-    def __exit__(self, *ex_args):
+    def __exit__(self, *ex_args):  # noqa: D105
         self.stop()
         # ex_args comes through as the exception type, exception value and
         # exception traceback. If any of them are not None, we should probably
