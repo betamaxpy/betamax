@@ -1,3 +1,4 @@
+# noqa: D100
 # -*- coding: utf-8 -*-
 NOT_IMPLEMENTED_ERROR_MSG = ('This method must be implemented by classes'
                              ' inheriting from BaseSerializer.')
@@ -39,10 +40,10 @@ class BaseSerializer(object):
     stored_as_binary = False
 
     @staticmethod
-    def generate_cassette_name(cassette_library_dir, cassette_name):
+    def generate_cassette_name(cassette_library_dir, cassette_name):  # noqa: D102, E501
         raise NotImplementedError(NOT_IMPLEMENTED_ERROR_MSG)
 
-    def __init__(self):
+    def __init__(self):  # noqa: D107
         if not self.name:
             raise ValueError("Serializer's name attribute must be a string"
                              " value, not None.")
@@ -50,7 +51,7 @@ class BaseSerializer(object):
         self.on_init()
 
     def on_init(self):
-        """Method to implement if you wish something to happen in ``__init__``.
+        """Implement this if you wish something to happen in ``__init__``.
 
         The return value is not checked and this is called at the end of
         ``__init__``. It is meant to provide the matcher author a way to
@@ -60,7 +61,7 @@ class BaseSerializer(object):
         return None
 
     def serialize(self, cassette_data):
-        """A method that must be implemented by the Serializer author.
+        """Implement this if you wish to serialize the cassette data.
 
         :param dict cassette_data: A dictionary with two keys:
             ``http_interactions``, ``recorded_with``.
@@ -69,7 +70,7 @@ class BaseSerializer(object):
         raise NotImplementedError(NOT_IMPLEMENTED_ERROR_MSG)
 
     def deserialize(self, cassette_data):
-        """A method that must be implemented by the Serializer author.
+        """Implement this if you wish to deserialize the cassette data.
 
         The return value is extremely important. If it is not empty, the
         dictionary returned must have the following structure::

@@ -16,15 +16,14 @@ PY3 = sys.version_info >= (3, 0)
 
 
 class HTTPHeaderDict(MutableMapping):
-    """
+    """A ``dict`` like container for storing HTTP Headers.
+
     :param headers:
         An iterable of field-value pairs. Must not contain multiple field names
         when compared case-insensitively.
 
     :param kwargs:
         Additional field-value pairs to pass in to ``dict.update``.
-
-    A ``dict`` like container for storing HTTP Headers.
 
     Field names are stored and compared case-insensitively in compliance with
     RFC 7230. Iteration provides the first case-sensitive key seen for each
@@ -49,7 +48,7 @@ class HTTPHeaderDict(MutableMapping):
     '7'
     """
 
-    def __init__(self, headers=None, **kwargs):
+    def __init__(self, headers=None, **kwargs):  # noqa: D107
         super(HTTPHeaderDict, self).__init__()
         self._container = {}
         if headers is not None:
@@ -60,21 +59,21 @@ class HTTPHeaderDict(MutableMapping):
         if kwargs:
             self.extend(kwargs)
 
-    def __setitem__(self, key, val):
+    def __setitem__(self, key, val):  # noqa: D105
         self._container[key.lower()] = (key, val)
         return self._container[key.lower()]
 
-    def __getitem__(self, key):
+    def __getitem__(self, key):  # noqa: D105
         val = self._container[key.lower()]
         return ', '.join(val[1:])
 
-    def __delitem__(self, key):
+    def __delitem__(self, key):  # noqa: D105
         del self._container[key.lower()]
 
-    def __contains__(self, key):
+    def __contains__(self, key):  # noqa: D105
         return key.lower() in self._container
 
-    def __eq__(self, other):
+    def __eq__(self, other):  # noqa: D105
         if not isinstance(other, Mapping) and not hasattr(other, 'keys'):
             return False
         if not isinstance(other, type(self)):
@@ -82,7 +81,7 @@ class HTTPHeaderDict(MutableMapping):
         return (dict((k.lower(), v) for k, v in self.itermerged()) ==
                 dict((k.lower(), v) for k, v in other.itermerged()))
 
-    def __ne__(self, other):
+    def __ne__(self, other):  # noqa: D105
         return not self.__eq__(other)
 
     if not PY3:  # Python 2
@@ -91,16 +90,18 @@ class HTTPHeaderDict(MutableMapping):
 
     __marker = object()
 
-    def __len__(self):
+    def __len__(self):  # noqa: D105
         return len(self._container)
 
-    def __iter__(self):
+    def __iter__(self):  # noqa: D105
         # Only provide the originally cased names
         for vals in self._container.values():
             yield vals[0]
 
     def pop(self, key, default=__marker):
-        """D.pop(k[,d]) -> v, remove specified key and return the value.
+        """Remove specified key and return the value.
+
+        D.pop(k[,d]) -> v
 
         If key is not found, d is returned if given, otherwise KeyError is
         raised.
@@ -119,15 +120,16 @@ class HTTPHeaderDict(MutableMapping):
             del self[key]
             return value
 
-    def discard(self, key):
+    def discard(self, key):  # noqa: D102
         try:
             del self[key]
         except KeyError:
             pass
 
     def add(self, key, val):
-        """Adds a (name, value) pair, doesn't overwrite the value if it already
-        exists.
+        """Add a (name, value) pair.
+
+        Doesn't overwrite the value if it already exists.
 
         >>> headers = HTTPHeaderDict(foo='bar')
         >>> headers.add('Foo', 'baz')
@@ -149,7 +151,8 @@ class HTTPHeaderDict(MutableMapping):
                 self._container[key_lower] = [vals[0], vals[1], val]
 
     def extend(self, *args, **kwargs):
-        """Generic import function for any type of header-like object.
+        """Import any type of generic header-like object.
+
         Adapted version of MutableMapping.update in order to insert items
         with self.add instead of self.__setitem__
         """
@@ -175,8 +178,10 @@ class HTTPHeaderDict(MutableMapping):
             self.add(key, value)
 
     def getlist(self, key):
-        """Returns a list of all the values for the named field. Returns an
-        empty list if the key doesn't exist."""
+        """Return a list of all the values for the named field.
+
+        Returns an empty list if the key doesn't exist.
+        """
         try:
             vals = self._container[key.lower()]
         except KeyError:
@@ -192,7 +197,7 @@ class HTTPHeaderDict(MutableMapping):
     getallmatchingheaders = getlist
     iget = getlist
 
-    def __repr__(self):
+    def __repr__(self):  # noqa: D105
         return "%s(%s)" % (type(self).__name__, dict(self.itermerged()))
 
     def _copy_from(self, other):
@@ -203,7 +208,7 @@ class HTTPHeaderDict(MutableMapping):
                 val = list(val)
             self._container[key.lower()] = [key] + val
 
-    def copy(self):
+    def copy(self):  # noqa: D102
         clone = type(self)()
         clone._copy_from(self)
         return clone
@@ -221,7 +226,7 @@ class HTTPHeaderDict(MutableMapping):
             val = self._container[key.lower()]
             yield val[0], ', '.join(val[1:])
 
-    def items(self):
+    def items(self):  # noqa: D102
         return list(self.iteritems())
 
     @classmethod

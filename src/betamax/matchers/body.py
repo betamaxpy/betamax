@@ -1,3 +1,4 @@
+# noqa: D100
 # -*- coding: utf-8 -*-
 from .base import BaseMatcher
 
@@ -5,10 +6,11 @@ from betamax import util
 
 
 class BodyMatcher(BaseMatcher):
-    # Matches based on the body of the request
+    """Match based on the body of the request."""
+
     name = 'body'
 
-    def match(self, request, recorded_request):
+    def match(self, request, recorded_request):  # noqa: D102
         recorded_request = util.deserialize_prepared_request(recorded_request)
 
         request_body = b''

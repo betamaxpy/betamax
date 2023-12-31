@@ -1,3 +1,4 @@
+# noqa: D100
 # -*- coding: utf-8 -*-
 import collections
 from datetime import datetime
@@ -12,7 +13,7 @@ from betamax.util import (_option_from, serialize_prepared_request,
                           serialize_response, timestamp)
 
 
-class Cassette(object):
+class Cassette(object):  # noqa: D101
 
     default_cassette_options = {
         'record_mode': 'once',
@@ -25,7 +26,7 @@ class Cassette(object):
 
     hooks = collections.defaultdict(list)
 
-    def __init__(self, cassette_name, serialization_format, **kwargs):
+    def __init__(self, cassette_name, serialization_format, **kwargs):  # noqa: D107, E501
         #: Short name of the cassette
         self.cassette_name = cassette_name
 
@@ -68,7 +69,7 @@ class Cassette(object):
         self.serializer.allow_serialization = self.is_recording()
 
     @staticmethod
-    def can_be_loaded(cassette_library_dir, cassette_name, serialize_with,
+    def can_be_loaded(cassette_library_dir, cassette_name, serialize_with,  # noqa: D102, E501
                       record_mode):
         # If we want to record a cassette we don't care if the file exists
         # yet
@@ -92,7 +93,7 @@ class Cassette(object):
         # have the cassette the user expects us to load and raise.
         return os.path.exists(cassette_path) or recording
 
-    def clear(self):
+    def clear(self):  # noqa: D102
         # Clear out the interactions
         self.interactions = []
         # Serialize to the cassette file
@@ -106,7 +107,7 @@ class Cassette(object):
             return i.recorded_at
         return datetime.now()
 
-    def eject(self):
+    def eject(self):  # noqa: D102
         self._save_cassette()
 
     def find_match(self, request):
@@ -166,7 +167,7 @@ class Cassette(object):
         }
         return values.get(self.record_mode, True)
 
-    def load_interactions(self):
+    def load_interactions(self):  # noqa: D102
         if self.serialized is None:
             self.serialized = self.serializer.deserialize()
 
@@ -177,11 +178,11 @@ class Cassette(object):
             dispatch_hooks('before_playback', i, self)
             i.replace_all(self.placeholders, False)
 
-    def sanitize_interactions(self):
+    def sanitize_interactions(self):  # noqa: D102
         for i in self.interactions:
             i.replace_all(self.placeholders, True)
 
-    def save_interaction(self, response, request):
+    def save_interaction(self, response, request):  # noqa: D102
         serialized_data = self.serialize_interaction(response, request)
         interaction = Interaction(serialized_data, response)
         dispatch_hooks('before_record', interaction, self)
@@ -189,7 +190,7 @@ class Cassette(object):
             self.interactions.append(interaction)
         return interaction
 
-    def serialize_interaction(self, response, request):
+    def serialize_interaction(self, response, request):  # noqa: D102
         return {
             'request': serialize_prepared_request(
                 request,
@@ -219,17 +220,17 @@ class Placeholder(collections.namedtuple('Placeholder',
     """Encapsulate some logic about Placeholders."""
 
     @classmethod
-    def from_dict(cls, dictionary):
+    def from_dict(cls, dictionary):  # noqa: D102
         return cls(**dictionary)
 
-    def unpack(self, serializing):
+    def unpack(self, serializing):  # noqa: D102
         if serializing:
             return self.replace, self.placeholder
         else:
             return self.placeholder, self.replace
 
 
-def merge_placeholder_lists(defaults, overrides):
+def merge_placeholder_lists(defaults, overrides):  # noqa: D103
     overrides = [Placeholder.from_dict(override) for override in overrides]
     overrides_dict = dict((p.placeholder, p) for p in overrides)
     placeholders = [overrides_dict.pop(p.placeholder, p)

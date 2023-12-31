@@ -1,3 +1,4 @@
+# noqa: D100
 from .mock_response import MockHTTPResponse
 from datetime import datetime
 from requests.models import PreparedRequest, Response
@@ -16,26 +17,26 @@ import io
 import sys
 
 
-def coerce_content(content, encoding=None):
+def coerce_content(content, encoding=None):  # noqa: D103
     if hasattr(content, 'decode'):
         content = content.decode(encoding or 'utf-8', 'replace')
     return content
 
 
-def body_io(string, encoding=None):
+def body_io(string, encoding=None):  # noqa: D103
     if hasattr(string, 'encode'):
         string = string.encode(encoding or 'utf-8')
     return io.BytesIO(string)
 
 
-def from_list(value):
+def from_list(value):  # noqa: D103
     if isinstance(value, list):
         return value[0]
     return value
 
 
 def add_body(r, preserve_exact_body_bytes, body_dict):
-    """Simple function which takes a response or request and coerces the body.
+    """Take a response or request and coerce the body.
 
     This function adds either ``'string'`` or ``'base64_string'`` to
     ``body_dict``. If ``preserve_exact_body_bytes`` is ``True`` then it
@@ -65,7 +66,7 @@ def add_body(r, preserve_exact_body_bytes, body_dict):
         body_dict['string'] = coerce_content(body, body_dict['encoding'])
 
 
-def serialize_prepared_request(request, preserve_exact_body_bytes):
+def serialize_prepared_request(request, preserve_exact_body_bytes):  # noqa: D103, E501
     headers = request.headers
     body = {'encoding': 'utf-8'}
     add_body(request, preserve_exact_body_bytes, body)
@@ -79,7 +80,7 @@ def serialize_prepared_request(request, preserve_exact_body_bytes):
     }
 
 
-def deserialize_prepared_request(serialized):
+def deserialize_prepared_request(serialized):  # noqa: D103
     p = PreparedRequest()
     p._cookies = RequestsCookieJar()
     body = serialized['body']
@@ -96,7 +97,7 @@ def deserialize_prepared_request(serialized):
     return p
 
 
-def serialize_response(response, preserve_exact_body_bytes):
+def serialize_response(response, preserve_exact_body_bytes):  # noqa: D103
     body = {'encoding': response.encoding}
     add_body(response, preserve_exact_body_bytes, body)
     header_map = HTTPHeaderDict(response.raw.headers)
@@ -112,7 +113,7 @@ def serialize_response(response, preserve_exact_body_bytes):
     }
 
 
-def deserialize_response(serialized):
+def deserialize_response(serialized):  # noqa: D103
     r = Response()
     r.encoding = serialized['body']['encoding']
     header_dict = HTTPHeaderDict()
@@ -136,7 +137,7 @@ def deserialize_response(serialized):
     return r
 
 
-def add_urllib3_response(serialized, response, headers):
+def add_urllib3_response(serialized, response, headers):  # noqa: D103
     if 'base64_string' in serialized['body']:
         body = io.BytesIO(
             base64.b64decode(serialized['body']['base64_string'].encode())
@@ -162,7 +163,7 @@ def add_urllib3_response(serialized, response, headers):
     response.raw = h
 
 
-def timestamp():
+def timestamp():  # noqa: D103
     stamp = datetime.utcnow().isoformat()
     try:
         i = stamp.rindex('.')

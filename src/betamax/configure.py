@@ -1,3 +1,4 @@
+# noqa: D100
 from collections import defaultdict
 
 from .cassette import Cassette
@@ -23,13 +24,13 @@ class Configuration(object):
     CASSETTE_LIBRARY_DIR = 'vcr/cassettes'
     recording_hooks = defaultdict(list)
 
-    def __enter__(self):
+    def __enter__(self):  # noqa: D105
         return self
 
-    def __exit__(self, *args):
+    def __exit__(self, *args):  # noqa: D105
         pass
 
-    def __setattr__(self, prop, value):
+    def __setattr__(self, prop, value):  # noqa: D105
         if prop == 'preserve_exact_body_bytes':
             self.default_cassette_options[prop] = True
         else:

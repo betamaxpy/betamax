@@ -1,3 +1,4 @@
+# noqa: D104
 from .cassette import Cassette, dispatch_hooks
 from .interaction import Interaction
 

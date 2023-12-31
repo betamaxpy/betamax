@@ -1,3 +1,4 @@
+# noqa: D100
 # -*- coding: utf-8 -*-
 from .base import BaseSerializer
 from betamax.exceptions import MissingDirectoryError
@@ -6,7 +7,6 @@ import os
 
 
 class SerializerProxy(BaseSerializer):
-
     """
     This is an internal implementation detail of the betamax library.
 
@@ -22,7 +22,7 @@ class SerializerProxy(BaseSerializer):
 
     """
 
-    def __init__(self, serializer, cassette_path, allow_serialization=False):
+    def __init__(self, serializer, cassette_path, allow_serialization=False):  # noqa: D107, E501
         self.proxied_serializer = serializer
         self.allow_serialization = allow_serialization
         self.cassette_path = cassette_path
@@ -37,7 +37,7 @@ class SerializerProxy(BaseSerializer):
         if not os.path.exists(self.cassette_path):
             open(self.cassette_path, 'w+').close()
 
-    def corrected_file_mode(self, base_mode):
+    def corrected_file_mode(self, base_mode):  # noqa: D102
         storing_binary_data = getattr(self.proxied_serializer,
                                       'stored_as_binary',
                                       False)
@@ -46,7 +46,7 @@ class SerializerProxy(BaseSerializer):
         return base_mode
 
     @classmethod
-    def find(cls, serialize_with, cassette_library_dir, cassette_name):
+    def find(cls, serialize_with, cassette_library_dir, cassette_name):  # noqa: D102, E501
         from . import serializer_registry
         serializer = serializer_registry.get(serialize_with)
         if serializer is None:
@@ -60,13 +60,13 @@ class SerializerProxy(BaseSerializer):
         return cls(serializer, cassette_path)
 
     @staticmethod
-    def generate_cassette_name(serializer, cassette_library_dir,
+    def generate_cassette_name(serializer, cassette_library_dir,  # noqa: D102
                                cassette_name):
         return serializer.generate_cassette_name(
             cassette_library_dir, cassette_name
             )
 
-    def serialize(self, cassette_data):
+    def serialize(self, cassette_data):  # noqa: D102
         if not self.allow_serialization:
             return
 
@@ -76,7 +76,7 @@ class SerializerProxy(BaseSerializer):
         with open(self.cassette_path, mode) as fd:
             fd.write(self.proxied_serializer.serialize(cassette_data))
 
-    def deserialize(self):
+    def deserialize(self):  # noqa: D102
         self._ensure_path_exists()
 
         data = {}

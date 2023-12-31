@@ -1,3 +1,4 @@
+# noqa: D100
 # -*- coding: utf-8 -*-
 import sys
 
@@ -13,7 +14,8 @@ isPY2 = (2, 6) <= sys.version_info < (3, 0)
 
 
 class QueryMatcher(BaseMatcher):
-    # Matches based on the query of the request
+    """Match based on the query of the request."""
+
     name = 'query'
 
     def to_dict(self, query):
@@ -23,7 +25,7 @@ class QueryMatcher(BaseMatcher):
             keep_blank_values=True,
         )
 
-    def match(self, request, recorded_request):
+    def match(self, request, recorded_request):  # noqa: D102
         request_query_dict = self.to_dict(urlparse(request.url).query)
         recorded_query = urlparse(recorded_request['uri']).query
         if recorded_query and isPY2:
