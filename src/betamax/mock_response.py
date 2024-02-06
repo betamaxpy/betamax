@@ -18,13 +18,13 @@ class MockHTTPResponse(object):
         self.msg = p.parsestr(h)
         self.msg.set_payload(h)
 
-        self.__closed = False
+        self._closed = False
 
     def isclosed(self):
-        return self.__closed
+        return self._closed
 
     def close(self):
-        self.__closed = True
+        self._closed = True
 
 
 class EmailMessage(message.Message):
