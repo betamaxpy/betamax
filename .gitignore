@@ -10,3 +10,4 @@ docs/_build
 tags
 build/
 dist/
+.pytest_cache/*

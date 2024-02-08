@@ -1,9 +1,11 @@
 History
 =======
 
-0.8.2 - 2018-10-21
+0.9.0 - 2024-02-06
 ------------------
 
+- Add support for urllib3 2.0 
+- Fix documentation
 - Add support for binary serializer storage;
   useful with custom serializers (such as pickle based),
   however all builtin betamax serializers remain text based.
