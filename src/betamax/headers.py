@@ -8,7 +8,7 @@ https://github.com/shazow/urllib3/blob/3bd63406bef7c16d007c17563b6af14582567d4b/
 """
 import sys
 
-from collections import Mapping, MutableMapping
+from collections.abc import Mapping, MutableMapping
 
 __all__ = ('HTTPHeaderDict',)
 
