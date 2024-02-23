@@ -11,3 +11,5 @@ tags
 build/
 dist/
 .pytest_cache/*
+test_cassette.test
+tests/cassettes/test_record_once.json
