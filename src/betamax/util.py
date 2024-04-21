@@ -1,5 +1,5 @@
 from .mock_response import MockHTTPResponse
-from datetime import datetime
+from datetime import datetime, timezone
 from requests.models import PreparedRequest, Response
 from requests.packages.urllib3 import HTTPResponse
 from requests.structures import CaseInsensitiveDict
@@ -163,7 +163,7 @@ def add_urllib3_response(serialized, response, headers):
 
 
 def timestamp():
-    stamp = datetime.utcnow().isoformat()
+    stamp = datetime.now(timezone.utc).isoformat().split("+")[0]
     try:
         i = stamp.rindex('.')
     except ValueError:

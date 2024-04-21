@@ -9,7 +9,7 @@ import os
 
 from . import cassette
 from .exceptions import BetamaxError
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from requests.adapters import BaseAdapter, HTTPAdapter
 
 _SENTINEL = object()
@@ -102,7 +102,7 @@ class BetamaxAdapter(BaseAdapter):
         if self.options.get('re_record_interval'):
             re_record_interval = timedelta(self.options['re_record_interval'])
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         if re_record_interval < (now - self.cassette.earliest_recorded_date):
             self.cassette.clear()
 
