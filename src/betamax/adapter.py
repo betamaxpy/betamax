@@ -102,7 +102,7 @@ class BetamaxAdapter(BaseAdapter):
         if self.options.get('re_record_interval'):
             re_record_interval = timedelta(self.options['re_record_interval'])
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         if re_record_interval < (now - self.cassette.earliest_recorded_date):
             self.cassette.clear()
 
