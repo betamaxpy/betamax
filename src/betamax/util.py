@@ -163,7 +163,7 @@ def add_urllib3_response(serialized, response, headers):
 
 
 def timestamp():
-    stamp = datetime.now(timezone.utc).isoformat().split("+")[0]
+    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
     try:
         i = stamp.rindex('.')
     except ValueError:
